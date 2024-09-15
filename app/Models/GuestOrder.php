@@ -16,11 +16,15 @@ class GuestOrder extends Model
         'guest_email',
         'guest_phone_number',
         'guest_address',
-        'total_amount',
         'status',
         'order_date',
         'shipping_method_id',
         'payment_method',
+        'promotion_id',
+        'coupon_id',
+        'total_price',
+        'discount_value',
+        'final_price',
     ];
 
     public function shippingMethod()

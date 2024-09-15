@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('guest_order_id')->nullable();
-            $table->enum('status', ['PENDING', 'COMPLETED', 'CANCELED'])->default('PENDING');
+            $table->enum('status', ['PENDING', 'COMPLETED', 'CANCELED', 'SHIPPING'])->default('PENDING'); // Pending là chuẩn bị hàng, Shipping là đang giao hàng, Completed là đã giao hàng, Canceled là đã hủy
             $table->timestamp('order_date')->useCurrent();
             $table->text('shipping_address')->nullable();
             $table->unsignedBigInteger('shipping_method_id');

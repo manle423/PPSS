@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('guest_email');
             $table->string('guest_phone_number', 20);
             $table->text('guest_address');
-            $table->enum('status', ['PENDING', 'COMPLETED', 'CANCELED'])->default('PENDING');
+            $table->enum('status', ['PENDING', 'COMPLETED', 'CANCELED', 'SHIPPING'])->default('PENDING'); // Pending là chuẩn bị hàng, Shipping là đang giao hàng, Completed là đã giao hàng, Canceled là đã hủy
             $table->timestamp('order_date')->useCurrent();
             $table->unsignedBigInteger('shipping_method_id');
             $table->enum('payment_method', ['CREDIT_CARD', 'PAYPAL', 'VNPAY']);
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('total_price', 18, 2);
             $table->decimal('discount_value', 18, 2)->default(0);
             $table->decimal('final_price', 18, 2);
+            $table->string('digital_signature');
             $table->timestamps();
             $table->softDeletes();
         });

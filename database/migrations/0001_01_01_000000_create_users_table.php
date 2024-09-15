@@ -19,13 +19,13 @@ return new class extends Migration
             $table->string('phone_number', 20)->nullable();
             $table->text('address')->nullable();
             $table->enum('role', ['ADMIN', 'BUYER', 'SELLER'])->default('BUYER');
-            $table->string('username', 50)->unique();
+            $table->string('username', 50)->unique()->nullable();
             $table->string('password');
+            $table->string('digital_signature')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
         });
-
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
