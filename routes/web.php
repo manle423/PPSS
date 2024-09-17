@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -8,6 +9,14 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\HomeController;
+
+// Routes for admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', function () {
+        return redirect(route('admin.dashboard'));
+    });
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+});
 
 // Routes for guests (not logged in)
 Route::middleware('guest')->group(function () {
@@ -49,4 +58,13 @@ Route::get('/', function () {
 });
 
 // Home Route
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Routes for buyers and guests
+Route::middleware('buyerOrGuest')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+});
+
+Route::get('/404', function () {
+    return view('errors.404');
+})->name('404');
