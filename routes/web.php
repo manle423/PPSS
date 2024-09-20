@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 
 // Routes for admin
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -68,3 +69,7 @@ Route::middleware('buyerOrGuest')->group(function () {
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
+
+//Routes for products
+Route::get('/products', [ProductController::class, 'index'])->name('products');
+Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
