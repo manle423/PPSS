@@ -26,10 +26,10 @@
                         <td>${{ number_format($item->quantity * $item->product->price, 2) }}</td>
                         <td>
                             <!-- Add actions like remove or update quantity -->
-                            <form action="{{ route('cart.destroy', $item->id) }}" method="POST">
+                            <form action="{{ route('cart.destroy', $item) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Remove</button>
+                                <button class="btn btn-danger">Remove</button>
                             </form>
                         </td>
                     </tr>
