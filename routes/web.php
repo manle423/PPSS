@@ -71,5 +71,5 @@ Route::get('/404', function () {
 })->name('404');
 
 //Routes for products
-Route::get('/products', [ProductController::class, 'index'])->name('products');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
