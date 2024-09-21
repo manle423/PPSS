@@ -35,7 +35,7 @@ class CartController extends Controller
      */
     public function store(Request $request, $productId)
     {
-        
+
 
         // Find the product
         $product = Product::findOrFail($productId);

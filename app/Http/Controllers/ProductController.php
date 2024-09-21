@@ -11,10 +11,14 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Fetch all products from the database
-        $products = Product::paginate(5);
+        $query = $request->input('search');
+        $products = Product::when($query, function ($q) use ($query) {
+            return $q->where('name', 'like', '%' . $query . '%')
+                ->orWhere('description', 'like', '%' . $query . '%');
+        })->paginate(5);
         //$products = Product::all();
         // Latest available products
         $latestProducts = Product::latest()->limit(5)->get();
@@ -44,7 +48,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return view('product.show',['product' => $product]);
+        return view('product.show', ['product' => $product]);
     }
 
     /**
