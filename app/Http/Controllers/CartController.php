@@ -85,9 +85,23 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        
+        // Find the cart item by its ID
+        $cartItem = Cart::findOrFail($id);
+
+        // Validate the quantity input
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:' . $cartItem->product->stock_quantity,
+        ]);
+
+        // Update the quantity
+        $cartItem->quantity = $request->input('quantity');
+        $cartItem->save();
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Cart updated successfully.');
     }
 
     /**
