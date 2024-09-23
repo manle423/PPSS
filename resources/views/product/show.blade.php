@@ -9,7 +9,7 @@
         <p>{{ $product->description }}</p>
         <p>Price: ${{ $product->price }}</p>
         <p>Stock: {{ $product->stock_quantity }}</p>
-        <p>Category: {{ $product->category_id }}</p>
+        <p>Category: {{ $product->category->name }}</p>
 
         {{-- Amount to add to cart --}}
         <form action="{{ route('cart.store', $product->id) }}" method="POST">
