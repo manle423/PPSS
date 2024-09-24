@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/', function () {
-    return redirect(route('login'));
+    return redirect(route('home'));
 });
 
 // Home Route
@@ -70,9 +70,9 @@ Route::get('/404', function () {
 })->name('404');
 
 //
-Route::get('/home', function () {
+Route::get('/testhome', function () {
     return view('webshop.home'); 
-})->name('home');
+})->name('testhome');
 
 Route::get('/shop', function () {
     return view('webshop.shop'); 
