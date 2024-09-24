@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,27 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = $request->input('search');
-        $products = Product::when($query, function ($q) use ($query) {
-            return $q->where('name', 'like', '%' . $query . '%')
-                ->orWhere('description', 'like', '%' . $query . '%');
-        })->paginate(10);
+        // Get all categories for the dropdown
+        $categories = Category::all();
 
-        return view('product.index', compact('products'));
+        // Start with a base query for products
+        $query = Product::query();
+
+        // Search by product name or description
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // Filter by category if selected
+        if ($categoryId = $request->input('category')) {
+            $query->where('category_id', $categoryId);
+        }
+
+        // Paginate the results or get them all
+        $products = $query->paginate(5);
+
+        return view('product.index', compact('products', 'categories'));
     }
     /**
      * Show the form for creating a new resource.

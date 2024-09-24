@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 
@@ -71,5 +72,18 @@ Route::get('/404', function () {
 })->name('404');
 
 //Routes for products
+<<<<<<< HEAD
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+=======
+Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+
+// Routes for cart
+Route::middleware(['auth'])->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
+});
+>>>>>>> feature/category
