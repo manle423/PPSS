@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/', function () {
-    return redirect(route('login'));
+    return redirect(route('home'));
 });
 
 // Home Route
@@ -63,8 +63,37 @@ Route::get('/', function () {
 // Routes for buyers and guests
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
+    Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
+    Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+    Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 });
 
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
+
+//
+// Route::get('/testhome', function () {
+//     return view('webshop.home'); 
+// })->name('testhome');
+
+// Route::get('/shop', function () {
+//     return view('webshop.shop'); 
+// })->name('shop');
+
+// Route::get('/shop-detail', function () {
+//     return view('webshop.shop-detail'); 
+// })->name('shop-detail');
+
+// Route::get('/cart', function () {
+//     return view('webshop.cart'); 
+// })->name('cart');
+
+// Route::get('/404', function () {
+//     return view('webshop.404'); 
+// })->name('web-404');
+
+// Route::get('/checkout', function () {
+//     return view('webshop.checkout'); 
+// })->name('checkout');
