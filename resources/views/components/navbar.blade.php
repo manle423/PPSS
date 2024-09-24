@@ -24,8 +24,7 @@
                     <a href="contact.html" class="nav-item nav-link">Contact</a>
                 </div>
                 <div class="d-flex m-2 me-0">
-                    <button
-                        class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
+                    <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
                         data-bs-toggle="modal" data-bs-target="#searchModal"><i
                             class="fas fa-search text-primary"></i></button>
                     <a href="{{ route('cart') }}" class="position-relative ms-3 me-3 my-2">
@@ -38,20 +37,32 @@
                     @guest
                         <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
                             data-bs-target="#loginModal">
-                            <i class="fas fa-sign-in-alt fa-2x"></i>
+                            {{-- <i class="fas fa-sign-in-alt fa-2x"></i> --}}
+                            <span class="nav-item nav-link">Login</span>
                         </a>
                         <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
                             data-bs-target="#registerModal">
-                            <i class="fas fa-user-plus fa-2x"></i>
+                            {{-- <i class="fas fa-user-plus fa-2x"></i> --}}
+                            <span class="nav-item nav-link">Register</span>
                         </a>
                     @else
-                        <a class="my-2 ms-3 d-flex align-items-center" href="{{ route('logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fas fa-sign-out-alt fa-2x"></i>
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
+                        <div class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle d-flex align-items-center"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-user fa-2x"></i>
+                            </a>
+                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                                <a href="#" class="dropdown-item">Profile</a>
+                                <a href="#" class="dropdown-item">Settings</a>
+                                <a href="{{ route('logout') }}" class="dropdown-item"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </div>
+                        </div>
                     @endguest
                 </div>
             </div>

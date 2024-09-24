@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Pets Product Shop System</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
@@ -98,6 +100,10 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('assets/vendor/js/main.js') }}"></script>
+
+    {{-- Gọi file auth.js bên assets/js/auth.js --}}
+    <script src="{{ asset('assets/js/auth.js') }}"></script>
+
 </body>
 
 </html>
