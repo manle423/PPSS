@@ -18,6 +18,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         return redirect(route('admin.dashboard'));
     });
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
 });
 
 // Routes for guests (not logged in)
