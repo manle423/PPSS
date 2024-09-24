@@ -18,7 +18,7 @@
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
                             <a href="{{ route('cart') }}" class="dropdown-item">Cart</a>
                             <a href="{{ route('checkout') }}" class="dropdown-item">Checkout</a>
-                            <a href="{{ route('web-404') }}" class="dropdown-item">404 Page</a>
+                            <a href="{{ route('404') }}" class="dropdown-item">404 Page</a>
                         </div>
                     </div>
                     <a href="contact.html" class="nav-item nav-link">Contact</a>

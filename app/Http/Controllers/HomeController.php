@@ -25,4 +25,24 @@ class HomeController extends Controller
     {
         return view('webshop.home');
     }
+
+    public function shop()
+    {
+        return view('webshop.shop');
+    }
+
+    public function shopDetail()
+    {
+        return view('webshop.shop-detail');
+    }
+
+    public function cart()
+    {
+        return view('webshop.cart');
+    }
+
+    public function checkout()
+    {
+        return view('webshop.checkout');
+    }
 }
