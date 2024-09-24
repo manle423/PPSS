@@ -276,14 +276,14 @@
 @media (min-width: 992px) {
     .hero-header,
     .page-header {
-        margin-top: 80px !important;
+        margin-top: 90px !important;
     }
 }
 
 @media (max-width: 992px) {
     .hero-header,
     .page-header {
-        margin-top: 77px !important;
+        margin-top: 87px !important;
     }
 }
 /*** Hero Header end ***/

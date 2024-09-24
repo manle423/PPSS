@@ -96,7 +96,7 @@
     <script src="{{ asset('assets/vendor/libs/easing/easing.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/waypoints/waypoints.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/lightbox/js/lightbox.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/owlcarousel/owl.carousel.min.js') }}"></script>
 
     <!-- Template Javascript -->
     <script src="{{ asset('assets/vendor/js/main.js') }}"></script>
