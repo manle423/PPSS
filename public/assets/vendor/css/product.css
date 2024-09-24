@@ -1,0 +1,184 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+  
+}
+
+.product-container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+   
+}
+
+.product-form-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.input-group textarea {
+    resize: vertical;
+}
+
+.submit-button {
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.submit-button:hover {
+    background-color: #4cae4c;
+}
+/* General styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f4f8;
+    margin: 0;
+   
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Title styling */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Container for the product table */
+.product-table-container {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #ffffff;
+    border-radius: 8px; /* Bo góc cho container */
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styling the product table */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px; /* Bo góc cho bảng */
+    overflow: hidden; /* Để góc bo được hiển thị đúng */
+}
+
+.product-table thead {
+    background-color: #007bff;
+    color: white;
+}
+
+.product-table th,
+.product-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+}
+
+.product-table tbody tr {
+    transition: background-color 0.3s;
+}
+
+.product-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.product-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.product-table .edit-button,
+.product-table .delete-button {
+    padding: 5px 10px; /* Giảm padding để nút nhỏ hơn */
+    font-size: 12px;   /* Giảm kích thước font */
+    margin-right: 5px; /* Khoảng cách giữa các nút */
+    cursor: pointer;    /* Thay đổi con trỏ khi hover */
+}
+
+.product-table .edit-button {
+    background-color: #4CAF50; /* Màu nền cho nút Edit */
+    color: white;               /* Màu chữ cho nút Edit */
+    border: none;               /* Xóa đường viền */
+    border-radius: 4px;        /* Bo góc */
+}
+
+.product-table .delete-button {
+    background-color: #f44336; /* Màu nền cho nút Delete */
+    color: white;               /* Màu chữ cho nút Delete */
+    border: none;               /* Xóa đường viền */
+    border-radius: 4px;        /* Bo góc */
+}
+
+.product-table .edit-button:hover,
+.product-table .delete-button:hover {
+    opacity: 0.8; /* Hiệu ứng hover cho các nút */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .product-table-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .product-table th, .product-table td {
+        padding: 10px 5px;
+        font-size: 14px;
+    }
+
+    .edit-button, .delete-button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
+.pagination {
+    display: flex;
+    justify-content: center; /* Căn giữa các liên kết phân trang */
+    margin-top: 20px; /* Khoảng cách trên phân trang */
+}
+
+.pagination a {
+    margin: 0 5px; /* Khoảng cách giữa các nút */
+    padding: 8px 12px; /* Kích thước nút */
+    border: 1px solid #ccc; /* Viền cho nút */
+    border-radius: 4px; /* Bo góc */
+    text-decoration: none; /* Bỏ gạch chân */
+    color: #007bff; /* Màu chữ */
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #007bff; /* Màu nền khi hover */
+    color: white; /* Màu chữ khi hover */
+}
