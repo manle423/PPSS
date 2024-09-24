@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\shop\ShopCateController;
+use App\Http\Controllers\shop\ShopProductController;
 use App\Http\Controllers\ProductController;
 
 // Routes for admin
@@ -76,4 +78,26 @@ Route::middleware('buyerOrGuest')->group(function () {
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
+//route for shop
+Route::prefix('shop')->group(function () {
+    Route::get('/page-home', [ShopCateController::class, 'index'])->name('shop.page');
+
+    Route::get('/page-addcate', [ShopCateController::class, 'create'])->name('shop.addcate');
+
+    Route::post('/page-addcate', [ShopCateController::class, 'store'])->name('shop.storecate');
+    Route::get('/page-listcate',[ShopCateController::class, 'listCate'])->name('shop.listCate');
+    Route::get('/page-editcate/{id}', [ShopCateController::class, 'editCate'])->name('shop.editCate');
+    Route::post('/page-editcate/{id}', [ShopCateController::class, 'updateCate'])->name('shop.updateCate');
+    Route::get('/page-deletecate/{id}', [ShopCateController::class, 'deleteCate'])->name('shop.deleteCate');
+
+    Route::resource('products', ShopProductController::class)->except(['show'])->names([
+        'create' => 'shop.addPro',      // Route cho form thêm sản phẩm
+        'store' => 'shop.storePro',      // Route để lưu sản phẩm
+        'edit' => 'shop.editPro',        // Route cho form chỉnh sửa sản phẩm
+        'update' => 'shop.updatePro',    // Route để cập nhật sản phẩm
+        'destroy' => 'shop.deletePro',   // Route để xóa sản phẩm
+        'index' => 'shop.listPro',       // Route để danh sách sản phẩm
+    ]);
+    
+});
 

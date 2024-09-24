@@ -27,8 +27,8 @@
 
     <!-- Libraries Stylesheet -->
    
-    <link href="{{ asset('assets/vendor/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('assets/vendor/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/vendor/libs/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendor/libs/tempusdominus/css/tempusdominus-bootstrap-4.min.css') }}" rel="stylesheet" />
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('assets/vendor/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -71,7 +71,15 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Category</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="#" class="dropdown-item">Add category</a>
+                            <a href="{{route('shop.addcate')}}" class="dropdown-item">Add category</a>
+                            <a href="{{route('shop.listCate')}}" class="dropdown-item">Categories</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Product</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{route('shop.addPro')}}" class="dropdown-item">Add product</a>
+                            <a href="{{route('shop.listPro')}}" class="dropdown-item">Product list</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
@@ -147,18 +155,16 @@
         </div>
        
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('assets/vendor/lib/chart/chart.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/easing/easing.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/owlcarousel/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/tempusdominus/js/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/chart/chart.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/tempusdominus/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/tempusdominus/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
     <!-- Template Javascript -->
     <script src="{{ asset('assets/vendor/js/main.js') }}"></script>
