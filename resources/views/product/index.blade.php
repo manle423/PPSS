@@ -3,14 +3,28 @@
 @section('content')
 <div class="container">
     <!-- Search Form -->
-    <form action="{{ route('product.index') }}" method="GET" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ request('search') }}">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit">Search</button>
-            </div>
+<form action="{{ route('product.index') }}" method="GET" class="mb-4">
+    <div class="input-group mb-2">
+        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ request('search') }}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
         </div>
-    </form>
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="form-group mb-2">
+        <select name="category" class="form-control">
+            <option value="">All Categories</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                    {{ $category->name }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
 
     <!-- Product Listing -->
     <div>
