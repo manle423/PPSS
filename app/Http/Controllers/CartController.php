@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,13 +14,43 @@ class CartController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cartItems = Cart::with('product')
-            ->where('user_id', Auth::id())
+
+
+
+        // Start with a base query for products
+        $query = Cart::query();
+
+        // Get all categories for the dropdown
+        $categories = Category::all();
+
+        // Filter cart items by the authenticated user
+        $query->where('user_id', Auth::id());
+
+        // Search by product name or description
+        if ($search = $request->input('search')) {
+            $query->whereHas('product', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by category if selected
+        if ($categoryId = $request->input('category')) {
+            $query->whereHas('product', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        }
+
+        // Get all items based on search and filters
+
+        // Get all items based on search and filters
+        $cartItems = $query->with('product')
             ->get();
 
-        return view('cart.index', compact('cartItems'));
+
+        return view('cart.index', compact('cartItems', 'categories'));
     }
 
     /**
@@ -87,7 +118,7 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+
         // Find the cart item by its ID
         $cartItem = Cart::findOrFail($id);
 
