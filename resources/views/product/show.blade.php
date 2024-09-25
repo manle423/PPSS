@@ -14,8 +14,8 @@
         <p>Stock: {{ $product->stock_quantity }}</p>
         <p>Category: {{ $product->category->name }}</p>
 
-        {{-- Choose product variant --}}
-        @if ($variants !== null)
+
+        @if ($variants && !$variants->isEmpty()) 
             <h5>Variants:</h5>
             @foreach ($variants as $variant)
                 <div class="form-check">
