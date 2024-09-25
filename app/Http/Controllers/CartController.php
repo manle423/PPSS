@@ -71,44 +71,40 @@ class CartController extends Controller
         // Find the product
         $product = Product::findOrFail($productId);
 
-        // Get the product variant (if there is one)
-        $variantId = $request->input('variant_id');
-        if ($variantId) {
-            $variant = ProductVariant::findOrFail($variantId);
-            // Check if the selected variant is available
-            if ($variant->stock_quantity < $request->input('amount')) {
-                return redirect()->route('cart.index')->with('error', 'Selected variant is out of stock!');
-            }
-            // Update the product variant stock
-            $variant->stock_quantity -= $request->input('amount');
-            $variant->save();
-            // Update the product stock
-            $product->stock_quantity -= $request->input('amount');
-            $product->save();
-        }
-
-
         // Validate the incoming request
         $request->validate([
             'amount' => 'required|integer|min:1|max:' . $product->stock_quantity,
+            'variant_id' => 'nullable|exists:product_variants,id',
         ]);
+         // Get the product variant (if there is one)
+         $variantId = $request->input('variant_id');
+    
+         if ($variantId) {
+             $variant = ProductVariant::findOrFail($variantId);
+             // Check if the selected variant is available
+             if ($variant->stock_quantity < $request->input('amount')) {
+                 return redirect()->route('cart.index')->with('error', 'Selected variant is out of stock!');
+             }
+         }
         // Check if the product is already in the user's cart
         $cartItem = Cart::where('user_id', Auth::id())
-            ->where('product_id', $productId)
+            ->where('product_id', $productId)->where('variant_id', $variantId)
             ->first();
-
         if ($cartItem) {
             // Update the quantity if the item is already in the cart
             $cartItem->quantity += $request->input('amount');
             $cartItem->save();
         } else {
             // Create a new cart item
-            Cart::create([
+            
+            $cart = Cart::create([
                 'user_id' => Auth::id(),
                 'product_id' => $productId,
                 'quantity' => $request->input('amount'),
                 'added_at' => now(),
+                'variant_id' => $variantId,
             ]);
+
         }
 
         // Redirect back with a success message

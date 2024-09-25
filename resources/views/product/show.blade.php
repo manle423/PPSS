@@ -37,7 +37,7 @@
             </div>
 
             {{-- Hidden input to store selected variant --}}
-            <input type="hidden" id="selected-variant-id" name="variant_id" value="">
+            <input type="hidden" id="variant-id" name="variant_id" value="">
 
             <button type="submit" class="btn btn-primary">Add to Cart</button>
             <a href="{{ route('product.index') }}" class="btn btn-secondary">Back to products</a>
@@ -50,20 +50,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             const variantInputs = document.querySelectorAll('input[name="variant_id_radio"]');
             const priceElement = document.getElementById('product-price');
-            const hiddenVariantInput = document.getElementById('selected-variant-id');
+            const hiddenVariantInput = document.getElementById('variant-id');
 
-            // Listen for changes in the variant selection
-            variantInputs.forEach(function(input) {
-                input.addEventListener('change', function() {
-                    const selectedPrice = this.getAttribute('data-price');
-                    const selectedVariantId = this.value;
+            function updatePriceAndVariant() {
+                const selectedVariant = document.querySelector('input[name="variant_id_radio"]:checked');
+
+                if (selectedVariant) {
+                    const selectedPrice = selectedVariant.getAttribute('data-price');
+                    const selectedVariantId = selectedVariant.value;
 
                     // Update the price element with the selected variant's price
                     priceElement.textContent = selectedPrice;
 
                     // Update the hidden input with the selected variant's ID
                     hiddenVariantInput.value = selectedVariantId;
-                });
+
+                    // Log the selected variant ID (for debugging purposes)
+                    console.log('Selected variant ID:', hiddenVariantInput.value);
+                }
+            }
+
+            // Run the function on page load to handle pre-selected variant
+            updatePriceAndVariant();
+
+            // Listen for changes in the variant selection
+            variantInputs.forEach(function(input) {
+                input.addEventListener('change', updatePriceAndVariant);
             });
         });
     </script>

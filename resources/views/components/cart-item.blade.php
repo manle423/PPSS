@@ -4,8 +4,9 @@
     <td>{{ $item->product->name }}</td>
 
     {{-- Check if the item has a variant before accessing variant_name --}}
-    <td>{{ optional($item->product->variant)->variant_name ?? 'N/A' }}</td>
-    
+
+    <td>{{ optional($item->variant)->variant_name?? '' }}</td>
+ 
     <td>{{ number_format($item->product->stock_quantity) }}</td>
     
     <td>
