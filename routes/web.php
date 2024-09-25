@@ -72,10 +72,6 @@ Route::get('/404', function () {
 })->name('404');
 
 //Routes for products
-<<<<<<< HEAD
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
-=======
 Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
 
@@ -86,4 +82,3 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 });
->>>>>>> feature/category

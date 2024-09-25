@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,10 +67,26 @@ class CartController extends Controller
      */
     public function store(Request $request, $productId)
     {
-
-
+        
         // Find the product
         $product = Product::findOrFail($productId);
+
+        // Get the product variant (if there is one)
+        $variantId = $request->input('variant_id');
+        if ($variantId) {
+            $variant = ProductVariant::findOrFail($variantId);
+            // Check if the selected variant is available
+            if ($variant->stock_quantity < $request->input('amount')) {
+                return redirect()->route('cart.index')->with('error', 'Selected variant is out of stock!');
+            }
+            // Update the product variant stock
+            $variant->stock_quantity -= $request->input('amount');
+            $variant->save();
+            // Update the product stock
+            $product->stock_quantity -= $request->input('amount');
+            $product->save();
+        }
+
 
         // Validate the incoming request
         $request->validate([

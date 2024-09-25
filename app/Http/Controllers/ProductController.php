@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -57,7 +58,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return view('product.show', ['product' => $product]);
+        // Get all variants of the product
+        $query = ProductVariant::query();
+        $query->where('product_id', $product->id);
+        $variants = $query->get();
+        return view('product.show', ['product' => $product, 'variants' => $variants]);
     }
 
     /**
