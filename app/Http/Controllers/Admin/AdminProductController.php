@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Shop;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Product;
 use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ShopProductController extends Controller
+class AdminProductController extends Controller
 {
     public function index()
     {
         $products = Product::whereNull('deleted_at')->paginate(10);
-        return view('shop-page.list-product', compact('products'));
+        return view('admin.products.list', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('shop-page.add-product', compact('categories'));
+        return view('admin.products.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -49,14 +49,14 @@ class ShopProductController extends Controller
             'created_at' => now(),
         ]);
 
-        return redirect()->route('products.create')->with('success', 'Product created successfully.');
+        return redirect()->route('admin.products.create')->with('success', 'Product created successfully.');
     }
 
     public function edit($id)
     {
         $product = Product::findOrFail($id);
         $categories = Category::all();
-        return view('shop-page.edit-product', compact('product', 'categories'));
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, $id)

@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 @section('content')
-<div class="container">
+    <div class="container">
         <h2>Category List</h2>
         @if (session('success'))
-                   <div class="alert alert-success">
-                         {{ session('success') }}
-                   </div>
-                @endif
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
         <div class="table-controls">
         </div>
         <table class="brand-table">
@@ -22,17 +22,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($categories as $category )
-                
-                <tr>
-                    <td>{{$category->id}}</td>
-                    <td>{{$category->name}}</td>
-                    <td>{{$category->description}}</td>
-                    <td>{{$category->created_at}}</td>
-                    <td>{{$category->updated_at}}</td>
-                    <td>{{$category->deleted_at}}</td>
-                    <td><a href="{{route('admin.category.edit',$category->id)}}">Edit</a> || <a href="{{route('admin.category.delete',$category->id)}}">Delete</a></td>
-                </tr>
+                @foreach ($categories as $category)
+                    <tr>
+                        <td>{{ $category->id }}</td>
+                        <td>{{ $category->name }}</td>
+                        <td>{{ $category->description }}</td>
+                        <td>{{ $category->created_at }}</td>
+                        <td>{{ $category->updated_at }}</td>
+                        <td>{{ $category->deleted_at }}</td>
+                        <td><a href="{{ route('admin.category.edit', $category->id) }}">Edit</a> || <a
+                                href="{{ route('admin.category.delete', $category->id) }}">Delete</a></td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>

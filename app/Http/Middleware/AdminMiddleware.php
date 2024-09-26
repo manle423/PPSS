@@ -18,10 +18,20 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === User::ADMIN) {
-            return $next($request);
+        // Kiểm tra xem người dùng đã đăng nhập hay chưa
+        if (Auth::check()) {
+            $user = Auth::user();
+            
+            // Kiểm tra nếu người dùng có role là 'admin'
+            if ($user->role === User::ADMIN) {
+                return $next($request); // Tiếp tục xử lý request
+            }
+
+            // Nếu role không phải admin, chuyển hướng tới trang chủ với thông báo lỗi
+            return redirect()->route('home')->with('error', 'You do not have admin access.');
         }
 
-        return redirect('/home')->with('error', 'You do not have admin access.');
+        // Nếu không đăng nhập, chuyển hướng tới trang đăng nhập
+        return redirect('/login')->with('error', 'Please login to access this page.');
     }
 }

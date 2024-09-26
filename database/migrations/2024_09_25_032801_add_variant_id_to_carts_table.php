@@ -12,23 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('carts', function (Blueprint $table) {
-            // Add a nullable foreign key to the product_variants table
-            $table->foreignId('variant_id')
-                  ->nullable()
-                  ->constrained('product_variants')
-                  ->onDelete('set null'); // Optionally handle cascade behavior
+            $table->foreignId('variant_id')->constrained('variants');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
-            // Drop the foreign key and column
-            $table->dropForeign(['variant_id']);
-            $table->dropColumn('variant_id');
+        Schema::table('carts', function (Blueprint $table) {
+            if (Schema::hasColumn('carts', 'variant_id')) {
+                $table->dropForeign(['variant_id']);
+                $table->dropColumn('variant_id');
+            }
         });
     }
 };

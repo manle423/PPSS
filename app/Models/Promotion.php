@@ -21,7 +21,10 @@ class Promotion extends Model
         'discount_value',
         'status',
     ];
-
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_promotion', 'promotion_id', 'order_id');
+    }
     public function promotionProducts()
     {
         return $this->hasMany(PromotionProduct::class, 'promotion_id', 'id');

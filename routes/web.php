@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -10,8 +12,6 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\shop\ShopCateController;
-use App\Http\Controllers\shop\ShopProductController;
 use App\Http\Controllers\ProductController;
 
 // Redirect
@@ -28,21 +28,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
 
     Route::prefix('/category')->group(function () {
-        Route::get('/', [ShopCateController::class, 'listCate'])->name('category.list');
-        Route::get('/create', [ShopCateController::class, 'create'])->name('category.create');
-        Route::post('/store', [ShopCateController::class, 'store'])->name('category.store');
-        Route::get('/edit/{id}', [ShopCateController::class, 'edit'])->name('category.edit');
-        Route::post('/update/{id}', [ShopCateController::class, 'update'])->name('category.update');
-        Route::get('/delete/{id}', [ShopCateController::class, 'delete'])->name('category.delete');
+        Route::get('/', [AdminCategoryController::class, 'listCate'])->name('category.list');
+        Route::get('/create', [AdminCategoryController::class, 'create'])->name('category.create');
+        Route::post('/store', [AdminCategoryController::class, 'store'])->name('category.store');
+        Route::get('/edit/{id}', [AdminCategoryController::class, 'edit'])->name('category.edit');
+        Route::post('/update/{id}', [AdminCategoryController::class, 'update'])->name('category.update');
+        Route::get('/delete/{id}', [AdminCategoryController::class, 'delete'])->name('category.delete');
     });
 
     Route::prefix('/products')->group(function () {
-        Route::get('/', [ShopProductController::class, 'index'])->name('products.list');
-        Route::get('/create', [ShopProductController::class, 'create'])->name('products.create');
-        Route::post('/store', [ShopProductController::class, 'store'])->name('products.store');
-        Route::get('/edit', [ShopProductController::class, 'edit'])->name('products.edit');
-        Route::post('/update', [ShopProductController::class, 'update'])->name('products.update');
-        Route::post('/delete', [ShopProductController::class, 'destroy'])->name('products.delete');
+        Route::get('/', [AdminProductController::class, 'index'])->name('products.list');
+        Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
+        Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
+        Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
+        Route::post('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
+        Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
     });
 
     // Route::resource('products', ShopProductController::class)->except(['show'])->names([
