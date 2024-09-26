@@ -24,7 +24,6 @@
 
         <form action="{{ route('admin.products.update', $product->id) }}" method="post" class="new-product-form">
             @csrf
-            @method('PUT')
 
             <div class="input-group">
                 <label for="id">Product ID</label>
