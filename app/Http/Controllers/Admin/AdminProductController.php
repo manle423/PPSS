@@ -41,6 +41,12 @@ class AdminProductController extends Controller
         DB::beginTransaction();
 
         try {
+            // Check if product is already exists
+            $existingProduct = Product::where('name', $request->name)
+                ->where('category_id', $request->category_id)
+                ->whereNull('deleted_at')
+                ->first();
+
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -49,12 +55,6 @@ class AdminProductController extends Controller
                 'stock_quantity' => $request->stock_quantity,
                 'created_at' => now(),
             ]);
-
-            // Check if product is already exists
-            $existingProduct = Product::where('name', $request->name)
-                ->where('category_id', $request->category_id)
-                ->whereNull('deleted_at')
-                ->first();
 
             if ($existingProduct) {
                 throw new \Exception('This product already exists in the selected category.');
@@ -76,9 +76,9 @@ class AdminProductController extends Controller
 
             return redirect()->route('admin.products.create')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'An error occurred while creating the product.']);
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
