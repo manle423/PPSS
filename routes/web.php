@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderListController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\shop\ShopCateController;
 use App\Http\Controllers\shop\ShopProductController;
@@ -101,3 +102,4 @@ Route::prefix('shop')->group(function () {
     
 });
 
+Route::get('/order-list',[OrderListController::class,'index']);

@@ -1,4 +1,4 @@
-@extends('layouts.shop-page')
+@extends('layouts.admin')
 @section('content')
 <div class="container">
         <h2>Category List</h2>

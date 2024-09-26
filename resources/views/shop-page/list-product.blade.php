@@ -1,4 +1,4 @@
-@extends('layouts.shop-page')
+@extends('layouts.admin')
 @section('content')
 <link href="{{ asset('assets/vendor/css/product.css') }}" rel="stylesheet">
 <div class="product-table-container">
