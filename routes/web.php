@@ -10,17 +10,52 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\shop\ShopCateController;
+use App\Http\Controllers\shop\ShopProductController;
 use App\Http\Controllers\ProductController;
 
-// Routes for admin
+// Redirect
+Route::get('/', function () {
+    return redirect(route('home'));
+});
+
+// Routes for admin va shop
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', function () {
         return redirect(route('admin.dashboard'));
     });
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
+
+    Route::prefix('/category')->group(function () {
+        Route::get('/', [ShopCateController::class, 'listCate'])->name('category.list');
+        Route::get('/create', [ShopCateController::class, 'create'])->name('category.create');
+        Route::post('/store', [ShopCateController::class, 'store'])->name('category.store');
+        Route::get('/edit/{id}', [ShopCateController::class, 'edit'])->name('category.edit');
+        Route::post('/update/{id}', [ShopCateController::class, 'update'])->name('category.update');
+        Route::get('/delete/{id}', [ShopCateController::class, 'delete'])->name('category.delete');
+    });
+
+    Route::prefix('/products')->group(function () {
+        Route::get('/', [ShopProductController::class, 'index'])->name('products.list');
+        Route::get('/create', [ShopProductController::class, 'create'])->name('products.create');
+        Route::post('/store', [ShopProductController::class, 'store'])->name('products.store');
+        Route::get('/edit', [ShopProductController::class, 'edit'])->name('products.edit');
+        Route::post('/update', [ShopProductController::class, 'update'])->name('products.update');
+        Route::post('/delete', [ShopProductController::class, 'destroy'])->name('products.delete');
+    });
+
+    // Route::resource('products', ShopProductController::class)->except(['show'])->names([
+    //     'create' => 'shop.addPro',      // Route cho form thêm sản phẩm
+    //     'store' => 'shop.storePro',      // Route để lưu sản phẩm
+    //     'edit' => 'shop.editPro',        // Route cho form chỉnh sửa sản phẩm
+    //     'update' => 'shop.updatePro',    // Route để cập nhật sản phẩm
+    //     'destroy' => 'shop.deletePro',   // Route để xóa sản phẩm
+    //     'index' => 'shop.listPro',       // Route để danh sách sản phẩm
+    // ]);
 });
 
-// Routes for guests (not logged in)
+// CHo người chưa đăng nhập
 Route::middleware('guest')->group(function () {
     // Login Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -55,30 +90,18 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::get('/', function () {
-    return redirect(route('login'));
-});
 
-// Home Route
-// Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-// Routes for buyers and guests
+// Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
+    Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
+    Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+    Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+    Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
 });
 
+// Not found page
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
-
-//Routes for products
-Route::get('/products', [ProductController::class, 'index'])->name('product.index');
-Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
-
-// Routes for cart
-Route::middleware(['auth'])->group(function () {
-    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
-    Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
-});
