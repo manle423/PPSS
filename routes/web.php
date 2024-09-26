@@ -28,7 +28,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
 
-    Route::prefix('/category')->group(function () {
+    Route::prefix('/categories')->group(function () {
         Route::get('/', [AdminCategoryController::class, 'listCate'])->name('category.list');
         Route::get('/create', [AdminCategoryController::class, 'create'])->name('category.create');
         Route::post('/store', [AdminCategoryController::class, 'store'])->name('category.store');
