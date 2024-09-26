@@ -23,7 +23,7 @@
         {
             "name": "Orders",
             "icon": "fas fa-receipt",
-            "url": "#"
+            "url": "orders"
         },
         {
             "name": "Shop",

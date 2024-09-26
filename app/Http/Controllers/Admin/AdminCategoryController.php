@@ -19,7 +19,7 @@ class AdminCategoryController extends Controller
     }
 
     // show list danh muc
-    public function listCate()
+    public function list()
     {
         $categories = Category::whereNull('deleted_at')->paginate(5);
         return view('admin.categories.list', compact('categories'));

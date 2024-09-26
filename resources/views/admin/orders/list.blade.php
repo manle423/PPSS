@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('content')
-<link href="{{ asset('assets/vendor/css/orderist.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/vendor/css/orderlist.css') }}" rel="stylesheet">
 
 <div class="order-list-container">
         <h1>Danh sách đơn hàng</h1>

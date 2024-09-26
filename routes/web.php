@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -29,7 +30,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
 
     Route::prefix('/categories')->group(function () {
-        Route::get('/', [AdminCategoryController::class, 'listCate'])->name('category.list');
+        Route::get('/', [AdminCategoryController::class, 'list'])->name('category.list');
         Route::get('/create', [AdminCategoryController::class, 'create'])->name('category.create');
         Route::post('/store', [AdminCategoryController::class, 'store'])->name('category.store');
         Route::get('/edit/{id}', [AdminCategoryController::class, 'edit'])->name('category.edit');
@@ -38,7 +39,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::prefix('/products')->group(function () {
-        Route::get('/', [AdminProductController::class, 'index'])->name('products.list');
+        Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
         Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
@@ -46,6 +47,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
     });
 
+    Route::prefix('/orders')->group(function () {
+        Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
+    });
     // Route::resource('products', ShopProductController::class)->except(['show'])->names([
     //     'create' => 'shop.addPro',      // Route cho form thêm sản phẩm
     //     'store' => 'shop.storePro',      // Route để lưu sản phẩm

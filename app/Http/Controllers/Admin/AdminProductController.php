@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminProductController extends Controller
 {
-    public function index()
+    public function list()
     {
         $products = Product::whereNull('deleted_at')->paginate(10);
         return view('admin.products.list', compact('products'));
