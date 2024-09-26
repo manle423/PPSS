@@ -33,9 +33,10 @@ class ProductController extends Controller
         }
 
         // Paginate the results or get them all
-        $products = $query->paginate(5);
+        $products = $query->paginate(9);
 
-        return view('product.index', compact('products', 'categories'));
+        //return view('product.index', compact('products', 'categories'));
+        return view('product.shop', compact('products', 'categories'));
     }
     /**
      * Show the form for creating a new resource.

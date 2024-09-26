@@ -104,6 +104,16 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
     Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
     Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
+
+    //Routes for products
+    Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+
+    // Routes for cart
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 });
 
 // Not found page
