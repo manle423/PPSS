@@ -1,7 +1,10 @@
 @extends('layouts.admin')
 @section('content')
     <div class="container">
-        <h2>Category List</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Category List</h2>
+            <a href="{{ route('admin.category.create') }}" class="btn btn-primary">Add Category</a>
+        </div>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -40,13 +43,7 @@
             <span>Showing 1 to 5 of 5 entries</span>
         </div>
         <div class="pagination">
-            <a href="#">&laquo;</a>
-            <a href="#" class="active">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">5</a>
-            <a href="#">&raquo;</a>
+            {{ $categories->links() }}
         </div>
     </div>
 @endsection

@@ -2,7 +2,10 @@
 @section('content')
     <link href="{{ asset('assets/vendor/css/product.css') }}" rel="stylesheet">
     <div class="product-table-container">
-        <h1>Product List</h1>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Product List</h1>
+            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
+        </div>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}

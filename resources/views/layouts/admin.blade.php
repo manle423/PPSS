@@ -53,59 +53,7 @@
         <!-- Spinner End -->
 
         <!-- Sidebar Start -->
-        <div class="sidebar pe-4 pb-3">
-            <nav class="navbar bg-light navbar-light">
-                <a class="navbar-brand mx-4 mb-3" href="{{ url('/') }}">
-                    <h3 class="text-primary">{{ config('app.name', 'Laravel') }}</h3>
-                </a>
-                <div class="d-flex align-items-center ms-4 mb-4">
-                    <div class="position-relative">
-                        <img class="rounded-circle" src="{{ asset('assets/vendor/img/user.jpg') }}" alt=""
-                            style="width: 40px; height: 40px;">
-                        <div
-                            class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1">
-                        </div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Pet products shop</h6>
-                        <span>Name</span>
-                    </div>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="" class="nav-item nav-link active"><i
-                            class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="far fa-file-alt me-2"></i>Category</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('admin.category.create') }}" class="dropdown-item">Add category</a>
-                            <a href="{{ route('admin.category.list') }}" class="dropdown-item">Categories</a>
-                        </div>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="far fa-file-alt me-2"></i>Product</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="{{ route('admin.products.create') }}" class="dropdown-item">Add product</a>
-                            <a href="{{ route('admin.products.list') }}" class="dropdown-item">Product list</a>
-                        </div>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#"class="nav-item nav-link active"><i
-                                class="far fa-file-alt me-2"></i>Customers</a>
-                    </div>
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                                class="far fa-file-alt me-2"></i>Shop</a>
-                        <div class="dropdown-menu bg-transparent border-0">
-                            <a href="#" class="dropdown-item">Information</a>
-                            <a href="#" class="dropdown-item">Change</a>
-                        </div>
-                    </div>
-                </div>
-
-            </nav>
-        </div>
+        @include('components.sidebar')
         <!-- Sidebar End -->
 
         <!-- Content Start -->

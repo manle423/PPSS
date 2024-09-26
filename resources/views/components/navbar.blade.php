@@ -16,7 +16,7 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            <!-- <a href="{{ route('cart') }}" class="dropdown-item">Cart</a> -->
+                            <a href="{{ route('cart') }}" class="dropdown-item">Cart</a>
                             <a href="{{ route('checkout') }}" class="dropdown-item">Checkout</a>
                             <a href="{{ route('404') }}" class="dropdown-item">404 Page</a>
                         </div>
