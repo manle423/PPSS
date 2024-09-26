@@ -1,4 +1,4 @@
-@extends('layouts.shop-page')
+@extends('layouts.admin')
 @section('content')
 <div class="container-fluid pt-4 px-4 d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="row g-4 w-100 justify-content-center">

@@ -67,7 +67,20 @@
                 </div>
                 <div class="navbar-nav w-100">
                     <a href="" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Category</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{route('shop.addcate')}}" class="dropdown-item">Add category</a>
+                            <a href="{{route('shop.listCate')}}" class="dropdown-item">Categories</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Product</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="{{route('shop.addPro')}}" class="dropdown-item">Add product</a>
+                            <a href="{{route('shop.listPro')}}" class="dropdown-item">Product list</a>
+                        </div>
+                    </div>
                     <div class="nav-item dropdown">
                         <a href="#"class="nav-item nav-link active"><i class="far fa-file-alt me-2"></i>Customers</a>
                     </div>
