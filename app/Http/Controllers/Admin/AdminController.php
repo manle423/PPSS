@@ -11,4 +11,8 @@ class AdminController extends Controller
     {
         return view('admin.dashboard');
     }
+    public function changePass()
+    {
+        return view('admin.change-pass');
+    }
 }

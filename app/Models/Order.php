@@ -13,6 +13,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'order_code',
         'user_id',
         'guest_order_id',
         'status',
@@ -26,6 +27,18 @@ class Order extends Model
         'discount_value',
         'final_price',
     ];
+
+    protected static function boot()
+    {
+        // Chuẩn order_code: HD + ngày tháng năm + số thứ tự order ngày hôm đó
+        parent::boot();
+
+        static::creating(function ($order) {
+            $date = now()->format('dmy');
+            $orderCount = self::whereDate('created_at', now()->toDateString())->count();
+            $order->order_code = 'HD' . $date . str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT);
+        });
+    }
 
     public function user()
     {
@@ -42,9 +55,9 @@ class Order extends Model
         return $this->belongsTo(ShippingMethod::class, 'shipping_method_id', 'id');
     }
 
-    public function promotion()
+    public function promotions()
     {
-        return $this->belongsTo(Promotion::class, 'promotion_id', 'id');
+        return $this->belongsToMany(Promotion::class, 'order_promotion', 'order_id', 'promotion_id');
     }
 
     public function coupon()

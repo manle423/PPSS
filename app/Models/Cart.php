@@ -17,6 +17,7 @@ class Cart extends Model
         'product_id',
         'quantity',
         'added_at',
+        'variant_id',
     ];
 
     public function user()
@@ -27,5 +28,9 @@ class Cart extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
+
+    public function variant() {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'id');
     }
 }

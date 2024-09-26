@@ -12,7 +12,7 @@
                 <div class="navbar-nav mx-auto">
                     <a href="{{ route('home') }}" class="nav-item nav-link active">Home</a>
                     <a href="{{ route('shop') }}" class="nav-item nav-link">Shop</a>
-                    <a href="{{ route('shop-detail') }}" class="nav-item nav-link">Shop Detail</a>
+                    <a  href="{{ route('contact') }}" class="nav-item nav-link">Contact</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -21,7 +21,7 @@
                             <a href="{{ route('404') }}" class="dropdown-item">404 Page</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                  
                 </div>
                 <div class="d-flex m-2 me-0">
                     <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
@@ -37,12 +37,12 @@
                     @guest
                         <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
                             data-bs-target="#loginModal">
-                            {{-- <i class="fas fa-sign-in-alt fa-2x"></i> --}}
+                            <i class="fas fa-sign-in-alt fa-2x"></i> 
                             <span class="nav-item nav-link">Login</span>
                         </a>
                         <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
                             data-bs-target="#registerModal">
-                            {{-- <i class="fas fa-user-plus fa-2x"></i> --}}
+                            <i class="fas fa-user-plus fa-2x"></i>
                             <span class="nav-item nav-link">Register</span>
                         </a>
                     @else
