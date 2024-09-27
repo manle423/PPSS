@@ -18,7 +18,7 @@
             <h1 class="mb-4">Pet Products Shop</h1>
             <form class="row g-4" action="{{ route('product.index') }}" method="GET">
                 <div class="col-lg-12">
-                    <div class="mb-3 row g-4">
+                    <div class="mb-3 row g-4" style="display: flex;justify-content:space-between;">
                         <div class="col-xl-3">
                             <div class="input-group w-100 mx-auto d-flex">
                                 <input type="search" name="search" class="form-control p-3"
@@ -28,14 +28,17 @@
                                         class="fa fa-search"></i></button>
                             </div>
                         </div>
-                        <div class="col-xl-3">
+                        <div class="col-xl-3" style="width:fit-content;">
                             <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
-                                <label for="fruits">Default Sorting:</label>
-                                <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3"
-                                    form="fruitform">
-                                    <option value="volvo">Nothing</option>
-
-                                </select>
+                                <form id="sortForm" action="{{ route('product.index') }}" method="GET"
+                                style="margin-left:auto;width:150px;" >
+                                    <label for="sort">Sort by Price:</label>
+                                    <select id="sort" name="sort" class="border-0 form-select-sm bg-light me-3" onchange="this.form.submit()">
+                                        <option value="none" {{ request('sort') == 'none' ? 'selected' : '' }}>None</option>
+                                        <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Price Increasing</option>
+                                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Price Decreasing</option>
+                                    </select>
+                                </form>
                             </div>
                         </div>
                     </div>

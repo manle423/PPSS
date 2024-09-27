@@ -44,6 +44,15 @@ class ProductController extends Controller
             $query->where('price', '<=', $maxPrice);
         }
 
+        // Sort by price
+        $sort = $request->input('sort'); // Default to ascending sort
+        if ($sort === 'asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'desc') {
+            $query->orderBy('price', 'desc');
+        }
+
+
         // Paginate the results or get them all
         $products = $query->paginate(9);
 
