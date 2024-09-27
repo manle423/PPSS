@@ -32,7 +32,7 @@
                             <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }}</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
-                            <p class="mb-4">Variants here</p>
+                            <p class="mb-3">Variants:</p>
                             {{-- Product variants --}}
                             @if ($variants && !$variants->isEmpty())
                                 @foreach ($variants as $key => $variant)
@@ -120,14 +120,14 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                <div class="tab-pane" id="nav-vision" role="tabpanel">
+                                {{-- <div class="tab-pane" id="nav-vision" role="tabpanel">
                                     <p class="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor
                                         sit. Aliqu diam
                                         amet diam et eos labore. 3</p>
                                     <p class="mb-0">Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos
                                         labore.
                                         Clita erat ipsum et lorem et sit</p>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         {{-- <form action="#">
@@ -200,7 +200,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="col-lg-12">
+                        {{-- <div class="col-lg-12">
                             <h4 class="mb-4">Featured products</h4>
                             <div class="d-flex align-items-center justify-content-start">
                                 <div class="rounded" style="width: 100px; height: 100px;">
@@ -270,7 +270,7 @@
                                     class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Vew
                                     More</a>
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-lg-12">
                             <div class="position-relative">
                                 <img src="{{ asset('assets/vendor/img/banner-dog.png') }}"
