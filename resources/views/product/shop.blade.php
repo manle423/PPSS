@@ -5,8 +5,8 @@
         <h1 class="text-center text-white display-6">Shop</h1>
         <ol class="breadcrumb justify-content-center mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                                    <li class="breadcrumb-item active text-white">Shop</li> -->
+                                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                                        <li class="breadcrumb-item active text-white">Shop</li> -->
         </ol>
     </div>
     <!-- Single Page Header End -->
@@ -67,12 +67,11 @@
                                 </div>
                                 <div class="col-lg-12">
                                     <div class="mb-3">
-                                        <h4 class="mb-2">Price</h4>
-                                        <input type="range" class="form-range w-100" id="rangeInput" name="rangeInput"
-                                            min="0" max="500" value="0"
-                                            oninput="amount.value=rangeInput.value">
-                                        <output id="amount" name="amount" min-velue="0" max-value="500"
-                                            for="rangeInput">0</output>
+                                        <h4 class="mb-2">Price Range</h4>
+                                        <label for="minPrice">Min Price:</label>
+                                        <input type="number" class="form-control" id="minPrice" name="min_price" min="0" max="500" value="{{ request('min_price') ?? 0 }}">
+                                        <label for="maxPrice">Max Price:</label>
+                                        <input type="number" class="form-control" id="maxPrice" name="max_price" min="0" max="500" value="{{ request('max_price') ?? 500 }}">
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
@@ -147,4 +146,12 @@
         </div>
     </div>
     <!-- Fruits Shop End-->
+
+    {{--Script for updating the price input--}}
+    <script>
+        document.getElementById('rangeInput').addEventListener('input', function() {
+            document.getElementById('minPrice').value = 0;
+            document.getElementById('maxPrice').value = this.value;
+        });
+    </script>
 @endsection

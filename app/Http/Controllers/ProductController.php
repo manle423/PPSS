@@ -36,6 +36,14 @@ class ProductController extends Controller
             $query->whereIn('category_id', $request->input('categories'));
         }
 
+        // Filter by price range
+        if ($minPrice = $request->input('min_price')) {
+            $query->where('price', '>=', $minPrice);
+        }
+        if ($maxPrice = $request->input('max_price')) {
+            $query->where('price', '<=', $maxPrice);
+        }
+
         // Paginate the results or get them all
         $products = $query->paginate(9);
 
