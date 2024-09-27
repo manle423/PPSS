@@ -5,8 +5,8 @@
         <h1 class="text-center text-white display-6">Shop</h1>
         <ol class="breadcrumb justify-content-center mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item active text-white">Shop</li> -->
+                                    <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                                    <li class="breadcrumb-item active text-white">Shop</li> -->
         </ol>
     </div>
     <!-- Single Page Header End -->
@@ -16,20 +16,18 @@
     <div class="container-fluid fruite py-5">
         <div class="container py-5">
             <h1 class="mb-4">Pet Products Shop</h1>
-            <div class="row g-4">
+            <form class="row g-4" action="{{ route('product.index') }}" method="GET">
                 <div class="col-lg-12">
-
-                    <form action="{{ route('product.index') }}" method="GET" class="mb-3 row g-4">
+                    <div class="mb-3 row g-4">
                         <div class="col-xl-3">
                             <div class="input-group w-100 mx-auto d-flex">
-                                <input type="search" name="search" class="form-control p-3" placeholder="Search products..."
-                                    aria-describedby="search-icon-1" value="{{ request('search') }}">
+                                <input type="search" name="search" class="form-control p-3"
+                                    placeholder="Search products..." aria-describedby="search-icon-1"
+                                    value="{{ request('search') }}">
                                 <button type="submit" id="search-icon-1" class="input-group-text p-3"><i
                                         class="fa fa-search"></i></button>
                             </div>
                         </div>
-
-
                         <div class="col-xl-3">
                             <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                 <label for="fruits">Default Sorting:</label>
@@ -40,8 +38,7 @@
                                 </select>
                             </div>
                         </div>
-                    </form>
-
+                    </div>
                     <div class="row g-4">
                         <div class="col-lg-3">
                             <div class="row g-4">
@@ -49,26 +46,23 @@
                                     <div class="mb-3">
                                         <h4>Categories</h4>
                                         <ul class="list-unstyled fruite-categorie">
-                                            <li>
-                                                <div class="d-flex justify-content-between fruite-name">
-                                                    <a href="#"><i class="fas fa-solid fa-paw me-2"></i></i>Toys</a>
-                                                    <span>(3)</span>
+                                            @foreach ($categories as $category)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="categories[]"
+                                                        value="{{ $category->id }}" id="category{{ $category->id }}"
+                                                        {{ is_array(request('categories')) && in_array($category->id, request('categories')) ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="category{{ $category->id }}">
+                                                        {{ $category->name }} ({{ $category->products->count() }})
+                                                    </label>
                                                 </div>
-                                            </li>
-                                            <li>
-                                                <div class="d-flex justify-content-between fruite-name">
-                                                    <a href="#"><i class="fas fa-solid fa-paw me-2"></i>Clothes</a>
-                                                    <span>(5)</span>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="d-flex justify-content-between fruite-name">
-                                                    <a href="#"><i class="fas fa-solid fa-paw me-2"></i>Foods</a>
-                                                    <span>(2)</span>
-                                                </div>
-                                            </li>
-
+                                            @endforeach
                                         </ul>
+                                        <!-- Additional hidden inputs to maintain category selection -->
+                                        @if (count(request('categories', [])) > 0)
+                                            @foreach (request('categories') as $selectedCategory)
+                                                <input type="hidden" name="categories[]" value="{{ $selectedCategory }}">
+                                            @endforeach
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
@@ -98,74 +92,7 @@
 
                                     </div>
                                 </div>
-                                <div class="col-lg-12">
-                                    <h4 class="mb-3">Featured products</h4>
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
-                                            <img src="{{ asset('assets/vendor/img/featur-1.jpg') }}"
-                                                class="img-fluid rounded" alt="">
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-2">Bóng bầu dục đồ chơi</h6>
-                                            <div class="d-flex mb-2">
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
-                                            <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
-                                            <img src="{{ asset('assets/vendor/img/featur-2.jpg') }}"
-                                                class="img-fluid rounded" alt="">
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-2">Bóng ném</h6>
-                                            <div class="d-flex mb-2">
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
-                                            <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
-                                            <img src="{{ asset('assets/vendor/img/featur-3.jpg') }}"
-                                                class="img-fluid rounded" alt="">
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-2">Mũ đáng yêu</h6>
-                                            <div class="d-flex mb-2">
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
-                                            <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-center my-4">
-                                        <a href="#"
-                                            class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Vew
-                                            More</a>
-                                    </div>
-                                </div>
+
                                 <div class="col-lg-12">
                                     <div class="position-relative">
                                         <img src="{{ asset('assets/vendor/img/banner-dog.png') }}"
@@ -216,7 +143,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
     <!-- Fruits Shop End-->

@@ -28,8 +28,12 @@ class ProductController extends Controller
         }
 
         // Filter by category if selected
-        if ($categoryId = $request->input('category')) {
-            $query->where('category_id', $categoryId);
+        // if ($categoryId = $request->input('category')) {
+        //     $query->where('category_id', $categoryId);
+        // }
+        // Filter by category if selected
+        if ($request->has('categories')) {
+            $query->whereIn('category_id', $request->input('categories'));
         }
 
         // Paginate the results or get them all
