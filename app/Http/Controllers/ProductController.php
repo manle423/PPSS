@@ -84,7 +84,8 @@ class ProductController extends Controller
         $query = ProductVariant::query();
         $query->where('product_id', $product->id);
         $variants = $query->get();
-        return view('product.show', ['product' => $product, 'variants' => $variants]);
+        return view('product.shop-detail', ['product' => $product, 'variants' => $variants]);
+        //return view('product.show', ['product' => $product, 'variants' => $variants]);
     }
 
     /**

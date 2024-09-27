@@ -5,8 +5,8 @@
         <h1 class="text-center text-white display-6">Shop</h1>
         <ol class="breadcrumb justify-content-center mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                                        <li class="breadcrumb-item active text-white">Shop</li> -->
+                                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                                            <li class="breadcrumb-item active text-white">Shop</li> -->
         </ol>
     </div>
     <!-- Single Page Header End -->
@@ -17,6 +17,7 @@
         <div class="container py-5">
             <h1 class="mb-4">Pet Products Shop</h1>
             <form class="row g-4" action="{{ route('product.index') }}" method="GET">
+                @csrf
                 <div class="col-lg-12">
                     <div class="mb-3 row g-4" style="display: flex;justify-content:space-between;">
                         <div class="col-xl-3">
@@ -31,12 +32,17 @@
                         <div class="col-xl-3" style="width:fit-content;">
                             <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                 <form id="sortForm" action="{{ route('product.index') }}" method="GET"
-                                style="margin-left:auto;width:150px;" >
+                                    style="margin-left:auto;width:150px;">
+                                    @csrf
                                     <label for="sort">Sort by Price:</label>
-                                    <select id="sort" name="sort" class="border-0 form-select-sm bg-light me-3" onchange="this.form.submit()">
-                                        <option value="none" {{ request('sort') == 'none' ? 'selected' : '' }}>None</option>
-                                        <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Price Increasing</option>
-                                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Price Decreasing</option>
+                                    <select id="sort" name="sort" class="border-0 form-select-sm bg-light me-3"
+                                        onchange="this.form.submit()">
+                                        <option value="none" {{ request('sort') == 'none' ? 'selected' : '' }}>None
+                                        </option>
+                                        <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Price
+                                            Increasing</option>
+                                        <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Price
+                                            Decreasing</option>
                                     </select>
                                 </form>
                             </div>
@@ -72,9 +78,11 @@
                                     <div class="mb-3">
                                         <h4 class="mb-2">Price Range</h4>
                                         <label for="minPrice">Min Price:</label>
-                                        <input type="number" class="form-control" id="minPrice" name="min_price" min="0" max="500" value="{{ request('min_price') ?? 0 }}">
+                                        <input type="number" class="form-control" id="minPrice" name="min_price"
+                                            min="0" max="500" value="{{ request('min_price') ?? 0 }}">
                                         <label for="maxPrice">Max Price:</label>
-                                        <input type="number" class="form-control" id="maxPrice" name="max_price" min="0" max="500" value="{{ request('max_price') ?? 500 }}">
+                                        <input type="number" class="form-control" id="maxPrice" name="max_price"
+                                            min="0" max="500" value="{{ request('max_price') ?? 500 }}">
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
@@ -120,7 +128,9 @@
                                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                 style="top: 10px; left: 10px;">{{ $product->category->name }}</div>
                                             <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                <h4>{{ $product->name }}</h4>
+                                                <h4><a
+                                                        href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+                                                </h4>
                                                 <p>{{ $product->description }}</p>
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                                     <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }}</p>
@@ -128,6 +138,7 @@
                                                         class="btn border border-secondary rounded-pill px-3 text-primary"><i
                                                             class="fa fa-shopping-bag me-2 text-primary"></i> Add to
                                                         cart</a>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -150,7 +161,7 @@
     </div>
     <!-- Fruits Shop End-->
 
-    {{--Script for updating the price input--}}
+    {{-- Script for updating the price input --}}
     <script>
         document.getElementById('rangeInput').addEventListener('input', function() {
             document.getElementById('minPrice').value = 0;
