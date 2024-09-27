@@ -45,4 +45,9 @@ class HomeController extends Controller
     {
         return view('webshop.checkout');
     }
+
+    public function contact()
+    {
+        return view('webshop.contact');
+    }
 }

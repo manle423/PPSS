@@ -11,6 +11,7 @@ class CheckoutController extends Controller
         return view('checkout');
     }
 
+
     public function __construct()
     {
         $this->middleware('guest');

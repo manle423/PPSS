@@ -1,5 +1,7 @@
 @extends('layouts.shop')
 @section('content')
+
+
     <!-- Single Page Header start -->
     <div class="container-fluid page-header py-5">
         <h1 class="text-center text-white display-6">Checkout</h1>
@@ -140,15 +142,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <div>
-                                            <input type="text" class="border-1 rounded me-5 py-3 mb-4"
-                                                placeholder="Coupon Code">
-                                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary"
-                                                type="button">Apply
-                                                Coupon</button>
-                                        </div>
-                                    </tr>
+
                                     <tr>
                                         <th scope="row">
                                         </th>
@@ -173,16 +167,12 @@
                                                     $8.00</label>
                                             </div>
                                         </td>
-                                    </tr>  
+                                    </tr>
                                     <tr>
-                                        <th scope="row">
-                                        </th>
-                                        <td class="py-5">
+                                        <td class="py-3">
                                             <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>
                                         </td>
-                                        <td class="py-5"></td>
-                                        <td class="py-5"></td>
-                                        <td class="py-5">
+                                        <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
                                                 <p class="mb-0 text-dark">$135.00</p>
                                             </div>
@@ -191,49 +181,33 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                            <div class="col-12">
-                                <div class="form-check text-start my-3">
-                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Transfer-1"
-                                        name="Transfer" value="Transfer">
-                                    <label class="form-check-label" for="Transfer-1">Direct Bank Transfer</label>
-                                </div>
-                                <p class="text-start text-dark">Make your payment directly into our bank account. Please
-                                    use your Order ID as the payment reference. Your order will not be shipped until the
-                                    funds have cleared in our account.</p>
-                            </div>
+                        <div>
+                            <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code">
+                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply
+                                Coupon</button>
                         </div>
-                        <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                            <div class="col-12">
-                                <div class="form-check text-start my-3">
-                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Payments-1"
-                                        name="Payments" value="Payments">
-                                    <label class="form-check-label" for="Payments-1">Check Payments</label>
-                                </div>
-                            </div>
+
+                        {{-- payment method --}}
+                        <h3 class="mb-4 mt-4">Payment Method</h3>
+                        <div>
+                             <form action="{{ route('placeOrder') }}" method="POST">
+                            @csrf
+                            <select name="payment_method" id="payment_method" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank</option>
+                                <option value="paypal">Paypal</option>
+                                <option value="momo">Momo</option>
+                            </select>
                         </div>
-                        <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                            <div class="col-12">
-                                <div class="form-check text-start my-3">
-                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Delivery-1"
-                                        name="Delivery" value="Delivery">
-                                    <label class="form-check-label" for="Delivery-1">Cash On Delivery</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                            <div class="col-12">
-                                <div class="form-check text-start my-3">
-                                    <input type="checkbox" class="form-check-input bg-primary border-0" id="Paypal-1"
-                                        name="Paypal" value="Paypal">
-                                    <label class="form-check-label" for="Paypal-1">Paypal</label>
-                                </div>
-                            </div>
-                        </div>
+                            {{-- <button type="submit">Place Order</button> --}}
+                        </form>
+
                         <div class="row g-4 text-center align-items-center justify-content-center pt-4">
-                            <button type="button"
+
+                            <button id="placeOrderBtn" type="button"
                                 class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place
                                 Order</button>
+
                         </div>
                     </div>
                 </div>

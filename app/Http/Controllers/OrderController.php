@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function showCheckoutPage()
+    {
+        // Hiển thị trang checkout
+        return view('components.modal-confirmed-checkout');
+    }
+
     public function store(Request $request)
     {
         $user = auth()->user(); // Giả sử người dùng đã đăng nhập
@@ -66,5 +72,11 @@ class OrderController extends Controller
         }
 
         return 0; // Trả về 0 nếu API lỗi
+    }
+    
+    public function placeOrder(Request $request)
+    {
+        // Xử lý đơn hàng
+        // Logic xử lý lưu đơn hàng vào database, gửi email xác nhận, v.v.
     }
 }
