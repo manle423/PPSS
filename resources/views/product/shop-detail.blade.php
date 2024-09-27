@@ -28,46 +28,44 @@
                         </div>
                         <div class="col-lg-6">
                             <h4 class="fw-bold mb-3">{{ $product->name }}</h4>
-                            <p class="mb-3">Category: {{ $product->category->name }}</p>
-                            <h5 class="fw-bold mb-3">{{ $product->price }}</h5>
-                            <div class="d-flex mb-4">
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star text-secondary"></i>
-                                <i class="fa fa-star"></i>
-                            </div>
+                            <p class="mb-3">{{ $product->category->name }}</p>
+                            <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }}</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
                             <p class="mb-4">Variants here</p>
-                            {{--Product variants--}}
-                            @foreach ($variants as $variant)
-                                <div class="form-check mb-4">
-                                    <input type="radio" class="form-check-input" id="variant-{{ $variant->id }}"
-                                        name="variant_id_radio" value="{{ $variant->id }}"
-                                        data-price="{{ $variant->variant_price }}">
-                                    <label class="form-check-label"
-                                        for="variant-{{ $variant->id }}">{{ $variant->variant_name }} -
-                                        ${{ $variant->variant_price }}</label>
+                            {{-- Product variants --}}
+                            @if ($variants && !$variants->isEmpty())
+                                @foreach ($variants as $key => $variant)
+                                    <div class="form-check mb-4">
+                                        <input type="radio" class="form-check-input" id="variant-{{ $variant->id }}"
+                                            name="variant_id_radio" value="{{ $variant->id }}"
+                                            data-price="{{ $variant->variant_price }}" {{ $key === 0 ? 'checked' : '' }}>
+                                        <label class="form-check-label"
+                                            for="variant-{{ $variant->id }}">{{ $variant->variant_name }} -
+                                            ${{ $variant->variant_price }}</label>
+                                    </div>
+                                @endforeach
+                            @endif
+                            {{-- Amount to add to cart --}}
+                            <form action="{{ route('cart.store', $product->id) }}" method="POST"
+                                onsubmit="return validateForm()">
+                                @csrf
+                                <div class="form-group mb-4">
+                                    <label for="amount">Amount:</label>
+                                    <input type="number" id="amount" name="amount" min="1" value="1"
+                                        max="{{ $product->stock_quantity }}" required>
                                 </div>
-                            @endforeach
-                            <div class="input-group quantity mb-5" style="width: 100px;">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                        <i class="fa fa-minus"></i>
+                                <p class="mb-4">Stock: {{ $product->stock_quantity }}</p>
+                                {{-- Hidden input to store selected variant --}}
+                                <input type="hidden" id="variant-id" name="variant_id" value="">
+
+                                <div class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary">
+                                    <button type="submit" class="fa fa-shopping-bag text-primary"
+                                        style="border:none;background:none;">
+                                        Add to Cart
                                     </button>
                                 </div>
-                                <input type="text" class="form-control form-control-sm text-center border-0"
-                                    value="1">
-                                <div class="input-group-btn">
-                                    <button class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                        <i class="fa fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <a href="#"
-                                class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
-                                    class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                            </form>
                         </div>
                         <div class="col-lg-12">
                             <nav>
@@ -438,4 +436,56 @@
         </div>
     </div>
     <!-- Single Product End -->
+    {{-- JavaScript to dynamically update price and selected variant --}}
+    <script>
+        // Make sure a variant is selected before adding it to cart
+        function validateForm() {
+            // Get the hidden input element
+            var variantIdInput = document.getElementById('variant-id');
+
+            // Check if the value is empty or null
+            if (variantIdInput.value.trim() === '') {
+                // Prompt the user with an alert
+                alert('Please select a variant before adding to cart.');
+                return false; // Prevent form submission
+            }
+
+
+            // Return true to allow the form to submit
+            return true;
+        }
+
+        // Dynamically update price and selected variant
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantInputs = document.querySelectorAll('input[name="variant_id_radio"]');
+            const priceElement = document.getElementById('product-price');
+            const hiddenVariantInput = document.getElementById('variant-id');
+
+            function updatePriceAndVariant() {
+                const selectedVariant = document.querySelector('input[name="variant_id_radio"]:checked');
+
+                if (selectedVariant) {
+                    const selectedPrice = selectedVariant.getAttribute('data-price');
+                    const selectedVariantId = selectedVariant.value;
+
+                    // Update the price element with the selected variant's price
+                    priceElement.textContent = selectedPrice;
+
+                    // Update the hidden input with the selected variant's ID
+                    hiddenVariantInput.value = selectedVariantId;
+
+                    // Log the selected variant ID (for debugging purposes)
+                    console.log('Selected variant ID:', hiddenVariantInput.value);
+                }
+            }
+
+            // Run the function on page load to handle pre-selected variant
+            updatePriceAndVariant();
+
+            // Listen for changes in the variant selection
+            variantInputs.forEach(function(input) {
+                input.addEventListener('change', updatePriceAndVariant);
+            });
+        });
+    </script>
 @endsection()
