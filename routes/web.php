@@ -106,6 +106,14 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
 });
 
+//Route cho ProductController
+Route::middleware('checkoutBuyer')->group(function () {
+Route::get('/products', [ProductController::class, 'index']); // Lấy danh sách sản phẩm
+Route::post('/products', [ProductController::class, 'store']); // Thêm sản phẩm
+Route::put('/products/{id}', [ProductController::class, 'update']); // Cập nhật sản phẩm
+Route::delete('/products/{id}', [ProductController::class, 'destroy']); // Xóa sản phẩm
+});
+
 // Not found page
 Route::get('/404', function () {
     return view('errors.404');
