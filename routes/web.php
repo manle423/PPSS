@@ -15,6 +15,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 
 // Redirect
 Route::get('/', function () {
@@ -93,6 +94,8 @@ Route::middleware('auth')->group(function () {
     Route::get('logout', function () {
         return redirect('/home');
     });
+
+    Route::get('/profile', [ProfileController::class, 'viewProfile'])->name('user.profile');
 });
 
 
