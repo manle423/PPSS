@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class AdminProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('admin');
+    }
     public function list()
     {
         $products = Product::whereNull('deleted_at')->paginate(10);
@@ -47,6 +51,10 @@ class AdminProductController extends Controller
                 ->whereNull('deleted_at')
                 ->first();
 
+            if ($existingProduct) {
+                throw new \Exception('This product already exists in the selected category.');
+            }
+
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -55,10 +63,6 @@ class AdminProductController extends Controller
                 'stock_quantity' => $request->stock_quantity,
                 'created_at' => now(),
             ]);
-
-            if ($existingProduct) {
-                throw new \Exception('This product already exists in the selected category.');
-            }
 
             if ($request->has('variants')) {
                 foreach ($request->variants as $variant) {
