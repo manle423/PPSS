@@ -99,7 +99,8 @@
                 @endif
             </div>
 
-            <button type="submit" class="submit-button">Add Product</button>
+            <button type="submit" class="submit-button" style="text-align:center">Add Product</button>
+            <a href="{{ route('admin.products.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Back to list</a>
         </form>
     </div>
 

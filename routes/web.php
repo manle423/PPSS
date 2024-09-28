@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminCouponController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminCustomerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -35,7 +37,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/store', [AdminCategoryController::class, 'store'])->name('category.store');
         Route::get('/edit/{id}', [AdminCategoryController::class, 'edit'])->name('category.edit');
         Route::post('/update/{id}', [AdminCategoryController::class, 'update'])->name('category.update');
-        Route::get('/delete/{id}', [AdminCategoryController::class, 'delete'])->name('category.delete');
+        Route::post('/delete/{id}', [AdminCategoryController::class, 'delete'])->name('category.delete');
+    });
+    Route::prefix('/coupons')->group(function () {
+        Route::get('/', [AdminCouponController::class, 'list'])->name('coupon.list');
+        Route::get('/create', [AdminCouponController::class, 'create'])->name('coupon.create');
+        Route::post('/store', [AdminCouponController::class, 'store'])->name('coupon.store');
+        Route::get('/detail/{id}', [AdminCouponController::class, 'detail'])->name('coupon.detail');
+        Route::get('/edit/{id}', [AdminCouponController::class, 'edit'])->name('coupon.edit');
+        Route::post('/update/{id}', [AdminCouponController::class, 'update'])->name('coupon.update');
+        Route::post('/delete/{id}', [AdminCouponController::class, 'delete'])->name('coupon.delete');
     });
 
     Route::prefix('/products')->group(function () {
@@ -50,14 +61,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::prefix('/orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
     });
-    // Route::resource('products', ShopProductController::class)->except(['show'])->names([
-    //     'create' => 'shop.addPro',      // Route cho form thêm sản phẩm
-    //     'store' => 'shop.storePro',      // Route để lưu sản phẩm
-    //     'edit' => 'shop.editPro',        // Route cho form chỉnh sửa sản phẩm
-    //     'update' => 'shop.updatePro',    // Route để cập nhật sản phẩm
-    //     'destroy' => 'shop.deletePro',   // Route để xóa sản phẩm
-    //     'index' => 'shop.listPro',       // Route để danh sách sản phẩm
-    // ]);
+    Route::prefix('/customers')->group(function () {
+        Route::get('/', [AdminCustomerController::class, 'list'])->name('customers.list');
+        Route::get('/edit/{id}', [AdminCustomerController::class, 'edit'])->name('customers.edit');
+        Route::get('/detail/{id}', [AdminCustomerController::class, 'detail'])->name('customers.detail');
+        // Route::post('/update/{id}', [AdminCustomerController::class, 'update'])->name('customers.update');
+        // Route::post('/delete/{id}', [AdminCustomerController::class, 'destroy'])->name('customers.delete');
+
+    });
 });
 
 // CHo người chưa đăng nhập

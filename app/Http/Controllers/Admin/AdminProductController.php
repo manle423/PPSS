@@ -13,7 +13,8 @@ class AdminProductController extends Controller
 {
     public function list()
     {
-        $products = Product::whereNull('deleted_at')->paginate(10);
+        $products = Product::paginate(10);
+        if($products==null)  return view('admin.products.list');
         return view('admin.products.list', compact('products'));
     }
 
