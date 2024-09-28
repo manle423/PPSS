@@ -28,14 +28,36 @@ class ProductController extends Controller
         }
 
         // Filter by category if selected
-        if ($categoryId = $request->input('category')) {
-            $query->where('category_id', $categoryId);
+        // if ($categoryId = $request->input('category')) {
+        //     $query->where('category_id', $categoryId);
+        // }
+        // Filter by category if selected
+        if ($request->has('categories')) {
+            $query->whereIn('category_id', $request->input('categories'));
         }
 
-        // Paginate the results or get them all
-        $products = $query->paginate(5);
+        // Filter by price range
+        if ($minPrice = $request->input('min_price')) {
+            $query->where('price', '>=', $minPrice);
+        }
+        if ($maxPrice = $request->input('max_price')) {
+            $query->where('price', '<=', $maxPrice);
+        }
 
-        return view('product.index', compact('products', 'categories'));
+        // Sort by price
+        $sort = $request->input('sort'); // Default to ascending sort
+        if ($sort === 'asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'desc') {
+            $query->orderBy('price', 'desc');
+        }
+
+
+        // Paginate the results or get them all
+        $products = $query->paginate(9);
+
+        //return view('product.index', compact('products', 'categories'));
+        return view('product.shop', compact('products', 'categories'));
     }
     /**
      * Show the form for creating a new resource.
@@ -62,7 +84,8 @@ class ProductController extends Controller
         $query = ProductVariant::query();
         $query->where('product_id', $product->id);
         $variants = $query->get();
-        return view('product.show', ['product' => $product, 'variants' => $variants]);
+        return view('product.shop-detail', ['product' => $product, 'variants' => $variants]);
+        //return view('product.show', ['product' => $product, 'variants' => $variants]);
     }
 
     /**
@@ -78,7 +101,9 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // $product = Product::findOrFail($id);
+        // $product->update($request->all());
+        // return response()->json($product);
     }
 
     /**

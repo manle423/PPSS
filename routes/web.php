@@ -12,7 +12,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderListController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 
@@ -104,9 +104,41 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
     Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
     Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
+
+    //Routes for products
+    Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+
+    // Routes for cart
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
+    Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
 });
 
 // Not found page
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
+
+//Route cho ProductController
+// Route::middleware('checkoutBuyer')->group(function () {
+//     Route::get('/products', [ProductController::class, 'index']); // Lấy danh sách sản phẩm
+//     Route::post('/products', [ProductController::class, 'store']); // Thêm sản phẩm
+//     Route::put('/products/{id}', [ProductController::class, 'update']); // Cập nhật sản phẩm
+//     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // Xóa sản phẩm
+// });
+
+//Route payment checkout
+// Route::get('/confirmed-checkout', [OrderController::class, 'showCheckoutPage'])->name('confirmed-checkout');
+Route::post('/checkout/momo', [PaymentController::class, 'momo'])->name('checkout.momo');
+Route::post('/checkout/paypal', [PaymentController::class, 'paypal'])->name('checkout.paypal');
+Route::post('/checkout/bank', [PaymentController::class, 'bank'])->name('checkout.bank');
+Route::post('/checkout/cash', [PaymentController::class, 'cash'])->name('checkout.cash');
+
+// route dat hang
+Route::post('/checkout/place-order', [PaymentController::class, 'placeOrder'])->name('placeOrder');
+
+Route::get('/order-success', function () {
+    return view('order-success');
+})->name('orderSuccess');
