@@ -45,14 +45,14 @@ $(document).ready(function() {
                     $('#loginForm .invalid-feedback').remove();
 
                     if (errors.email) {
-                        $('#email').addClass('is-invalid');
-                        $('#email').after(
+                        $('#login-email').addClass('is-invalid');
+                        $('#login-email').after(
                             '<span class="invalid-feedback" role="alert"><strong>' +
                             errors.email[0] + '</strong></span>');
                     }
                     if (errors.password) {
-                        $('#password').addClass('is-invalid');
-                        $('#password').after(
+                        $('#login-password').addClass('is-invalid');
+                        $('#login-password').after(
                             '<span class="invalid-feedback" role="alert"><strong>' +
                             errors.password[0] + '</strong></span>');
                     }
