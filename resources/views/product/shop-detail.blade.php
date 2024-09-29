@@ -32,9 +32,10 @@
                             <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }}</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
-                            <p class="mb-3">Variants:</p>
+
                             {{-- Product variants --}}
                             @if ($variants && !$variants->isEmpty())
+                                <p class="mb-3">Variants:</p>
                                 @foreach ($variants as $key => $variant)
                                     <div class="form-check mb-4">
                                         <input type="radio" class="form-check-input" id="variant-{{ $variant->id }}"
@@ -48,7 +49,7 @@
                             @endif
                             {{-- Amount to add to cart --}}
                             <form action="{{ route('cart.store', $product->id) }}" method="POST"
-                                onsubmit="return validateForm()">
+                                @if ($variants && !$variants->isEmpty()) onsubmit="return validateForm()" @endif>
                                 @csrf
                                 <div class="form-group mb-4">
                                     <label for="amount">Amount:</label>
@@ -273,10 +274,9 @@
                         </div> --}}
                         <div class="col-lg-12">
                             <div class="position-relative">
-                                <img src="{{ asset('assets/vendor/img/banner-dog.png') }}"
-                                    class="img-fluid w-100 rounded" alt="">
-                                <div class="position-absolute"
-                                    style="top: 50%; right: 10px; transform: translateY(-50%);">
+                                <img src="{{ asset('assets/vendor/img/banner-dog.png') }}" class="img-fluid w-100 rounded"
+                                    alt="">
+                                <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
                                     <h3 class="text-secondary fw-bold">Happy <br> Dog <br> Banner</h3>
                                 </div>
                             </div>
