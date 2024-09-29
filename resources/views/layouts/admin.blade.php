@@ -114,7 +114,7 @@
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
 
                             <a href="#" class="dropdown-item">My Profile</a>
-                            <a href="" class="dropdown-item">Change password</a>
+                            <a href="{{ route('admin.change-password') }}" class="dropdown-item">Change password</a>
                             @guest
                                 @if (Route::has('login'))
                                     <li class="nav-item">

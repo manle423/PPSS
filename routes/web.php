@@ -28,7 +28,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         return redirect(route('admin.dashboard'));
     });
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::get('/change-password', [AdminController::class, 'changePass'])->name('changePassword');
+    Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
 
     Route::prefix('/categories')->group(function () {
         Route::get('/', [AdminCategoryController::class, 'list'])->name('category.list');
@@ -95,7 +95,14 @@ Route::middleware('auth')->group(function () {
         return redirect('/home');
     });
 
-    Route::get('/profile', [ProfileController::class, 'viewProfile'])->name('user.profile');
+    Route::prefix('/profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'viewProfile'])->name('user.profile');
+        Route::post('/add-address', [ProfileController::class, 'addAddress'])->name('user.add-address');
+        Route::delete('/delete-address/{id}', [ProfileController::class, 'deleteAddress'])->name('user.delete-address');
+        Route::post('/edit-address/{id}', [ProfileController::class, 'editAddress'])->name('user.edit-address');
+        Route::get('/address/{id}', [ProfileController::class, 'getAddress'])->name('user.get-address');
+        Route::post('/update-info', [ProfileController::class, 'updateUserInfo'])->name('user.update-info');
+    });
 });
 
 
