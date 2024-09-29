@@ -18,7 +18,8 @@
             <div class="row g-4 mb-5">
                 {{-- Search bar--}}
                 <div class="col-lg-4 col-xl-3">
-                    <div class="row g-4">
+                    <form class="row g-4" action="{{ route('product.index') }}" method="GET">
+                        @csrf
                         <div class="col-lg-12">
                             <div class="mb-3 row g-4" style="display: flex;justify-content:space-between;">
                                 <div class="input-group w-100 mx-auto d-flex">
@@ -91,7 +92,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 {{-- Product Info --}}
                 <div class="col-lg-8 col-xl-9">
