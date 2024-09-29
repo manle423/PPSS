@@ -16,6 +16,84 @@
     <div class="container-fluid py-5 mt-5">
         <div class="container py-5">
             <div class="row g-4 mb-5">
+                {{-- Search bar--}}
+                <div class="col-lg-4 col-xl-3">
+                    <div class="row g-4">
+                        <div class="col-lg-12">
+                            <div class="mb-3 row g-4" style="display: flex;justify-content:space-between;">
+                                <div class="input-group w-100 mx-auto d-flex">
+                                    <input type="search" name="search" class="form-control p-3"
+                                        placeholder="Search products..." aria-describedby="search-icon-1"
+                                        value="{{ request('search') }}">
+                                    <button type="submit" id="search-icon-1" class="input-group-text p-3"><i
+                                            class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <h4>Categories</h4>
+                                <ul class="list-unstyled fruite-categorie">
+                                    @foreach ($categories as $category)
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="categories[]"
+                                                value="{{ $category->id }}" id="category{{ $category->id }}"
+                                                {{ is_array(request('categories')) && in_array($category->id, request('categories')) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="category{{ $category->id }}">
+                                                {{ $category->name }} ({{ $category->products->count() }})
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </ul>
+                                <!-- Additional hidden inputs to maintain category selection -->
+                                @if (count(request('categories', [])) > 0)
+                                    @foreach (request('categories') as $selectedCategory)
+                                        <input type="hidden" name="categories[]" value="{{ $selectedCategory }}">
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <h4 class="mb-2">Price Range</h4>
+                                <label for="minPrice">Min Price:</label>
+                                <input type="number" class="form-control" id="minPrice" name="min_price" min="0"
+                                    max="500" value="{{ request('min_price') ?? 0 }}">
+                                <label for="maxPrice">Max Price:</label>
+                                <input type="number" class="form-control" id="maxPrice" name="max_price" min="0"
+                                    max="500" value="{{ request('max_price') ?? 500 }}">
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <h4>Additional</h4>
+
+                                <div class="mb-2">
+                                    <input type="radio" class="me-2" id="Categories-3" name="Categories-1"
+                                        value="Beverages">
+                                    <label for="Categories-3"> Sales</label>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="radio" class="me-2" id="Categories-4" name="Categories-1"
+                                        value="Beverages">
+                                    <label for="Categories-4"> Discount</label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="position-relative">
+                                <img src="{{ asset('assets/vendor/img/banner-dog.png') }}" class="img-fluid w-100 rounded"
+                                    alt="">
+                                <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
+                                    <h3 class="text-secondary fw-bold">Happy <br> Dog <br> Banner</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- Product Info --}}
                 <div class="col-lg-8 col-xl-9">
                     <div class="row g-4">
                         <div class="col-lg-6">
@@ -72,15 +150,17 @@
                             <nav>
                                 <div class="nav nav-tabs mb-3">
                                     <button class="nav-link active border-white border-bottom-0" type="button"
-                                        role="tab" id="nav-about-tab" data-bs-toggle="tab" data-bs-target="#nav-about"
-                                        aria-controls="nav-about" aria-selected="true">Description</button>
+                                        role="tab" id="nav-about-tab" data-bs-toggle="tab"
+                                        data-bs-target="#nav-about" aria-controls="nav-about"
+                                        aria-selected="true">Description</button>
                                     {{-- <button class="nav-link border-white border-bottom-0" type="button" role="tab"
                                             id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
                                             aria-controls="nav-mission" aria-selected="false">Reviews</button> --}}
                                 </div>
                             </nav>
                             <div class="tab-content mb-5">
-                                <div class="tab-pane active" id="nav-about" role="tabpanel" aria-labelledby="nav-about-tab">
+                                <div class="tab-pane active" id="nav-about" role="tabpanel"
+                                    aria-labelledby="nav-about-tab">
                                     {{ $product->description }}
                                 </div>
                                 {{-- <div class="tab-pane" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
@@ -168,121 +248,7 @@
                             </form> --}}
                     </div>
                 </div>
-                <div class="col-lg-4 col-xl-3">
-                    <div class="row g-4 fruite">
-                        <div class="col-lg-12">
-                            <div class="input-group w-100 mx-auto d-flex mb-4">
-                                <input type="search" class="form-control p-3" placeholder="keywords"
-                                    aria-describedby="search-icon-1">
-                                <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
-                            </div>
-                            <div class="mb-4">
-                                <h4>Categories</h4>
-                                <ul class="list-unstyled fruite-categorie">
-                                    <li>
-                                        <div class="d-flex justify-content-between fruite-name">
-                                            <a href="#"><i class="fas fa-solid fa-paw me-2"></i>Clothes</a>
-                                            <span>(3)</span>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex justify-content-between fruite-name">
-                                            <a href="#"><i class="fas fa-solid fa-paw me-2"></i>Food</a>
-                                            <span>(5)</span>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex justify-content-between fruite-name">
-                                            <a href="#"><i class="fas fa-solid fa-paw me-2"></i>Toys</a>
-                                            <span>(2)</span>
-                                        </div>
-                                    </li>
 
-                                </ul>
-                            </div>
-                        </div>
-                        {{-- <div class="col-lg-12">
-                            <h4 class="mb-4">Featured products</h4>
-                            <div class="d-flex align-items-center justify-content-start">
-                                <div class="rounded" style="width: 100px; height: 100px;">
-                                    <img src="{{ asset('assets/vendor/img/featur-1.jpg') }}" class="img-fluid rounded"
-                                        alt="Image">
-                                </div>
-                                <div>
-                                    <h6 class="mb-2">Bóng bầu dục đồ chơi</h6>
-                                    <div class="d-flex mb-2">
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                    <div class="d-flex mb-2">
-                                        <h5 class="fw-bold me-2">2.99 $</h5>
-                                        <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-start">
-                                <div class="rounded" style="width: 100px; height: 100px;">
-                                    <img src="{{ asset('assets/vendor/img/featur-2.jpg') }}" class="img-fluid rounded"
-                                        alt="">
-                                </div>
-                                <div>
-                                    <h6 class="mb-2">Bóng ném</h6>
-                                    <div class="d-flex mb-2">
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                    <div class="d-flex mb-2">
-                                        <h5 class="fw-bold me-2">2.99 $</h5>
-                                        <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center justify-content-start">
-                                <div class="rounded" style="width: 100px; height: 100px;">
-                                    <img src="{{ asset('assets/vendor/img/featur-3.jpg') }}" class="img-fluid rounded"
-                                        alt="">
-                                </div>
-                                <div>
-                                    <h6 class="mb-2">Mũ đáng yêu</h6>
-                                    <div class="d-flex mb-2">
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star text-secondary"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                    <div class="d-flex mb-2">
-                                        <h5 class="fw-bold me-2">2.99 $</h5>
-                                        <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-                            <div class="d-flex justify-content-center my-4">
-                                <a href="#"
-                                    class="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100">Vew
-                                    More</a>
-                            </div>
-                        </div> --}}
-                        <div class="col-lg-12">
-                            <div class="position-relative">
-                                <img src="{{ asset('assets/vendor/img/banner-dog.png') }}" class="img-fluid w-100 rounded"
-                                    alt="">
-                                <div class="position-absolute" style="top: 50%; right: 10px; transform: translateY(-50%);">
-                                    <h3 class="text-secondary fw-bold">Happy <br> Dog <br> Banner</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <h1 class="fw-bold mb-0">Related products</h1>
             <div class="vesitable">
