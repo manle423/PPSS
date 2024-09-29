@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Address;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,20 +13,21 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $addresses = $user->addresses->sortByDesc('is_default');
-        return view('user.profile', compact('user', 'addresses'));
+        $provinces = Province::with('districts')->get();
+        return view('user.profile', compact('user', 'addresses', 'provinces'));
     }
 
     public function addAddress(Request $request)
     {
+        // dd($request->all());
         try {
             $request->validate([
                 'full_name' => 'required|string|max:255',
                 'phone_number' => 'required|string|max:15',
                 'address_line_1' => 'required|string|max:255',
                 'address_line_2' => 'nullable|string|max:255',
-                'ward' => 'nullable|string|max:255',
-                'district' => 'nullable|string|max:255',
-                'province' => 'nullable|string|max:255',
+                'district_id' => 'required|exists:districts,id',
+                'province_id' => 'required|exists:provinces,id',
                 'is_default' => 'nullable',
             ]);
 
@@ -67,9 +69,8 @@ class ProfileController extends Controller
                 'phone_number' => 'required|string|max:15',
                 'address_line_1' => 'required|string|max:255',
                 'address_line_2' => 'nullable|string|max:255',
-                'ward' => 'nullable|string|max:255',
-                'district' => 'nullable|string|max:255',
-                'province' => 'nullable|string|max:255',
+                'district_id' => 'required|exists:districts,id',
+                'province_id' => 'required|exists:provinces,id',
                 'is_default' => 'nullable',
             ]);
 

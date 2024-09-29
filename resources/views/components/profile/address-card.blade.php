@@ -1,13 +1,10 @@
 <div class="card mb-3" id="address-card-{{ $address->id }}">
+    {{-- @dd($address); --}}
     <div class="card-body">
         <div class="address-view">
             <p><strong>Full Name:</strong> {{ $address->full_name }}</p>
             <p><strong>Phone Number:</strong> {{ $address->phone_number }}</p>
-            <p><strong>Address Line 1:</strong> {{ $address->address_line_1 }}</p>
-            <p><strong>Address Line 2:</strong> {{ $address->address_line_2 ?? 'N/A' }}</p>
-            <p><strong>Ward:</strong> {{ $address->ward ?? 'N/A' }}</p>
-            <p><strong>District:</strong> {{ $address->district ?? 'N/A' }}</p>
-            <p><strong>Province:</strong> {{ $address->province ?? 'N/A' }}</p>
+            <p><strong>Address:</strong> {{ $address->address_line_1 }}, {{ $address->address_line_2 ?? '' }}, {{ $address->district->name }}, {{ $address->province->name }}</p>
             <p><strong>Is Default:</strong> {{ $address->is_default ? 'Yes' : 'No' }}</p>
             <button class="btn btn-secondary btn-edit-address" data-id="{{ $address->id }}">Edit</button>
             <form action="{{ route('user.delete-address', $address->id) }}" method="POST" style="display:inline;">
@@ -29,24 +26,30 @@
                     <input type="text" class="form-control" id="phone_number_{{ $address->id }}" name="phone_number" value="{{ $address->phone_number }}" required>
                 </div>
                 <div class="form-group">
+                    <label for="province_{{ $address->id }}">Province</label>
+                    <select class="form-control" id="province_{{ $address->id }}" name="province_id" required>
+                        <option value="">Select Province</option>
+                        @foreach($provinces as $province)
+                            <option value="{{ $province->id }}" {{ $address->province_id == $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="district_{{ $address->id }}">District</label>
+                    <select class="form-control" id="district_{{ $address->id }}" name="district_id" required>
+                        <option value="">Select District</option>
+                        @foreach($address->province->districts as $district)
+                            <option value="{{ $district->id }}" {{ $address->district_id == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="address_line_1_{{ $address->id }}">Address Line 1</label>
                     <input type="text" class="form-control" id="address_line_1_{{ $address->id }}" name="address_line_1" value="{{ $address->address_line_1 }}" required>
                 </div>
                 <div class="form-group">
                     <label for="address_line_2_{{ $address->id }}">Address Line 2</label>
                     <input type="text" class="form-control" id="address_line_2_{{ $address->id }}" name="address_line_2" value="{{ $address->address_line_2 }}">
-                </div>
-                <div class="form-group">
-                    <label for="ward_{{ $address->id }}">Ward</label>
-                    <input type="text" class="form-control" id="ward_{{ $address->id }}" name="ward" value="{{ $address->ward }}">
-                </div>
-                <div class="form-group">
-                    <label for="district_{{ $address->id }}">District</label>
-                    <input type="text" class="form-control" id="district_{{ $address->id }}" name="district" value="{{ $address->district }}">
-                </div>
-                <div class="form-group">
-                    <label for="province_{{ $address->id }}">Province</label>
-                    <input type="text" class="form-control" id="province_{{ $address->id }}" name="province" value="{{ $address->province }}">
                 </div>
                 <div class="form-group">
                     <label for="is_default_{{ $address->id }}">Is Default</label>
@@ -58,3 +61,26 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const provinces = @json($provinces);
+        const addressId = {{ $address->id }};
+        const districtSelect = document.getElementById('district_' + addressId);
+        const provinceSelect = document.getElementById('province_' + addressId);
+
+        provinceSelect.addEventListener('change', function() {
+            const selectedProvinceId = this.value;
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            if (selectedProvinceId) {
+                const selectedProvince = provinces.find(province => province.id == selectedProvinceId);
+                selectedProvince.districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.id;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            }
+        });
+    });
+</script>

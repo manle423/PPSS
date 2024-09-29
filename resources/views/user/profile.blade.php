@@ -63,7 +63,7 @@
             <div class="col-md-12">
                 <button id="show-address-form" class="btn btn-primary">Add New Address</button>
                 <div id="address-form-container" style="display: none;">
-                    <x-profile.address-form />
+                    <x-profile.address-form :provinces="$provinces" />
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
                     <p>N/A</p>
                 @else
                     @foreach ($addresses as $address)
-                        <x-profile.address-card :address="$address" />
+                        <x-profile.address-card :address="$address" :provinces="$provinces" />
                     @endforeach
                 @endif
             </div>
