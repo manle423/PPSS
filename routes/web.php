@@ -52,6 +52,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::prefix('/products')->group(function () {
         Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
+        Route::post('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
         Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
         Route::post('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
@@ -66,8 +67,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCustomerController::class, 'edit'])->name('customers.edit');
         Route::get('/detail/{id}', [AdminCustomerController::class, 'detail'])->name('customers.detail');
         // Route::post('/update/{id}', [AdminCustomerController::class, 'update'])->name('customers.update');
-        // Route::post('/delete/{id}', [AdminCustomerController::class, 'destroy'])->name('customers.delete');
-
+         Route::post('/delete/{id}', [AdminCustomerController::class, 'destroy'])->name('customers.delete');
+         Route::get('/orders/{id}', [AdminCustomerController::class, 'orders'])->name('customers.orders');
     });
 });
 

@@ -14,7 +14,7 @@ class AdminCustomerController extends Controller
     }
 
     public function edit($id){
-        $user=User::findOrFial($id);
+        $user=User::findOrFail($id);
         return view('admin.customers.edit',compact('user'));
     }
     public function update(Request $request,$id){
@@ -24,5 +24,12 @@ class AdminCustomerController extends Controller
      $user=User::findOrFail($id);
         return view('admin.customers.show',compact('user'));
     }
-    
+    public function destroy($id){
+        $customer=User::findOrFail($id);
+        $customer->detele();
+        return redirect()->route('admin.customers.list')->with('success', 'Customer deleted successfully.');
+    }
+    public function orders($id){
+        return view('admin.customers.order-list');
+    }
 }

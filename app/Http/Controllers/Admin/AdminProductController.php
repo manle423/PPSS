@@ -119,4 +119,33 @@ class AdminProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.list')->with('success', 'Product deleted successfully.');
     }
+
+    public function filter(Request $request){
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric|min:0',
+            'stock_quantity' => 'nullable|integer|min:0',
+        ]);
+        $query = Product::query();
+        if ($request->has('name') && $request->name != '') {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+    
+        // Lọc theo đơn giá
+        if ($request->has('price') && $request->price != '') {
+            $query->where('price', '<=', $request->price);
+        }
+    
+        // Lọc theo số lượng sản phẩm
+        if ($request->has('stock_quantity') && $request->stock_quantity != '') {
+            $query->where('stock_quantity', '>=', $request->stock_quantity);
+        }
+    
+        $products = $query->paginate(10);
+    
+        return view('admin.products.list', compact('products'));
+
+    }
+   
+
 }

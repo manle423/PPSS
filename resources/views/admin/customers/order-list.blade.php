@@ -2,7 +2,7 @@
 @section('content')
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Customers List</h2>
+            <h2>Customer Orders</h2>
            
         </div>
         @if ($errors->any())
@@ -33,16 +33,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($users as $user)
+           
                     <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->user_name}}</td>
-                        <td>{{ $user->full_name}}</td>
-                        <td>{{ $user->phone_number}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td>  
-                        <a href="{{ route('admin.customers.detail', $user->id) }}"> <i class="fas fa-eye"></i></a> || 
-                        <a href="{{ route('admin.customers.orders', $user->id) }}"><i class="fas fa-receipt" ></i> </a>||
-                        <form action="{{ route('admin.customers.delete', $user->id) }}" method="POST" style="display: inline-block;">
+                        <a href=""> <i class="fas fa-eye"></i></a> || 
+                        <a href=""><i class="fas fa-receipt" ></i> </a>||
+                        <form action="" method="POST" style="display: inline-block;">
                          @csrf
                          @method('POST')
                          <button type="submit" class="btn btn-sm"  onclick="return confirm('Are you sure you want to delete this customer?')"> <i class="fas fa-trash"></i></button>
@@ -59,7 +59,7 @@
             <span>Showing 1 to 5 of 5 entries</span>
         </div>
         <div class="pagination">
-            {{ $users->links() }}
+           
         </div>
     </div>
 @endsection

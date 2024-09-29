@@ -38,7 +38,7 @@
                         </div>
                         <div class="d-flex justify-content-center">
                             <button type="submit" class="btn btn-primary">Add</button>
-                            <a href="{{ route('admin.category.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Back to list</a>
+                            <a href="{{ route('admin.category.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Cancel</a>
                         </div>
                     </form>
                 </div>

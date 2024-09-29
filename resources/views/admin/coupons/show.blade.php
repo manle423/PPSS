@@ -73,7 +73,12 @@
                 <div class="card-footer bg-light d-flex justify-content-center py-3">
                   
                 </div>
+             
             </div>
+            <div class="d-flex justify-content-center">
+            <a href="{{ route('admin.coupon.list') }}" class="btn btn-primary" style="margin:10px; background-color:yellow;" >Cancel</a>
+                        </div>
+           
         </div>
     </div>
 </div>
