@@ -126,10 +126,11 @@
                                     </div>
                                 @endforeach
                             @endif
-                            {{-- Amount to add to cart --}}
+                            
                             <form action="{{ route('cart.store', $product->id) }}" method="POST"
                                 @if ($variants && !$variants->isEmpty()) onsubmit="return validateForm()" @endif>
                                 @csrf
+                                {{-- Amount to add to cart --}}
                                 <div class="form-group mb-4">
                                     <label for="amount">Amount:</label>
                                     <input type="number" id="amount" name="amount" min="1" value="1"

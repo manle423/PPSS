@@ -113,9 +113,6 @@ class ProductController extends Controller
             $query->orderBy('price', 'desc');
         }
 
-
-        // Paginate the results or get them all
-        $products = $query->paginate(9);
         return view('product.shop-detail', ['product' => $product, 'variants' => $variants,'categories' => $categories]);
         //return view('product.show', ['product' => $product, 'variants' => $variants]);
     }

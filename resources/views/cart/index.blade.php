@@ -28,7 +28,7 @@
 
 
 
-        @if ($cartItems->isEmpty())
+        @if ($cartItems == [])
             <p>Your cart is empty.</p>
         @else
             <table class="table">
@@ -44,9 +44,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($cartItems as $item)
-                        <x-cart-item :item="$item"/>
-                    @endforeach
+                
+                        @foreach ($cartItems as $item)
+                            <x-cart-item :item="$item" />
+                        @endforeach
+                 
+                    
+
                 </tbody>
             </table>
         @endif
