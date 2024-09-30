@@ -1,4 +1,5 @@
-@props(['item'])
+@props(['item','cartKey','amount'])
+
 <tr>
     <td>{{ $item->product->name }}</td>
 
@@ -12,8 +13,9 @@
 
     @guest
         {{-- Update the quantity of the cart stored in session --}}
-        <script>
-            function updateQuantity(productId, variantId) {
+        {{-- <script>
+            function updateQuantity(productId, variantId, currentQuantity) {
+
                 var quantityInput = document.getElementById('quantityInput');
                 var newQuantity = parseInt(quantityInput.value);
 
@@ -23,7 +25,6 @@
                 }
 
                 // Update the quantity of the cart item in the session directly
-                // Assuming $item is stored in the session with the key 'cart'
                 var sessionCart = {!! json_encode(session('cart')) !!};
                 var cartKey = productId + '-' + variantId;
 
@@ -35,20 +36,24 @@
 
                 // Update the displayed quantity in the input field
                 quantityInput.value = newQuantity;
-                quantityInput.textContent = newQuantity;
-
-                alert("Quantity changed to " + quantityInput.value);
-                
+                alert({{$item->quantity}});
             }
-            
-        </script>
+        </script> --}}
+
         <td>
-            <input type="number" id="quantityInput" name="quantity" value="{{ $item->quantity }}" style="width: 60px;"
-                max="{{ $item->product->stock_quantity }}" />
-            <button class="btn btn-primary btn-sm"
-                onclick="updateQuantity({{ $item->product->id }},{{ $item->variant->id }})">
-                Update</button>
+            <form action="{{route("cart.updateSession",$cartKey)}}" method="POST">
+                @csrf
+                @method('POST')
+                <input type="number" id="quantityInput" name="quantity" value="{{ $item->quantity }}" style="width: 60px;"
+                    max="{{ $item->product->stock_quantity }}" />
+                <button class="btn btn-primary btn-sm"
+                    {{-- onclick="updateQuantity({{ $item->product->id }}, {{ $item->variant ? $item->variant->id : 'null' }}, {{ $item->quantity }})" --}}
+                    >
+                    Update
+                </button>
+            </form>
         </td>
+        <input type="hidden" id="itemQuantity" value="{{ $item->quantity }}" />
     @endguest
     @auth
         {{-- Update the quantity of the cart in database --}}

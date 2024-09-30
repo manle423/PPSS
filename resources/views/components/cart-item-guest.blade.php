@@ -1,2 +1,5 @@
-@props(['item'])
-{{dd()}}
+@props(['cartKey', 'amount',"product","variant"])
+<tr>
+
+    <td>{{ $product }}</td>
+</tr>

@@ -23,6 +23,8 @@ class CartController extends Controller
     // Get all categories for the dropdown
     $categories = Category::all();
 
+    $sessionCart = session()->get('cart', []);
+
     // Search by product name or description
     if ($search = $request->input('search')) {
         $query->whereHas('product', function ($q) use ($search) {
@@ -47,8 +49,9 @@ class CartController extends Controller
     }
 
     // Get cart items from session if the user is not logged in
-    if (!Auth::check()) {
-        $sessionCart = session()->get('cart', []);
+    
+    else if (!Auth::check()) {
+        
 
         // Loop through session cart items to create cart items
         foreach ($sessionCart as $cartKey => $amount) {
@@ -67,7 +70,7 @@ class CartController extends Controller
         }
     }
 
-    return view('cart.index', compact('cartItems', 'categories'));
+    return view('cart.index', compact('cartItems', 'categories','sessionCart'));
 }
 
     /**
@@ -165,7 +168,6 @@ class CartController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         // Find the cart item by its ID
         $cartItem = Cart::findOrFail($id);
 
@@ -180,6 +182,14 @@ class CartController extends Controller
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Cart updated successfully.');
+    }
+
+
+    /**
+     * Update the specified resource in session.
+     */
+    public function updateSession(Request $request,$cartKey) {
+        dd($cartKey);
     }
 
     /**

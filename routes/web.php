@@ -114,6 +114,7 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::post('/cart/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
 });
 
 // Not found page

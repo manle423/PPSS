@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container">
         <h1>Your Cart</h1>
@@ -44,13 +43,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                
-                        @foreach ($cartItems as $item)
-                            <x-cart-item :item="$item" />
-                        @endforeach
-                 
-                    
 
+                    @foreach ($cartItems as $item)
+                        @php
+
+                            $cartKey = $item->product->id . '-' . ($item->variant ? $item->variant->id : '');
+                            $amount = $sessionCart[$cartKey] ?? 0;
+                        @endphp
+                        <x-cart-item :item="$item" :cartKey="$cartKey" :amount="$amount"  />
+                    @endforeach
+
+                    {{-- @guest
+                        @foreach (session()->get('cart', []) as $cartKey => $amount)
+                            @php
+                                [$productId, $variantId] = explode('-', $cartKey);
+                                
+                            @endphp
+                            <x-cart-item-guest :cartKey="$cartKey" :productId="$productId" :variantId="$variantId" :amount="$amount" />
+                        @endforeach
+                    @endguest --}}
                 </tbody>
             </table>
         @endif
