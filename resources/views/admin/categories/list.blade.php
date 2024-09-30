@@ -33,8 +33,14 @@
                         <td>{{ $category->created_at }}</td>
                         <td>{{ $category->updated_at }}</td>
                         <td>{{ $category->deleted_at }}</td>
-                        <td><a href="{{ route('admin.category.edit', $category->id) }}">Edit</a> || <a
-                                href="{{ route('admin.category.delete', $category->id) }}">Delete</a></td>
+                        <td class="d-flex">
+                            <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm  mr-2"><i class="fas fa-edit"></i> Edit</a>
+                            <form action="{{ route('admin.category.delete', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                @csrf
+                                @method('POST')
+                                <button type="submit" class="btn btn-sm "><i class="fas fa-trash"></i> Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
