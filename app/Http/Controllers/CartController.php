@@ -25,8 +25,12 @@ class CartController extends Controller
         // Get all categories for the dropdown
         $categories = Category::all();
 
+        // Cart stored in session
         $sessionCart = session()->get('cart', []);
-        $subtotal = 0.0;
+        
+        // Total price for the cart
+        $subtotal = 0;
+
         // Search by product name or description
         if ($search = $request->input('search')) {
             $query->whereHas('product', function ($q) use ($search) {
@@ -73,6 +77,7 @@ class CartController extends Controller
                         'variant' => $variant,
                         'quantity' => $amount
                     ];
+                    $subtotal += $amount * ($variant? $variant->variant_price : $product->price);
                 }
             }
         }
@@ -233,6 +238,24 @@ class CartController extends Controller
         // Find the cart item by its ID and delete it
         $cartItem = Cart::findOrFail($id);
         $cartItem->delete();
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Item removed from the cart.');
+    }
+
+    /**
+     * Remove the specified resource from session.
+     */
+    public function destroySession($cartKey)
+    {
+        // Get the cart item from the session
+        $sessionCart = session()->get('cart', []);
+
+        // Remove the item from session cart
+        unset($sessionCart[$cartKey]);
+
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Item removed from the cart.');

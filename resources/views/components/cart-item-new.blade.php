@@ -56,8 +56,15 @@
                 </button>
             </form>
         @endauth
-
-
+        @guest
+            <form action="{{ route('cart.destroySession', $cartKey) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-md rounded-circle bg-light border mt-4">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        @endguest
     </td>
 
 </tr>
