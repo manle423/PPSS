@@ -77,7 +77,8 @@ class CartController extends Controller
             }
         }
 
-        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'));
+        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'))
+        ->with('cart',session()->get('cart', []));
         //return view('cart.index', compact('cartItems', 'categories','sessionCart'));
     }
 
@@ -97,6 +98,9 @@ class CartController extends Controller
 
         // Find the product
         $product = Product::findOrFail($productId);
+
+        // Get the cart items from the session, if any
+        $sessionCart = session()->get('cart', []);
 
         // Validate the incoming request
         $request->validate([
@@ -188,8 +192,12 @@ class CartController extends Controller
         $cartItem->quantity = $request->input('quantity');
         $cartItem->save();
 
+        // Get the cart item from the session
+        $sessionCart = session()->get('cart', []);
+
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'Cart updated successfully.');
+        return redirect()->back()->with('success', 'Cart updated successfully.')
+        ->with('cart',$sessionCart);
     }
 
 
@@ -203,7 +211,7 @@ class CartController extends Controller
 
         // Validate the quantity input
         $request->validate([
-            'quantity' => 'required|integer|min:1|max:' . $sessionCart[$cartKey],
+            'quantity' => 'required|integer|min:1',
         ]);
 
         // Update the quantity in session cart
@@ -211,8 +219,10 @@ class CartController extends Controller
 
         // Update the session with the modified cart
         session()->put('cart', $sessionCart);
+        //dd( $sessionCart[$cartKey]);
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'Cart updated successfully.');
+        return redirect()->back()->with('success', 'Cart updated successfully.')
+        ->with('cart', $sessionCart);
     }
 
     /**
