@@ -101,7 +101,7 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
     Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
-    Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+    //Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
     Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
     Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
 
@@ -113,8 +113,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
-    Route::post('/cart/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
+    Route::patch('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
 });
 
 // Not found page

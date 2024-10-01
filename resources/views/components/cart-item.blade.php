@@ -13,42 +13,18 @@
 
     @guest
         {{-- Update the quantity of the cart stored in session --}}
-        {{-- <script>
-            function updateQuantity(productId, variantId, currentQuantity) {
-
-                var quantityInput = document.getElementById('quantityInput');
-                var newQuantity = parseInt(quantityInput.value);
-
-                if (newQuantity < 1 || newQuantity > {{ $item->product->stock_quantity }}) {
-                    alert('Invalid quantity entered!');
-                    return;
-                }
-
-                // Update the quantity of the cart item in the session directly
-                var sessionCart = {!! json_encode(session('cart')) !!};
-                var cartKey = productId + '-' + variantId;
-
-                // Update the quantity for the corresponding cart item
-                sessionCart[cartKey] = newQuantity;
-
-                // Update the session with the modified cart data
-                sessionStorage.setItem('cart', JSON.stringify(sessionCart));
-
-                // Update the displayed quantity in the input field
-                quantityInput.value = newQuantity;
-                alert({{$item->quantity}});
-            }
-        </script> --}}
 
         <td>
-            <form action="{{route("cart.updateSession",$cartKey)}}" method="POST">
+            <form action="{{ route('cart.updateSession', ['cartKey' => $cartKey]) }}" method="POST">
                 @csrf
-                @method('POST')
-                <input type="number" id="quantityInput" name="quantity" value="{{ $item->quantity }}" style="width: 60px;"
+                @method('PATCH')
+                @php
+                    $sessionCart = session()->get('cart', []);
+                    $newAmount = $sessionCart[$cartKey];
+                @endphp
+                <input type="number" id="quantityInput" name="quantity" value="{{ $newAmount }}" style="width: 60px;"
                     max="{{ $item->product->stock_quantity }}" />
-                <button class="btn btn-primary btn-sm"
-                    {{-- onclick="updateQuantity({{ $item->product->id }}, {{ $item->variant ? $item->variant->id : 'null' }}, {{ $item->quantity }})" --}}
-                    >
+                <button type="submit" class="btn btn-primary btn-sm">
                     Update
                 </button>
             </form>
@@ -75,7 +51,7 @@
 
     @guest
         {{-- Delete the cart stored in session --}}
-        <td>
+        {{-- <td>
             <script>
                 function deleteCartItem(productId, variantId) {
                     // Delete the cart item in the session directly
@@ -91,7 +67,7 @@
             </script>
             <button class="btn btn-danger btn-sm"
                 onclick="deleteCartItem({{ $item->product->id }},{{ $item->variant->id }})">Remove</button>
-        </td>
+        </td> --}}
 
     @endguest
 

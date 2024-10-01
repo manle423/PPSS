@@ -1,3 +1,4 @@
+
 @extends('layouts.shop')
 @section('content')
     <!-- Single Page Header start -->

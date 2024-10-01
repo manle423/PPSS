@@ -2,7 +2,6 @@
 @section('content')
     <div class="container">
         <h1>Your Cart</h1>
-
         <!-- Search Form -->
         <form action="{{ route('cart.index') }}" method="GET" class="mb-4">
             <div class="input-group">

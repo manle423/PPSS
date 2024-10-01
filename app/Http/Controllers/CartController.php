@@ -10,68 +10,76 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use function Laravel\Prompts\alert;
+
 class CartController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    // Start with a base query for products
-    $query = Cart::query();
+    {
+        // Start with a base query for products
+        $query = Cart::query();
 
-    // Get all categories for the dropdown
-    $categories = Category::all();
+        // Get all categories for the dropdown
+        $categories = Category::all();
 
-    $sessionCart = session()->get('cart', []);
+        $sessionCart = session()->get('cart', []);
+        $subtotal = 0.0;
+        // Search by product name or description
+        if ($search = $request->input('search')) {
+            $query->whereHas('product', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
-    // Search by product name or description
-    if ($search = $request->input('search')) {
-        $query->whereHas('product', function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-        });
-    }
+        // Filter by category if selected
+        if ($categoryId = $request->input('category')) {
+            $query->whereHas('product', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        }
 
-    // Filter by category if selected
-    if ($categoryId = $request->input('category')) {
-        $query->whereHas('product', function ($q) use ($categoryId) {
-            $q->where('category_id', $categoryId);
-        });
-    }
+        $cartItems = [];
 
-    $cartItems = [];
+        // Filter cart items by the authenticated user if logged in
+        if (Auth::check()) {
+            $query->where('user_id', Auth::id());
+            $cartItems = $query->with('product')->get();
+         
 
-    // Filter cart items by the authenticated user if logged in
-    if (Auth::check()) {
-        $query->where('user_id', Auth::id());
-        $cartItems = $query->with('product')->get();
-    }
-
-    // Get cart items from session if the user is not logged in
-    
-    else if (!Auth::check()) {
-        
-
-        // Loop through session cart items to create cart items
-        foreach ($sessionCart as $cartKey => $amount) {
-            list($productId, $variantId) = explode('-', $cartKey);
-
-            $product = Product::find($productId);
-            $variant = $variantId ? ProductVariant::find($variantId) : null;
-
-            if ($product) {
-                $cartItems[] = (object)[
-                    'product' => $product,
-                    'variant' => $variant,
-                    'quantity' => $amount
-                ];
+            foreach ($cartItems as $item) {
+                $subtotal += $item->quantity * $item->product->price;
             }
         }
-    }
 
-    return view('cart.index', compact('cartItems', 'categories','sessionCart'));
-}
+        // Get cart items from session if the user is not logged in
+
+        else if (!Auth::check()) {
+
+
+            // Loop through session cart items to create cart items
+            foreach ($sessionCart as $cartKey => $amount) {
+                list($productId, $variantId) = explode('-', $cartKey);
+
+                $product = Product::find($productId);
+                $variant = $variantId ? ProductVariant::find($variantId) : null;
+
+                if ($product) {
+                    $cartItems[] = (object)[
+                        'product' => $product,
+                        'variant' => $variant,
+                        'quantity' => $amount
+                    ];
+                }
+            }
+        }
+
+        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'));
+        //return view('cart.index', compact('cartItems', 'categories','sessionCart'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -188,8 +196,23 @@ class CartController extends Controller
     /**
      * Update the specified resource in session.
      */
-    public function updateSession(Request $request,$cartKey) {
-        dd($cartKey);
+    public function updateSession(Request $request, $cartKey)
+    {
+        // Get the cart item from the session
+        $sessionCart = session()->get('cart', []);
+
+        // Validate the quantity input
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:' . $sessionCart[$cartKey],
+        ]);
+
+        // Update the quantity in session cart
+        $sessionCart[$cartKey] = $request->input('quantity');
+
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Cart updated successfully.');
     }
 
     /**
