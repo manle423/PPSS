@@ -77,8 +77,8 @@ class CartController extends Controller
             }
         }
 
-        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'))
-        ->with('cart',session()->get('cart', []));
+
+        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'));
         //return view('cart.index', compact('cartItems', 'categories','sessionCart'));
     }
 
@@ -147,10 +147,10 @@ class CartController extends Controller
 
             if (array_key_exists($cartKey, $sessionCart)) {
                 // Update quantity in session cart
-                $sessionCart[$cartKey] += $request->input('amount');
+                $sessionCart[$cartKey] += number_format($request->input('amount'));
             } else {
                 // Add new item to session cart
-                $sessionCart[$cartKey] = $request->input('amount');
+                $sessionCart[$cartKey] = number_format($request->input('amount'));
             }
 
             // Update the session with the modified cart
@@ -194,10 +194,10 @@ class CartController extends Controller
 
         // Get the cart item from the session
         $sessionCart = session()->get('cart', []);
-
+        echo $sessionCart;
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'Cart updated successfully.')
-        ->with('cart',$sessionCart);
+        return redirect()->back()->with('success', 'Cart updated successfully.');
+    
     }
 
 
@@ -219,10 +219,10 @@ class CartController extends Controller
 
         // Update the session with the modified cart
         session()->put('cart', $sessionCart);
-        //dd( $sessionCart[$cartKey]);
+        
         // Redirect back with a success message
-        return redirect()->back()->with('success', 'Cart updated successfully.')
-        ->with('cart', $sessionCart);
+        return redirect()->back()->with('success', 'Cart updated successfully.');
+
     }
 
     /**
