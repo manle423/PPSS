@@ -19,7 +19,8 @@
                     <tbody>
                         @foreach ($cartItems as $item)
                         @php
-                            $cartKey = $item->product->id . '-' . ($item->variant ? $item->variant->id : '');
+                            $variantId = $item->variant ? strval($item->variant->id) : '';
+                            $cartKey = $item->product->id . '-' . $variantId;
                             $amount = $sessionCart[$cartKey] ?? 0;
                         @endphp
                             <x-cart-item-new :item="$item" :cartKey="$cartKey" :amount="$amount"  />

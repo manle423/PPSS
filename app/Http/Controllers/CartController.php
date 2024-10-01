@@ -181,7 +181,7 @@ class CartController extends Controller
 
         // Validate the quantity input
         $request->validate([
-            'quantity' => 'required|integer|min:1|max:' . $cartItem->product->stock_quantity,
+            'quantity' => 'required|integer|min:1',
         ]);
 
         // Update the quantity
