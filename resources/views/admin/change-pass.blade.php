@@ -5,7 +5,6 @@
             <div class="col-sm-12 col-xl-6">
                 <div class="bg-light rounded h-100 p-4">
                     <h6 class="mb-4 text-center">Change password</h6>
-                    <form>
                         <div class="row mb-3">
                             <label for="inputEmail3" class="col-sm-2 col-form-label">Password</label>
                             <div class="col-sm-10">

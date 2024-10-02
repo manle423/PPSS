@@ -52,7 +52,7 @@
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
                             <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="#" class="dropdown-item">Profile</a>
+                                <a href="{{ route('user.profile') }}" class="dropdown-item">Profile</a>
                                 <a href="#" class="dropdown-item">Settings</a>
                                 <a href="{{ route('logout') }}" class="dropdown-item"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
