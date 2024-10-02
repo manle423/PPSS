@@ -27,7 +27,7 @@ class CartController extends Controller
 
         // Cart stored in session
         $sessionCart = session()->get('cart', []);
-        
+
         // Total price for the cart
         $subtotal = 0;
 
@@ -51,19 +51,36 @@ class CartController extends Controller
         // Filter cart items by the authenticated user if logged in
         if (Auth::check()) {
             $query->where('user_id', Auth::id());
-            $cartItems = $query->with('product')->get();
-         
+            // Check if the query is not empty
+            if ($query->count()) {
+                $cartItems = $query->with('product')->get();
+                foreach ($cartItems as $item) {
+                    $subtotal += $item->quantity * $item->product->price;
+                }
+            } else {
+                // Create cart items on the database based on the session data
+                foreach ($sessionCart as $cartKey => $amount) {
+                    list($productId, $variantId) = explode('-', $cartKey);
 
-            foreach ($cartItems as $item) {
-                $subtotal += $item->quantity * $item->product->price;
+                    $product = Product::find($productId);
+                    $variant = $variantId ? ProductVariant::find($variantId) : null;
+
+                    if ($product) {
+                        Cart::create([
+                            'user_id' => Auth::id(),
+                            'product_id' => $product->id,
+                            'variant_id' => $variantId,
+                            'quantity' => $amount
+                        ]);
+                    }
+                }
+                $cartItems = $query->with('product')->get();
             }
         }
 
-        // Get cart items from session if the user is not logged in
-
-        else if (!Auth::check()) {
-
-
+        // Get cart items from session 
+        else {
+            
             // Loop through session cart items to create cart items
             foreach ($sessionCart as $cartKey => $amount) {
                 list($productId, $variantId) = explode('-', $cartKey);
@@ -77,13 +94,14 @@ class CartController extends Controller
                         'variant' => $variant,
                         'quantity' => $amount
                     ];
-                    $subtotal += $amount * ($variant? $variant->variant_price : $product->price);
+                    $subtotal += $amount * ($variant ? $variant->variant_price : $product->price);
                 }
             }
         }
 
+       
 
-        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart','subtotal'));
+        return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
         //return view('cart.index', compact('cartItems', 'categories','sessionCart'));
     }
 
@@ -100,16 +118,13 @@ class CartController extends Controller
      */
     public function store(Request $request, $productId)
     {
-
-        // Find the product
-        $product = Product::findOrFail($productId);
-
+        
         // Get the cart items from the session, if any
         $sessionCart = session()->get('cart', []);
 
         // Validate the incoming request
         $request->validate([
-            'amount' => 'required|integer|min:1|max:' . $product->stock_quantity,
+            'amount' => 'required|integer|min:1|',
             'variant_id' => 'nullable|exists:product_variants,id',
         ]);
         // Get the product variant (if there is one)
@@ -122,6 +137,7 @@ class CartController extends Controller
                 return redirect()->route('cart.index')->with('error', 'Selected variant is out of stock!');
             }
         }
+        
         // Check if the user is logged in
         if (Auth::check()) {
             // Check if the product is already in the user's cart
@@ -135,7 +151,7 @@ class CartController extends Controller
                 $cartItem->quantity += $request->input('amount');
                 $cartItem->save();
             } else {
-                // Create a new cart item
+                // Create a new cart item in database
                 $cart = Cart::create([
                     'user_id' => Auth::id(),
                     'product_id' => $productId,
@@ -144,23 +160,23 @@ class CartController extends Controller
                     'variant_id' => $variantId,
                 ]);
             }
-        } else {
-            // Get the cart items from the session, if any
-            $sessionCart = session()->get('cart', []);
-
-            $cartKey = $productId . '-' . $variantId;
-
-            if (array_key_exists($cartKey, $sessionCart)) {
-                // Update quantity in session cart
-                $sessionCart[$cartKey] += number_format($request->input('amount'));
-            } else {
-                // Add new item to session cart
-                $sessionCart[$cartKey] = number_format($request->input('amount'));
-            }
-
-            // Update the session with the modified cart
-            session()->put('cart', $sessionCart);
         }
+        
+        // Get the cart items from the session, if any
+        $sessionCart = session()->get('cart', []);
+
+        $cartKey = $productId . '-' . $variantId;
+
+        if (array_key_exists($cartKey, $sessionCart)) {
+            // Update quantity in session cart
+            $sessionCart[$cartKey] += number_format($request->input('amount'));
+        } else {
+            // Add new item to session cart
+            $sessionCart[$cartKey] = number_format($request->input('amount'));
+        }
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
+
         // Redirect back with a success message
         return redirect()->route('cart.index')->with('success', 'Product added to cart successfully!');
     }
@@ -183,8 +199,9 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $cartKey, $id)
     {
+ 
         // Find the cart item by its ID
         $cartItem = Cart::findOrFail($id);
 
@@ -193,16 +210,25 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Update the quantity
-        $cartItem->quantity = $request->input('quantity');
-        $cartItem->save();
+        // Check if the cart item id exists
+        if ($cartItem) {
+            // Update the quantity
+            $cartItem->quantity = $request->input('quantity');
+            $cartItem->save();
+        }
 
         // Get the cart item from the session
         $sessionCart = session()->get('cart', []);
-        echo $sessionCart;
+
+        // Update the quantity in session cart
+        $sessionCart[$cartKey] = $request->input('quantity');
+
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
+        
+
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Cart updated successfully.');
-    
     }
 
 
@@ -224,10 +250,9 @@ class CartController extends Controller
 
         // Update the session with the modified cart
         session()->put('cart', $sessionCart);
-        
+
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Cart updated successfully.');
-
     }
 
     /**

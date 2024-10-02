@@ -2,7 +2,7 @@
 @section('content')
     <!-- Cart Page Start -->
     <div class="container-fluid py-5">
-        <div class="container py-5">
+         <div class="container py-5">
             <div class="table-responsive">
                 <table class="table">
                     <thead>
@@ -17,19 +17,21 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                         @foreach ($cartItems as $item)
                         @php
                             $variantId = $item->variant ? strval($item->variant->id) : '';
                             $cartKey = $item->product->id . '-' . $variantId;
                             $amount = $sessionCart[$cartKey] ?? 0;
                         @endphp
-                            <x-cart-item-new :item="$item" :cartKey="$cartKey" :amount="$amount"  />
+                            <x-cart-item-new :item="$item" :cartKey="$cartKey" :amount="$amount"  /> 
+
                         @endforeach
                         
                     </tbody>
                 </table>
             </div>
-            <div class="row g-4 justify-content-end">
+             <div class="row g-4 justify-content-end">
                 <div class="col-8"></div>
                 <div class="container-fluid">
                     <div class="bg-light rounded">
@@ -58,12 +60,12 @@
                                 Proceed Checkout
                             </button>
                         </form>
-
                     </div>
                 </div>
 
             </div>
-        </div>
-    </div>
+        </div> 
+    </div> 
+    
     <!-- Cart Page End -->
 @endsection()

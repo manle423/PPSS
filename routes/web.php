@@ -114,7 +114,7 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::delete('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroySession');
-    Route::patch('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::patch('/cart/update/{cartKey}/{product}', [CartController::class, 'update'])->name('cart.update');
     Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
 });
 
