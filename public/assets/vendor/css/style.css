@@ -1,5 +1,7 @@
 /********** Template CSS **********/
-
+.container-fluid .row-profile{
+margin-top:60px;
+}
 :root {
     --primary: #009CFF;
     --light: #F3F6F9;

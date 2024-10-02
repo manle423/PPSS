@@ -1,3 +1,4 @@
+<link href="{{ asset('assets/vendor/css/profile.css') }}" rel="stylesheet">
 <div class="card mb-3" id="address-card-{{ $address->id }}">
     {{-- @dd($address); --}}
     <div class="card-body">
@@ -55,8 +56,8 @@
                     <label for="is_default_{{ $address->id }}">Is Default</label>
                     <input type="checkbox" id="is_default_{{ $address->id }}" name="is_default" {{ $address->is_default ? 'checked' : '' }}>
                 </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="button" class="btn btn-secondary btn-cancel-edit" data-id="{{ $address->id }}">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;">Save</button>
+                <button type="button" class="btn btn-secondary btn-cancel-edit"style="margin-top:10px;" data-id="{{ $address->id }}">Cancel</button>
             </form>
         </div>
     </div>
@@ -65,7 +66,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const provinces = @json($provinces);
-        const addressId = {{ $address->id }};
+        const addressId = {{$address->id}};
         const districtSelect = document.getElementById('district_' + addressId);
         const provinceSelect = document.getElementById('province_' + addressId);
 
