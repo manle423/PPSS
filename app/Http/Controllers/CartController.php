@@ -56,7 +56,12 @@ class CartController extends Controller
                 $cartItems = $query->with('product')->get();
                 foreach ($cartItems as $item) {
                     $subtotal += $item->quantity * $item->product->price;
+                    $variantId = $item->variant ? strval($item->variant->id) : '';
+                    $cartKey = $item->product->id . '-' . $variantId;
+                    $sessionCart[$cartKey] = $item->quantity;
                 }
+                // Update the session with the cart items from the database
+                session()->put('cart', $sessionCart);
             } else {
                 // Create cart items on the database based on the session data
                 foreach ($sessionCart as $cartKey => $amount) {
@@ -99,10 +104,7 @@ class CartController extends Controller
             }
         }
 
-       
-
         return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
-        //return view('cart.index', compact('cartItems', 'categories','sessionCart'));
     }
 
     /**
