@@ -121,21 +121,23 @@ Route::middleware('auth')->group(function () {
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
-    Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
-    Route::get('/cart', [HomeController::class, 'cart'])->name('cart');
+    //Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
+    //Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
+    //Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
     Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
     Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
 
     //Routes for products
-    Route::get('/products', [ProductController::class, 'index'])->name('product.index');
-    Route::get('products/{product}', [ProductController::class, 'show'])->name('product.show');
+    Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/shop/{product}', [ProductController::class, 'show'])->name('product.show');
 
     // Routes for cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::patch('/cart/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroySession');
+    Route::patch('/cart/update/{cartKey}/{product}', [CartController::class, 'update'])->name('cart.update');
+    Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
 });
 
 // Not found page

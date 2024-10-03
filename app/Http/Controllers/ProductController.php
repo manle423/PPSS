@@ -28,10 +28,6 @@ class ProductController extends Controller
         }
 
         // Filter by category if selected
-        // if ($categoryId = $request->input('category')) {
-        //     $query->where('category_id', $categoryId);
-        // }
-        // Filter by category if selected
         if ($request->has('categories')) {
             $query->whereIn('category_id', $request->input('categories'));
         }
@@ -78,13 +74,46 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Request $request, Product $product)
     {
         // Get all variants of the product
         $query = ProductVariant::query();
+        // Get all categories for the dropdown
+        $categories = Category::all();
         $query->where('product_id', $product->id);
         $variants = $query->get();
-        return view('product.shop-detail', ['product' => $product, 'variants' => $variants]);
+
+        // Start with a base query for products
+        $query = Product::query();
+
+        // Search by product name or description
+        if ($search = $request->input('search')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        // Filter by category if selected
+        if ($request->has('categories')) {
+            $query->whereIn('category_id', $request->input('categories'));
+        }
+
+        // Filter by price range
+        if ($minPrice = $request->input('min_price')) {
+            $query->where('price', '>=', $minPrice);
+        }
+        if ($maxPrice = $request->input('max_price')) {
+            $query->where('price', '<=', $maxPrice);
+        }
+
+        // Sort by price
+        $sort = $request->input('sort'); // Default to ascending sort
+        if ($sort === 'asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'desc') {
+            $query->orderBy('price', 'desc');
+        }
+
+        return view('product.shop-detail', ['product' => $product, 'variants' => $variants,'categories' => $categories]);
         //return view('product.show', ['product' => $product, 'variants' => $variants]);
     }
 

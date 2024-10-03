@@ -1,9 +1,7 @@
 @extends('layouts.app')
-
 @section('content')
     <div class="container">
         <h1>Your Cart</h1>
-
         <!-- Search Form -->
         <form action="{{ route('cart.index') }}" method="GET" class="mb-4">
             <div class="input-group">
@@ -28,7 +26,7 @@
 
 
 
-        @if ($cartItems->isEmpty())
+        @if ($cartItems == [])
             <p>Your cart is empty.</p>
         @else
             <table class="table">
@@ -44,9 +42,25 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     @foreach ($cartItems as $item)
-                        <x-cart-item :item="$item"/>
+                        @php
+
+                            $cartKey = $item->product->id . '-' . ($item->variant ? $item->variant->id : '');
+                            $amount = $sessionCart[$cartKey] ?? 0;
+                        @endphp
+                        <x-cart-item :item="$item" :cartKey="$cartKey" :amount="$amount"  />
                     @endforeach
+
+                    {{-- @guest
+                        @foreach (session()->get('cart', []) as $cartKey => $amount)
+                            @php
+                                [$productId, $variantId] = explode('-', $cartKey);
+                                
+                            @endphp
+                            <x-cart-item-guest :cartKey="$cartKey" :productId="$productId" :variantId="$variantId" :amount="$amount" />
+                        @endforeach
+                    @endguest --}}
                 </tbody>
             </table>
         @endif
