@@ -58,6 +58,7 @@
                 <tr>
                     <th>Product Id</th>
                     <th>Product Name</th>
+                    <th>Image</th>
                     <th>Category</th>
                     <th>Description</th>
                     <th>Price ($)</th>
@@ -72,6 +73,7 @@
                     <tr>
                         <td>{{ $product->id }}</td>
                         <td>{{ $product->name }}</td>
+                        <td><img src="{{ asset('img/products/' . $product->image) }}"></td>
                         <td>{{ $product->category->name }}</td> 
                         <td>{{ $product->description }}</td>
                         <td>{{ $product->price }}</td>

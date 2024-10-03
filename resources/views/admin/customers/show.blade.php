@@ -13,26 +13,26 @@
             </div>
             <div class="form-group">
                 <label for="user_name">User name:</label>
-                <input type="text" id="user_name" name="user_name" readonly value="{{$user->user_name}}">
+                <input type="text" id="user_name" name="user_name"  value="{{$user->user_name}}">
             </div>
             <div class="form-group">
                 <label for="full_name">Full name:</label>
-                <input type="text" id="full_name" name="full_name" readonly  value="{{$user->full_name}}">
+                <input type="text" id="full_name" name="full_name"   value="{{$user->full_name}}">
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email"  readonly value="{{$user->email}}">
+                <input type="email" id="email" name="email"   value="{{$user->email}}">
             </div>
             <div class="form-group">
                 <label for="phone_number">Phone number:</label>
-                <input type="tel" id="phone_number" name="phone_number" readonly value="{{$user->phone_number}}">
+                <input type="tel" id="phone_number" name="phone_number"  value="{{$user->phone_number}}">
             </div>
             <div class="form-group">
                 <label for="address">Address:</label>
-                <input type="text" id="address" name="address" readonly  value="{{$user->address}}">
+                <input type="text" id="address" name="address"  value="{{$user->address}}">
             </div>
         </div>
 

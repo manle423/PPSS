@@ -30,13 +30,14 @@ class AdminProductController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
+       
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
@@ -56,11 +57,18 @@ class AdminProductController extends Controller
                 throw new \Exception('This product already exists in the selected category.');
             }
 
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
+                $request->image->move(public_path('img/products'), $imageName);
+            } else {
+                throw new \Exception('Image upload failed.');
+            }
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
+                'image' => $imageName,
                 'stock_quantity' => $request->stock_quantity,
                 'created_at' => now(),
             ]);
@@ -101,21 +109,47 @@ class AdminProductController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             'stock_quantity' => 'required|integer|min:0',
         ]);
-
+    
         $product = Product::findOrFail($id);
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock_quantity' => $request->stock_quantity,
-            'updated_at' => now(),
-        ]);
-
+    
+        if ($request->hasFile('image')) {
+            // Xóa ảnh cũ nếu có
+            if ($product->image && file_exists(public_path('img/products/' . $product->image))) {
+                unlink(public_path('img/products/' . $product->image));
+            }
+    
+            // Lưu ảnh mới
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('img/products'), $imageName);
+    
+            // Cập nhật thông tin sản phẩm với ảnh mới
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'image' => $imageName,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        } else {
+            // Cập nhật thông tin sản phẩm mà không thay đổi ảnh
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        }
+    
         return redirect()->route('admin.products.list')->with('success', 'Product updated successfully!');
     }
+    
 
     public function destroy($id)
     {

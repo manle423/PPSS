@@ -44,7 +44,7 @@ class CartController extends Controller
             });
         }
 
-        // Get all items based on search and filters
+     
 
         // Get all items based on search and filters
         $cartItems = $query->with('product')
