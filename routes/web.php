@@ -48,15 +48,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::prefix('/orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
+        Route::get('/detail', [AdminOrderController::class, 'index'])->name('orders.detail');
     });
-    // Route::resource('products', ShopProductController::class)->except(['show'])->names([
-    //     'create' => 'shop.addPro',      // Route cho form thêm sản phẩm
-    //     'store' => 'shop.storePro',      // Route để lưu sản phẩm
-    //     'edit' => 'shop.editPro',        // Route cho form chỉnh sửa sản phẩm
-    //     'update' => 'shop.updatePro',    // Route để cập nhật sản phẩm
-    //     'destroy' => 'shop.deletePro',   // Route để xóa sản phẩm
-    //     'index' => 'shop.listPro',       // Route để danh sách sản phẩm
-    // ]);
+   
+   
 });
 
 // CHo người chưa đăng nhập
