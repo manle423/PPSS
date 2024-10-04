@@ -22,9 +22,9 @@ class AdminCustomerController extends Controller
      $user=User::findOrFail($id);
         return view('admin.customers.show',compact('user'));
     }
-    public function destroy($id){
+    public function delete($id){
         $customer=User::findOrFail($id);
-        $customer->detele();
+        $customer->delete();
         return redirect()->route('admin.customers.list')->with('success', 'Customer deleted successfully.');
     }
     public function orders($id){

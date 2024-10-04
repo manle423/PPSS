@@ -48,7 +48,7 @@
          Cancel
         </a>
 
-            <button type="submit" class="btn btn-primary">Edit</button>
+      
            <a href="{{ route('admin.customers.orders', $user->id) }}"><button type="button" class="btn btn-primary" style="margin-left:10px; background-color:green">Customer orders</button></a> 
         </div>
     </form>
