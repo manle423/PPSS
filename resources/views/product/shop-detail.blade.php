@@ -109,7 +109,7 @@
                         <div class="col-lg-6">
                             <h4 class="fw-bold mb-3">{{ $product->name }}</h4>
                             <p class="mb-3">{{ $product->category->name }}</p>
-                            <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }}</span></h5>
+                            <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }} đ</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
 
@@ -120,10 +120,12 @@
                                     <div class="form-check mb-4">
                                         <input type="radio" class="form-check-input" id="variant-{{ $variant->id }}"
                                             name="variant_id_radio" value="{{ $variant->id }}"
-                                            data-price="{{ $variant->variant_price }}" {{ $key === 0 ? 'checked' : '' }}>
+                                            data-price="{{ $variant->variant_price }}"
+                                            data-stock-quantity="{{ $variant->stock_quantity }}"
+                                             {{ $key === 0 ? 'checked' : '' }}>
                                         <label class="form-check-label"
-                                            for="variant-{{ $variant->id }}">{{ $variant->variant_name }} -
-                                            ${{ $variant->variant_price }}</label>
+                                            for="variant-{{ $variant->id }}">{{ $variant->variant_name }}
+                                             </label>
                                     </div>
                                 @endforeach
                             @endif
@@ -137,10 +139,9 @@
                                     <input type="number" id="amount" name="amount" min="1" value="1"
                                         max="{{ $product->stock_quantity }}" required>
                                 </div>
-                                <p class="mb-4">Stock: {{ $product->stock_quantity }}</p>
+                                <p class="mb-4" id="product-stock-quantity">Stock: {{ $product->stock_quantity }}</p>
                                 {{-- Hidden input to store selected variant --}}
                                 <input type="hidden" id="variant-id" name="variant_id" value="">
-
                                 <div class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary">
                                     <button type="submit" class="fa fa-shopping-bag text-primary"
                                         style="border:none;background:none;">
@@ -429,22 +430,30 @@
             const variantInputs = document.querySelectorAll('input[name="variant_id_radio"]');
             const priceElement = document.getElementById('product-price');
             const hiddenVariantInput = document.getElementById('variant-id');
+            const stockQuantityElement = document.getElementById('product-stock-quantity');
 
             function updatePriceAndVariant() {
                 const selectedVariant = document.querySelector('input[name="variant_id_radio"]:checked');
 
                 if (selectedVariant) {
                     const selectedPrice = selectedVariant.getAttribute('data-price');
+                    const selectedStockQuantity = selectedVariant.getAttribute('data-stock-quantity');
                     const selectedVariantId = selectedVariant.value;
 
                     // Update the price element with the selected variant's price
-                    priceElement.textContent = selectedPrice;
+                    priceElement.textContent = selectedPrice + " đ";
 
                     // Update the hidden input with the selected variant's ID
                     hiddenVariantInput.value = selectedVariantId;
 
+                    //Update the stock quantity element with the selected variant's
+                    stockQuantityElement.textContent = `Stock: ${selectedStockQuantity}`;
+
+                    // Update the maximum amount to add to cart as the stock quantity
+                    document.getElementById('amount').setAttribute('max', selectedStockQuantity);
+
                     // Log the selected variant ID (for debugging purposes)
-                    console.log('Selected variant ID:', hiddenVariantInput.value);
+                    // console.log('Selected variant ID:', hiddenVariantInput.value);
                 }
             }
 

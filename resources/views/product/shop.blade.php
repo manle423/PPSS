@@ -5,8 +5,8 @@
         <h1 class="text-center text-white display-6">Shop</h1>
         <ol class="breadcrumb justify-content-center mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                                            <li class="breadcrumb-item active text-white">Shop</li> -->
+                                                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                                                <li class="breadcrumb-item active text-white">Shop</li> -->
         </ol>
     </div>
     <!-- Single Page Header End -->
@@ -133,7 +133,15 @@
                                                 </h4>
                                                 <p>{{ $product->description }}</p>
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
-                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }}</p>
+                                                    @if ($product->variants->count() == 0)
+                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ</p>
+                                                    @elseif ($product->variants->count() == 1)
+                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants[0]->variant_price }} đ</p>
+                                                    {{--Show price in format (lowest variant price) - (highest variant price)--}}
+                                                    @else
+                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants->min('variant_price') }} -
+                                                        {{ $product->variants->max('variant_price') }} đ</p>
+                                                    @endif
                                                     <a href="#"
                                                         class="btn border border-secondary rounded-pill px-3 text-primary"><i
                                                             class="fa fa-shopping-bag me-2 text-primary"></i> Add to
