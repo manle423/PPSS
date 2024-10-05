@@ -61,15 +61,15 @@
 
     <!-- Fruits Shop Start-->
     <div class="container-fluid fruite py-5">
-        {{-- Latest Products Section --}}
+        {{-- Popular Products Section --}}
         <div class="container py-5">
             <div class="tab-class text-center">
 
                 <div class="row g-4">
                     <div class="col-lg-4 text-start">
-                        <h1>Our latest products</h1>
+                        <h1>Most Popular</h1>
                     </div>
-                    {{-- Latest Products Categories--}}
+                    {{-- Popular Products Categories--}}
                     <div class="col-lg-8 text-end">
                         <ul class="nav nav-pills d-inline-flex text-center mb-5">
                             <li class="nav-item">
@@ -103,7 +103,7 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
-                                    @foreach ($latestProductsAll as $product)
+                                    @foreach ($popularProducts as $product)
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
@@ -116,7 +116,7 @@
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ $product->description }}</p>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
@@ -147,7 +147,7 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
-                                    @foreach ($latestProductsCategories[0] as $product)
+                                    @foreach ($popularProductsCategories[0] as $product)
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
@@ -160,7 +160,7 @@
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ $product->description }}</p>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
@@ -191,7 +191,7 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
-                                    @foreach ($latestProductsCategories[1] as $product)
+                                    @foreach ($popularProductsCategories[1] as $product)
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
@@ -204,7 +204,7 @@
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ $product->description }}</p>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
@@ -235,6 +235,223 @@
                         <div class="row g-4">
                             <div class="col-lg-12">
                                 <div class="row g-4">
+                                    @foreach ($popularProductsCategories[2] as $product)
+                                        <div class="col-md-6 col-lg-4 col-xl-3">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                </div>
+                                                <div
+                                                    class="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                                                    style="top: 10px; left: 10px;">
+                                                    {{ $product->category->name }}</div>
+                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        @if ($product->variants->count() == 0)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
+                                                            </p>
+                                                        @elseif ($product->variants->count() == 1)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants[0]->variant_price }} đ</p>
+                                                            {{-- Show price in format (lowest variant price) - (highest variant price) --}}
+                                                        @else
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants->min('variant_price') }} -
+                                                                {{ $product->variants->max('variant_price') }} đ</p>
+                                                        @endif
+                                                        <a href="{{ route('product.show', $product) }}"
+                                                            class="btn border border-secondary rounded-pill px-3 text-primary"><i
+                                                                class="fa fa-shopping-bag me-2 text-primary"></i> Add to
+                                                            cart</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Latest Products Section --}}
+        <div class="container py-5">
+            <div class="tab-class text-center">
+
+                <div class="row g-4">
+                    <div class="col-lg-4 text-start">
+                        <h1>Our latest products</h1>
+                    </div>
+                    {{-- Latest Products Categories--}}
+                    <div class="col-lg-8 text-end">
+                        <ul class="nav nav-pills d-inline-flex text-center mb-5">
+                            <li class="nav-item">
+                                <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill"
+                                    href="#tab-5">
+                                    <span class="text-dark" style="width: 130px;text-align:center">All Products</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="d-flex py-2 m-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-6">
+                                    <span class="text-dark" style="width: 130px;text-align:center">{{$categories[0]->name}}</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-7">
+                                    <span class="text-dark" style="width: 130px; text-align:center">{{$categories[1]->name}}</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href="#tab-8">
+                                    <span class="text-dark" style="width: 130px;text-align:center">{{$categories[2]->name}}</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                {{-- Latest Products Content (stored in multiple tabs)--}}
+                <div class="tab-content">
+                    <div id="tab-5" class="tab-pane fade show p-0 active">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="row g-4">
+                                    @foreach ($latestProductsAll as $product)
+                                        <div class="col-md-6 col-lg-4 col-xl-3">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                </div>
+                                                <div
+                                                    class="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                                                    style="top: 10px; left: 10px;">
+                                                    {{ $product->category->name }}</div>
+                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                    <p>{{ Str::words(Str::words(Str::words($product->description, 10) , 10) , 10) }}</p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        @if ($product->variants->count() == 0)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
+                                                            </p>
+                                                        @elseif ($product->variants->count() == 1)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants[0]->variant_price }} đ</p>
+                                                            {{-- Show price in format (lowest variant price) - (highest variant price) --}}
+                                                        @else
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants->min('variant_price') }} -
+                                                                {{ $product->variants->max('variant_price') }} đ</p>
+                                                        @endif
+                                                        <a href="{{ route('product.show', $product) }}"
+                                                            class="btn border border-secondary rounded-pill px-3 text-primary"><i
+                                                                class="fa fa-shopping-bag me-2 text-primary"></i> Add to
+                                                            cart</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-6" class="tab-pane fade show p-0 inactive">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="row g-4">
+                                    @foreach ($latestProductsCategories[0] as $product)
+                                        <div class="col-md-6 col-lg-4 col-xl-3">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                </div>
+                                                <div
+                                                    class="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                                                    style="top: 10px; left: 10px;">
+                                                    {{ $product->category->name }}</div>
+                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                    <p>{{ Str::words(Str::words($product->description, 10) , 10)  }}</p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        @if ($product->variants->count() == 0)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
+                                                            </p>
+                                                        @elseif ($product->variants->count() == 1)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants[0]->variant_price }} đ</p>
+                                                            {{-- Show price in format (lowest variant price) - (highest variant price) --}}
+                                                        @else
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants->min('variant_price') }} -
+                                                                {{ $product->variants->max('variant_price') }} đ</p>
+                                                        @endif
+                                                        <a href="{{ route('product.show', $product) }}"
+                                                            class="btn border border-secondary rounded-pill px-3 text-primary"><i
+                                                                class="fa fa-shopping-bag me-2 text-primary"></i> Add to
+                                                            cart</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-7" class="tab-pane fade show p-0 inactive">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="row g-4">
+                                    @foreach ($latestProductsCategories[1] as $product)
+                                        <div class="col-md-6 col-lg-4 col-xl-3">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                </div>
+                                                <div
+                                                    class="text-white bg-secondary px-3 py-1 rounded position-absolute"
+                                                    style="top: 10px; left: 10px;">
+                                                    {{ $product->category->name }}</div>
+                                                <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                    <p>{{ Str::words(Str::words($product->description, 10) , 10)  }}</p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        @if ($product->variants->count() == 0)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
+                                                            </p>
+                                                        @elseif ($product->variants->count() == 1)
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants[0]->variant_price }} đ</p>
+                                                            {{-- Show price in format (lowest variant price) - (highest variant price) --}}
+                                                        @else
+                                                            <p class="text-dark fs-5 fw-bold mb-0">
+                                                                {{ $product->variants->min('variant_price') }} -
+                                                                {{ $product->variants->max('variant_price') }} đ</p>
+                                                        @endif
+                                                        <a href="{{ route('product.show', $product) }}"
+                                                            class="btn border border-secondary rounded-pill px-3 text-primary"><i
+                                                                class="fa fa-shopping-bag me-2 text-primary"></i> Add to
+                                                            cart</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-8" class="tab-pane fade show p-0 inactive">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="row g-4">
                                     @foreach ($latestProductsCategories[2] as $product)
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
@@ -248,7 +465,7 @@
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ $product->description }}</p>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ

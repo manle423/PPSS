@@ -48,12 +48,23 @@ class HomeController extends Controller
             $index += 1;
         }
 
-        // Get popular products
-        // $popularProducts = Product::query()
-        //     ->withCount('orders')
-        //     ->orderBy('orders_count', 'desc');
+        // Get 8 most popular products
+        $popularProducts = Product::query()
+            ->withCount('orders')
+            ->orderBy('orders_count', 'desc')->limit(8)->get();
+        
+        // Get 8 most popular products of each category
+        $popularProductsCategories = [];
+        $index = 0;
+        foreach ($categories as $category) {
+            $popularProductsCategories[$index] = $category->products()
+                ->withCount('orders')
+                ->orderBy('orders_count', 'desc')->limit(8)->get();
+            $index += 1;
+        }
 
-        return view('home', compact('categories', 'latestProductsAll','latestProductsCategories'));
+        // Return the view with the data
+        return view('home', compact('categories', 'latestProductsAll','latestProductsCategories','popularProducts','popularProductsCategories'));
     }
 
     public function shop()
