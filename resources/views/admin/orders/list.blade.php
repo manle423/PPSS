@@ -16,30 +16,27 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach($orders as $order)
                 <tr>
-                    <td>001</td>
-                    <td>Nguyễn Văn A</td>
-                    <td>20/09/2024</td>
-                    <td><span class="status pending">Đang xử lý</span></td>
-                    <td>1.000.000 VNĐ</td>
-                    <td><button class="action-btn">Chi tiết</button></td>
+                    <td>$order->order_code</td>
+                    <td>$order->user->full_name</td>
+                    <td>$order->order_date</td>
+                    <td> 
+                    @if($order->status=='PENDING')
+                    <span class="status pending">Pending</span>
+                    @elseif($order->status=='COMPLETED')
+                    <span class="status complete">Completed</span>
+                    @elseif($order->status=='CANCELED')
+                    <span class="status canceled">Canceled</span>
+                    @elseif($order->status=='SHIPPING')
+                    <span class="status shipping">Shipping</span>
+                    @endif
+                    </td>
+                    <td>$order-> final_price</td>
+                    
+                    <td>x<button class="action-btn"><a href=""></a>Details</button></td>
                 </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Trần Thị B</td>
-                    <td>18/09/2024</td>
-                    <td><span class="status completed">Hoàn thành</span></td>
-                    <td>2.500.000 VNĐ</td>
-                    <td><button class="action-btn">Chi tiết</button></td>
-                </tr>
-                <tr>
-                    <td>003</td>
-                    <td>Phạm Văn C</td>
-                    <td>15/09/2024</td>
-                    <td><span class="status canceled">Đã hủy</span></td>
-                    <td>500.000 VNĐ</td>
-                    <td><button class="action-btn">Chi tiết</button></td>
-                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
