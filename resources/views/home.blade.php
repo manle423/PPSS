@@ -9,9 +9,7 @@
             <div class="row g-4">
                 <div class="col-md-6 col-lg-3">
                     <div class="featurs-item text-center rounded bg-light p-4">
-
                         <i class="fas fa-car-side fa-3x" style="color: #81c408;"></i>
-
                         <div class="featurs-content text-center">
                             <h5 class="title-text">Free ship</h5>
                             <p class="mb-0">Orders over 500,000 VND</p>
