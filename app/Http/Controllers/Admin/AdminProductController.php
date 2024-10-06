@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
@@ -59,7 +60,7 @@ class AdminProductController extends Controller
 
             if ($request->hasFile('image')) {
                 $imageName = time() . '.' . $request->image->extension();
-                $request->image->move(public_path('img/products'), $imageName);
+                Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
             } else {
                 throw new \Exception('Image upload failed.');
             }
@@ -116,16 +117,16 @@ class AdminProductController extends Controller
         $product = Product::findOrFail($id);
     
         if ($request->hasFile('image')) {
-            // Xóa ảnh cũ nếu có
-            if ($product->image && file_exists(public_path('img/products/' . $product->image))) {
-                unlink(public_path('img/products/' . $product->image));
+            // Delete old image if it exists
+            if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+                Storage::disk('local')->delete('products/' . $product->image);
             }
     
-            // Lưu ảnh mới
+            // Save new image
             $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('img/products'), $imageName);
+            Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
     
-            // Cập nhật thông tin sản phẩm với ảnh mới
+            // Update product information with new image
             $product->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -136,7 +137,7 @@ class AdminProductController extends Controller
                 'updated_at' => now(),
             ]);
         } else {
-            // Cập nhật thông tin sản phẩm mà không thay đổi ảnh
+            // Update product information without changing the image
             $product->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -154,6 +155,12 @@ class AdminProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // Delete the product image if it exists
+        if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+            Storage::disk('local')->delete('products/' . $product->image);
+        }
+
         $product->delete();
         return redirect()->route('admin.products.list')->with('success', 'Product deleted successfully.');
     }
