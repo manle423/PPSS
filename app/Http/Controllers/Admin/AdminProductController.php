@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
@@ -30,13 +31,14 @@ class AdminProductController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
+       
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
@@ -56,11 +58,18 @@ class AdminProductController extends Controller
                 throw new \Exception('This product already exists in the selected category.');
             }
 
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
+                Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
+            } else {
+                throw new \Exception('Image upload failed.');
+            }
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
+                'image' => $imageName,
                 'stock_quantity' => $request->stock_quantity,
                 'created_at' => now(),
             ]);
@@ -101,25 +110,57 @@ class AdminProductController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             'stock_quantity' => 'required|integer|min:0',
         ]);
-
+    
         $product = Product::findOrFail($id);
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock_quantity' => $request->stock_quantity,
-            'updated_at' => now(),
-        ]);
-
+    
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+                Storage::disk('local')->delete('products/' . $product->image);
+            }
+    
+            // Save new image
+            $imageName = time() . '.' . $request->image->extension();
+            Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
+    
+            // Update product information with new image
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'image' => $imageName,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        } else {
+            // Update product information without changing the image
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        }
+    
         return redirect()->route('admin.products.list')->with('success', 'Product updated successfully!');
     }
+    
 
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // Delete the product image if it exists
+        if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+            Storage::disk('local')->delete('products/' . $product->image);
+        }
+
         $product->delete();
         return redirect()->route('admin.products.list')->with('success', 'Product deleted successfully.');
     }

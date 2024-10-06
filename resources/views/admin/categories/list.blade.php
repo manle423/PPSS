@@ -35,7 +35,7 @@
                         <td>{{ $category->deleted_at }}</td>
                         <td class="d-flex">
                             <a href="{{ route('admin.category.edit', $category->id) }}" class="btn btn-sm  mr-2"><i class="fas fa-edit"></i> Edit</a>
-                            <form action="{{ route('admin.category.delete', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+                            <form action="{{ route('admin.category.delete', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?')">
                                 @csrf
                                 @method('POST')
                                 <button type="submit" class="btn btn-sm "><i class="fas fa-trash"></i> Delete</button>
@@ -46,7 +46,9 @@
             </tbody>
         </table>
         <div class="table-info">
-            <span>Showing 1 to 5 of 5 entries</span>
+        <span>
+        Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }} of {{ $categories->total() }} entries
+    </span>
         </div>
         <div class="pagination">
             {{ $categories->links() }}

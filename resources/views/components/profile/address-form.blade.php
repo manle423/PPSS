@@ -41,6 +41,7 @@
     <button type="button" id="cancel-address-form" class="btn btn-secondary">Cancel</button>
 </form>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const provinces = @json($provinces);

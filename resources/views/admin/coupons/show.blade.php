@@ -42,6 +42,7 @@
                                 <th scope="row">Min Order Value:</th>
                                 <td><span class="text-muted">{{ $coupon->min_order_value }}</span></td>
                             </tr>
+                          
                             <tr>
                                 <th scope="row">Max Discount Value:</th>
                                 <td><span class="text-muted">{{ $coupon->max_discount }}</span></td>
@@ -53,6 +54,14 @@
                             <tr>
                                 <th scope="row">End Date:</th>
                                 <td><span class="text-muted">{{ $coupon->end_date }}</span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Created at:</th>
+                                <td><span class="text-muted">{{ $coupon->created_at}}</span></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Updated at:</th>
+                                <td><span class="text-muted">{{ $coupon->updated_at}}</span></td>
                             </tr>
                             <tr>
                                 <th scope="row">Status:</th>

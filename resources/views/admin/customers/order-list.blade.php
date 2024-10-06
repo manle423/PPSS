@@ -25,20 +25,22 @@
         <table class="brand-table">
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>Order code</th>
                     <th>User name</th>
-                    <th>Full name</th>
-                    <th>Phone number</th>
+                    <th>Order date</th>
+                    <th>Total price</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-           
+           @foreach($orders as $order)
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{{$order->order_code}}</td>
+                        <td>{{$username}}</td>
+                        <td>{{$order->order_date}}</td>
+                        <td>{{$order->total_price}}</td>
+                        <td>{{$order->status}}</td>
                         <td>  
                         <a href=""> <i class="fas fa-eye"></i></a> || 
                         <a href=""><i class="fas fa-receipt" ></i> </a>||
@@ -50,16 +52,16 @@
                     
                         </td>
                       
-                       
+                @endforeach   
                     </tr>
-                @endforeach
+              
             </tbody>
         </table>
         <div class="table-info">
             <span>Showing 1 to 5 of 5 entries</span>
         </div>
         <div class="pagination">
-           
+        {{ $orders->links() }}
         </div>
     </div>
 @endsection

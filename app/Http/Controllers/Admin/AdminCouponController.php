@@ -11,7 +11,7 @@ class AdminCouponController extends Controller
     //xem danh sach coupon
     public function list(){
         $coupons=Coupon::paginate(10);
-        if($coupons==null) return view('admin.coupons.list');
+      
         return view('admin.coupons.list',compact('coupons'));
     }
 
@@ -24,6 +24,7 @@ class AdminCouponController extends Controller
             'code' => 'required|string|max:255',
             'discount_value' => 'required|numeric|min:0',
             'min_order_value' => 'required|numeric|min:0',
+         
             'max_discount' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
@@ -41,7 +42,7 @@ class AdminCouponController extends Controller
       'discount_value' => $request->discount_value,
       'max_discount' => $request->max_discount,
       'min_order_value' => $request->min_order_value,
-      'max_order_value' => $request->max_order_value,
+    
       'start_date' => $request->start_date,
       'end_date' => $request->end_date,
       'status' => $status,
@@ -70,6 +71,7 @@ class AdminCouponController extends Controller
              'code' => 'required|string|max:255',
              'discount_value' => 'required|numeric|min:0',
              'min_order_value' => 'required|numeric|min:0',
+          
              'max_discount' => 'required|numeric|min:0',
              'start_date' => 'required|date',
              'end_date' => 'required|date|after:start_date',
@@ -85,7 +87,7 @@ class AdminCouponController extends Controller
                  'discount_value' => $request->discount_value,
                  'max_discount' => $request->max_discount,
                  'min_order_value' => $request->min_order_value,
-                 'max_order_value' => $request->max_order_value,
+               
                  'start_date' => $request->start_date,
                  'end_date' => $request->end_date,
                  'status' => $request->input('status', 1),
@@ -103,7 +105,7 @@ class AdminCouponController extends Controller
      public function delete($id){
         $coupon=Coupon::findOrFail($id);
         $coupon->delete();
-        return view('admin.coupons.list')->with('success', 'Coupon deleted successfully.');
+        return redirect()->route('admin.coupon.list')->with('success', 'Coupon deleted successfully.');
        
      }
      
