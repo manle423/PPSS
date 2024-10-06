@@ -51,13 +51,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::prefix('/products')->group(function () {
+        // product
         Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
         Route::post('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
         Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
-        Route::post('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
+        Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
         Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
+
+        // variant
+        Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
     });
 
     Route::prefix('/orders')->group(function () {

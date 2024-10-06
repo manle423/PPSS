@@ -75,6 +75,10 @@
                                     <label for="variant_exp_date">Expiration Date</label>
                                     <input type="date" name="variants[{{ $index }}][exp_date]" value="{{ $variant['exp_date'] }}">
                                 </div>
+                                <div class="input-group mt-2">
+                                    <label for="variant_image">Variant Image</label>
+                                    <input type="file" name="variants[{{ $index }}][variant_image]" accept="image/*">
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -97,6 +101,10 @@
                             <div class="input-group mt-2">
                                 <label for="variant_exp_date">Expiration Date</label>
                                 <input type="date" name="variants[0][exp_date]">
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_image">Variant Image</label>
+                                <input type="file" name="variants[0][variant_image]" accept="image/*">
                             </div>
                         </div>
                     </div>
