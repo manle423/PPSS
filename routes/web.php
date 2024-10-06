@@ -62,6 +62,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::prefix('/orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
+        Route::get('/{id}', [AdminOrderController::class, 'show'])->name('orders.detail');
     });
     Route::prefix('/customers')->group(function () {
         Route::get('/', [AdminCustomerController::class, 'list'])->name('customers.list');
