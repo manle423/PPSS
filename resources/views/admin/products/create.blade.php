@@ -20,7 +20,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <form action="{{ route('admin.products.store') }}" method="post" class="new-product-form" onsubmit="removeEmptyVariants()">
+        <form action="{{ route('admin.products.store') }}" enctype="multipart/form-data" method="post" class="new-product-form" onsubmit="removeEmptyVariants()">
             @csrf
             <div class="input-group">
                 <label for="name">Product Name</label>
@@ -37,6 +37,10 @@
             <div class="input-group">
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="4" required>{{ old('description') }}</textarea>
+            </div>
+            <div class="input-group">
+            <label class="file-input">File Input</h6>      
+            <input class="form-control" type="file" id="image" name="image">            
             </div>
             <div class="input-group">
                 <label for="price">Price ($)</label>

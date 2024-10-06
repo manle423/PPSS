@@ -22,7 +22,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.products.update', $product->id) }}" method="post" class="new-product-form">
+        <form action="{{ route('admin.products.update', $product->id) }}" method="post" class="new-product-form" enctype="multipart/form-data">
             @csrf
 
             <div class="input-group">
@@ -50,7 +50,10 @@
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="4" required>{{ old('description', $product->description) }}</textarea>
             </div>
-
+            <div class="input-group">
+            <label class="file-input">File Input</h6>      
+            <input class="form-control" type="file" id="image" name="image">            
+            </div>
             <div class="input-group">
                 <label for="price">Price ($)</label>
                 <input type="number" id="price" name="price" value="{{ old('price', $product->price) }}"

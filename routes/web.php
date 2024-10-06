@@ -68,9 +68,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCustomerController::class, 'edit'])->name('customers.edit');
         Route::get('/detail/{id}', [AdminCustomerController::class, 'detail'])->name('customers.detail');
         // Route::post('/update/{id}', [AdminCustomerController::class, 'update'])->name('customers.update');
-         Route::post('/delete/{id}', [AdminCustomerController::class, 'destroy'])->name('customers.delete');
+         Route::post('/delete/{id}', [AdminCustomerController::class, 'delete'])->name('customers.delete');
          Route::get('/orders/{id}', [AdminCustomerController::class, 'orders'])->name('customers.orders');
     });
+
+    //Change password
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 // CHo người chưa đăng nhập

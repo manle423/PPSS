@@ -47,6 +47,9 @@ class ProductController extends Controller
         } elseif ($sort === 'desc') {
             $query->orderBy('price', 'desc');
         }
+        else if ($sort === 'latest') {
+            $query->latest();
+        }
 
 
         // Paginate the results or get them all

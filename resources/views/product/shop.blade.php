@@ -5,8 +5,8 @@
         <h1 class="text-center text-white display-6">Shop</h1>
         <ol class="breadcrumb justify-content-center mb-0">
             <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                                            <li class="breadcrumb-item active text-white">Shop</li> -->
+                                                <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                                                <li class="breadcrumb-item active text-white">Shop</li> -->
         </ol>
     </div>
     <!-- Single Page Header End -->
@@ -15,7 +15,6 @@
     <!-- Fruits Shop Start-->
     <div class="container-fluid fruite py-5">
         <div class="container py-5">
-            <h1 class="mb-4">Pet Products Shop</h1>
             <form class="row g-4" action="{{ route('product.index') }}" method="GET">
                 @csrf
                 <div class="col-lg-12">
@@ -34,11 +33,12 @@
                                 <form id="sortForm" action="{{ route('product.index') }}" method="GET"
                                     style="margin-left:auto;width:150px;">
                                     @csrf
-                                    <label for="sort">Sort by Price:</label>
+                                    <label for="sort">Sort by:</label>
                                     <select id="sort" name="sort" class="border-0 form-select-sm bg-light me-3"
                                         onchange="this.form.submit()">
                                         <option value="none" {{ request('sort') == 'none' ? 'selected' : '' }}>None
                                         </option>
+                                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
                                         <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Price
                                             Increasing</option>
                                         <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Price
@@ -131,10 +131,18 @@
                                                 <h4><a
                                                         href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
                                                 </h4>
-                                                <p>{{ $product->description }}</p>
+                                                <p>{{ Str::words($product->description, 10) }}</p>
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
-                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }}</p>
-                                                    <a href="#"
+                                                    @if ($product->variants->count() == 0)
+                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ</p>
+                                                    @elseif ($product->variants->count() == 1)
+                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants[0]->variant_price }} đ</p>
+                                                    {{--Show price in format (lowest variant price) - (highest variant price)--}}
+                                                    @else
+                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants->min('variant_price') }} -
+                                                        {{ $product->variants->max('variant_price') }} đ</p>
+                                                    @endif
+                                                    <a href="{{ route('product.show', $product) }}"
                                                         class="btn border border-secondary rounded-pill px-3 text-primary"><i
                                                             class="fa fa-shopping-bag me-2 text-primary"></i> Add to
                                                         cart</a>

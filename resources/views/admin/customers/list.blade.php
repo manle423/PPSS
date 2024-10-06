@@ -56,7 +56,7 @@
             </tbody>
         </table>
         <div class="table-info">
-            <span>Showing 1 to 5 of 5 entries</span>
+        Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} entries
         </div>
         <div class="pagination">
             {{ $users->links() }}
