@@ -8,12 +8,18 @@ use App\Models\ProductVariant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('admin');
+    }
     public function list()
     {
-        $products = Product::whereNull('deleted_at')->paginate(10);
+        $products = Product::paginate(10);
+        if($products==null)  return view('admin.products.list');
         return view('admin.products.list', compact('products'));
     }
 
@@ -25,13 +31,14 @@ class AdminProductController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
+       
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
@@ -47,18 +54,25 @@ class AdminProductController extends Controller
                 ->whereNull('deleted_at')
                 ->first();
 
+            if ($existingProduct) {
+                throw new \Exception('This product already exists in the selected category.');
+            }
+
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
+                Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
+            } else {
+                throw new \Exception('Image upload failed.');
+            }
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
+                'image' => $imageName,
                 'stock_quantity' => $request->stock_quantity,
                 'created_at' => now(),
             ]);
-
-            if ($existingProduct) {
-                throw new \Exception('This product already exists in the selected category.');
-            }
 
             if ($request->has('variants')) {
                 foreach ($request->variants as $variant) {
@@ -96,26 +110,87 @@ class AdminProductController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             'stock_quantity' => 'required|integer|min:0',
         ]);
-
+    
         $product = Product::findOrFail($id);
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock_quantity' => $request->stock_quantity,
-            'updated_at' => now(),
-        ]);
-
+    
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+                Storage::disk('local')->delete('products/' . $product->image);
+            }
+    
+            // Save new image
+            $imageName = time() . '.' . $request->image->extension();
+            Storage::disk('local')->put('products/' . $imageName, file_get_contents($request->image));
+    
+            // Update product information with new image
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'image' => $imageName,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        } else {
+            // Update product information without changing the image
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'price' => $request->price,
+                'stock_quantity' => $request->stock_quantity,
+                'updated_at' => now(),
+            ]);
+        }
+    
         return redirect()->route('admin.products.list')->with('success', 'Product updated successfully!');
     }
+    
 
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
+
+        // Delete the product image if it exists
+        if ($product->image && Storage::disk('local')->exists('products/' . $product->image)) {
+            Storage::disk('local')->delete('products/' . $product->image);
+        }
+
         $product->delete();
         return redirect()->route('admin.products.list')->with('success', 'Product deleted successfully.');
     }
+
+    public function filter(Request $request){
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric|min:0',
+            'stock_quantity' => 'nullable|integer|min:0',
+        ]);
+        $query = Product::query();
+        if ($request->has('name') && $request->name != '') {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+    
+        // Lọc theo đơn giá
+        if ($request->has('price') && $request->price != '') {
+            $query->where('price', '<=', $request->price);
+        }
+    
+        // Lọc theo số lượng sản phẩm
+        if ($request->has('stock_quantity') && $request->stock_quantity != '') {
+            $query->where('stock_quantity', '>=', $request->stock_quantity);
+        }
+    
+        $products = $query->paginate(10);
+    
+        return view('admin.products.list', compact('products'));
+
+    }
+   
+
 }
