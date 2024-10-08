@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
+use App\Models\Order;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaypalController extends Controller
 {
-    public function createPaypal()
+    public function process(Request $request)
     {
-        return view("payments.success");
-    }
-
-    public function processPaypal(Request $request)
-    {
-        // dd($request->all());
-        // $item = $request;
+        $order = Order::findOrFail($request->order_id);
 
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
@@ -24,65 +19,48 @@ class PaypalController extends Controller
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
             "application_context" => [
-                "return_url" => route('processSuccess'),
-                "cancel_url" => route('processCancel'),
+                "return_url" => route('paypal.success'),
+                "cancel_url" => route('paypal.cancel'),
             ],
             "purchase_units" => [
                 0 => [
                     "amount" => [
                         "currency_code" => "USD",
-                        "value" => "100.00"
+                        "value" => number_format($order->total_amount, 2, '.', '')
                     ]
                 ]
             ]
         ]);
 
         if (isset($response['id']) && $response['id'] != null) {
-
-            // redirect to approve href
             foreach ($response['links'] as $links) {
                 if ($links['rel'] == 'approve') {
                     return redirect()->away($links['href']);
                 }
             }
-
-            return redirect()
-                ->route('paypal.create')
-                ->with('error', 'Something went wrong.');
-
+            return redirect()->route('checkout.index')->with('error', 'Something went wrong.');
         } else {
-            return redirect()
-                ->route('paypal.create')
-                ->with('error', $response['message'] ?? 'Something went wrong.');
+            return redirect()->route('checkout.index')->with('error', $response['message'] ?? 'Something went wrong.');
         }
     }
 
-
-    public function processSuccess(Request $request)
+    public function success(Request $request)
     {
-
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request['token']);
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-            return redirect()
-                ->route('paypal.create')
-                ->with('success', 'Transaction complete.');
+            // Update order status
+            return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {
-            return redirect()
-                // fail transaction
-                ->route('paypal.create')
-                ->with('error', $response['message'] ?? 'Something went wrong.');
+            return redirect()->route('checkout.index')->with('error', $response['message'] ?? 'Something went wrong.');
         }
-
     }
 
-    public function processCancel(Request $request)
+    public function cancel()
     {
-        return redirect()
-            ->route('paypal.create')
-            ->with('error', $response['message'] ?? 'You have canceled the transaction.');
+        return redirect()->route('checkout.index')->with('error', 'You have canceled the transaction.');
     }
 }

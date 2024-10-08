@@ -4,7 +4,6 @@
 <link href="{{ asset('assets/vendor/css/profile.css') }}" rel="stylesheet">
     <div class="container-fluid py-5">
         <div class="row-profile">
-
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
@@ -28,7 +27,6 @@
                     <p><strong>Username:</strong> {{ $user->username ?? 'N/A' }}</p>
                     <p><strong>Email:</strong> {{ $user->email }}</p>
                     <p><strong>Phone Number:</strong> {{ $user->phone_number ?? 'N/A' }}</p>
-                    <p><strong>Address:</strong> {{ $user->address ?? 'N/A' }}</p>
                     <button class="btn btn-secondary btn-edit-user-info">Edit</button>
                 </div>
                 <div class="user-info-edit" style="display: none;">
@@ -49,10 +47,6 @@
                         <div class="form-group" style="font-weight: bold;">
                             <label for="phone_number">Phone Number</label>
                             <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ $user->phone_number }}" required>
-                        </div>
-                        <div class="form-group" style="font-weight: bold;">
-                            <label for="address">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" value="{{ $user->address }}" required>
                         </div>
                         <button type="submit" class="btn btn-primary" style="margin-top:10px">Save</button>
                         <button type="button" class="btn btn-secondary btn-cancel-edit-user-info" style="margin-top:10px">Cancel</button>

@@ -37,4 +37,10 @@ class Address extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function scopeDefault($query)
+    {
+        return $query->where('is_default', true);
+    }
 }
+

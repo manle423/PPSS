@@ -133,11 +133,7 @@ Route::middleware('auth')->group(function () {
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    //Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
-    //Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
-    //Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-    //Route::get('/contact', [HomeController::class, ])->name('contact');
+    
 
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
@@ -151,11 +147,19 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::patch('/cart/update/{cartKey}/{product}', [CartController::class, 'update'])->name('cart.update');
     Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.update-session');
 
+    Route::prefix('/checkout')->group(function () {
+        Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
+        Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    });
+
     Route::prefix('paypal')->group(function () {
-        Route::get('create', [PaypalController::class, 'createPaypal'])->name('paypal.create');
-        Route::get('process', [PaypalController::class, 'processPaypal'])->name('paypal.process');
-        Route::get('processSuccess', [PaypalController::class, 'processSuccess'])->name('processSuccess');
-        Route::get('processCancel', [PaypalController::class, 'processCancel'])->name('processCancel');
+        Route::get('process', [PaypalController::class, 'process'])->name('paypal.process');
+        Route::get('success', [PaypalController::class, 'success'])->name('paypal.success');
+        Route::get('cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
+    });
+
+    Route::prefix('vnpay')->group(function () {
+
     });
 });
 
