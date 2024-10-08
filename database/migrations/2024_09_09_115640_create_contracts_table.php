@@ -17,8 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('guest_id')->nullable();
             $table->string('contract_number', 50);
-            $table->timestamp('start_date');
-            $table->timestamp('end_date');
+            // Chỉ định cột timestamp mà không có giá trị mặc định
+            $table->timestamp('start_date')->nullable();
+            $table->timestamp('end_date')->nullable();
             $table->enum('status', ['ACTIVE', 'EXPIRED', 'TERMINATED']);
             $table->timestamps();
             $table->softDeletes();

@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -73,8 +73,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCustomerController::class, 'edit'])->name('customers.edit');
         Route::get('/detail/{id}', [AdminCustomerController::class, 'detail'])->name('customers.detail');
         // Route::post('/update/{id}', [AdminCustomerController::class, 'update'])->name('customers.update');
-         Route::post('/delete/{id}', [AdminCustomerController::class, 'delete'])->name('customers.delete');
-         Route::get('/orders/{id}', [AdminCustomerController::class, 'orders'])->name('customers.orders');
+        Route::post('/delete/{id}', [AdminCustomerController::class, 'delete'])->name('customers.delete');
+        Route::get('/orders/{id}', [AdminCustomerController::class, 'orders'])->name('customers.orders');
     });
 
     //Change password
@@ -164,16 +164,22 @@ Route::get('/404', function () {
 //     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // Xóa sản phẩm
 // });
 
-//Route payment checkout
-// Route::get('/confirmed-checkout', [OrderController::class, 'showCheckoutPage'])->name('confirmed-checkout');
-Route::post('/checkout/momo', [PaymentController::class, 'momo'])->name('checkout.momo');
-Route::post('/checkout/paypal', [PaymentController::class, 'paypal'])->name('checkout.paypal');
-Route::post('/checkout/bank', [PaymentController::class, 'bank'])->name('checkout.bank');
-Route::post('/checkout/cash', [PaymentController::class, 'cash'])->name('checkout.cash');
+//Route payment paypal
+// Route::get('paypal', [PaypalController::class, 'index'])->name('paypal');
 
-// route dat hang
-Route::post('/checkout/place-order', [PaymentController::class, 'placeOrder'])->name('placeOrder');
+// Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
+// Route::get('paypal/payment/success', [PaypalController::class, 'paymentSuccess'])->name('paypal.payment.success');
+// Route::get('paypal/payment/cancel', [PaypalController::class, 'paymentCancel'])->name('paypal.payment.cancel');
 
-Route::get('/order-success', function () {
-    return view('order-success');
-})->name('orderSuccess');
+
+route::get('createpaypal', [PaypalController::class, 'createpaypal'])->name('createpaypal');
+
+route::get('processPaypal', [PaypalController::class, 'processPaypal'])->name('processPaypal');
+
+route::get('processSuccess', [PaypalController::class, 'processSuccess'])->name('processSuccess');
+
+route::get('processCancel', [PaypalController::class, 'processCancel'])->name('processCancel');
+
+// Route::get('/order-success', function () {
+//     return view('payments.success');
+// })->name('orderSuccess');
