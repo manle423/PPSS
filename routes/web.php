@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -135,8 +136,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     //Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
     //Route::get('/shop-detail', [HomeController::class, 'shopDetail'])->name('shop-detail');
     //Route::get('/cart', [HomeController::class, 'cart'])->name('cart.index');
-    Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
-    Route::get('/contact', [HomeController::class, 'checkout'])->name('contact');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    //Route::get('/contact', [HomeController::class, ])->name('contact');
 
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
@@ -146,9 +147,16 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::delete('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroySession');
+    Route::delete('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroy-session');
     Route::patch('/cart/update/{cartKey}/{product}', [CartController::class, 'update'])->name('cart.update');
-    Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.updateSession');
+    Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.update-session');
+
+    Route::prefix('paypal')->group(function () {
+        Route::get('create', [PaypalController::class, 'createPaypal'])->name('paypal.create');
+        Route::get('process', [PaypalController::class, 'processPaypal'])->name('paypal.process');
+        Route::get('processSuccess', [PaypalController::class, 'processSuccess'])->name('processSuccess');
+        Route::get('processCancel', [PaypalController::class, 'processCancel'])->name('processCancel');
+    });
 });
 
 // Not found page
@@ -172,13 +180,7 @@ Route::get('/404', function () {
 // Route::get('paypal/payment/cancel', [PaypalController::class, 'paymentCancel'])->name('paypal.payment.cancel');
 
 
-route::get('createpaypal', [PaypalController::class, 'createpaypal'])->name('createpaypal');
 
-route::get('processPaypal', [PaypalController::class, 'processPaypal'])->name('processPaypal');
-
-route::get('processSuccess', [PaypalController::class, 'processSuccess'])->name('processSuccess');
-
-route::get('processCancel', [PaypalController::class, 'processCancel'])->name('processCancel');
 
 // Route::get('/order-success', function () {
 //     return view('payments.success');

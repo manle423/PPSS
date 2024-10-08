@@ -1,5 +1,6 @@
 @extends('layouts.shop')
 @section('content')
+
     <!-- Cart Page Start -->
     <div class="container-fluid py-5">
          <div class="container py-5">
@@ -25,7 +26,6 @@
                             $amount = $sessionCart[$cartKey] ?? 0;
                         @endphp
                             <x-cart-item-new :item="$item" :cartKey="$cartKey" :amount="$amount"  /> 
-
                         @endforeach
                         
                     </tbody>
@@ -44,7 +44,7 @@
                             
                         </div>
                         
-                        <form action="{{ route('checkout') }}" method="GET">
+                        <form action="{{ route('checkout.index')}}" method="GET">
                             <button
                                 class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
                                 type="submit">

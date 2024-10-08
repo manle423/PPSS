@@ -32,7 +32,7 @@
             
         @guest
             {{-- Update the quantity of the cart stored in session --}}
-            <form action="{{ route('cart.updateSession', ['cartKey' => $cartKey]) }}" method="POST">
+            <form action="{{ route('cart.update-session', ['cartKey' => $cartKey]) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 @php
@@ -49,10 +49,10 @@
         @endguest
     </td>
     <td>
-        ${{ number_format($item->product->price, 2) }}
+        {{(optional($item->variant)->variant_price ?? $item->product->price)  }}đ
     </td>
     <td>
-        <p class="mb-0 mt-4">${{ number_format($item->quantity * $item->product->price, 2) }}</p>
+        <p class="mb-0 mt-4">{{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 2) }}đ</p>
     </td>
     <td>
         @auth
@@ -65,7 +65,7 @@
             </form>
         @endauth
         @guest
-            <form action="{{ route('cart.destroySession', $cartKey) }}" method="POST">
+            <form action="{{ route('cart.destroy-session', $cartKey) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-md rounded-circle bg-light border mt-4">

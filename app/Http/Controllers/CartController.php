@@ -104,6 +104,12 @@ class CartController extends Controller
             }
         }
 
+        // Save the subtotal to session
+        session()->put('subtotal', $subtotal);
+
+        // Save cartItems to session
+        session()->put('cartItems', $cartItems);
+
         return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
     }
 

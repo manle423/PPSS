@@ -7,13 +7,16 @@ use Illuminate\Http\Request;
 
 class PaypalController extends Controller
 {
-    public function createpaypal()
+    public function createPaypal()
     {
         return view("payments.success");
     }
 
     public function processPaypal(Request $request)
     {
+        // dd($request->all());
+        // $item = $request;
+
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
@@ -44,12 +47,12 @@ class PaypalController extends Controller
             }
 
             return redirect()
-                ->route('createpaypal')
+                ->route('paypal.create')
                 ->with('error', 'Something went wrong.');
 
         } else {
             return redirect()
-                ->route('createpaypal')
+                ->route('paypal.create')
                 ->with('error', $response['message'] ?? 'Something went wrong.');
         }
     }
@@ -65,12 +68,12 @@ class PaypalController extends Controller
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             return redirect()
-                ->route('createpaypal')
+                ->route('paypal.create')
                 ->with('success', 'Transaction complete.');
         } else {
             return redirect()
                 // fail transaction
-                ->route('createpaypal')
+                ->route('paypal.create')
                 ->with('error', $response['message'] ?? 'Something went wrong.');
         }
 
@@ -79,7 +82,7 @@ class PaypalController extends Controller
     public function processCancel(Request $request)
     {
         return redirect()
-            ->route('createpaypal')
+            ->route('paypal.create')
             ->with('error', $response['message'] ?? 'You have canceled the transaction.');
     }
 }

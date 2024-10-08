@@ -8,13 +8,21 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        return view('checkout');
+        // Cart stored in session
+        $sessionCart = session()->get('cart', []);
+        // Subtotal stored in session
+        $subtotal = session()->get('subtotal');
+
+        // CartItems stored in session
+        $cartItems = session()->get('cartItems');
+
+        return view('webshop.checkout', compact('sessionCart','subtotal', 'cartItems'));
     }
 
 
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('buyerOrGuest');
     }
 
     protected function validator(array $data)
