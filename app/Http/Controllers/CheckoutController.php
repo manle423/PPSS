@@ -201,7 +201,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'item_id' => $item->product->id,
                     'quantity' => $quantity,
-                    'price' => $item->variant ? $item->variant->price : $item->product->price,
+                    'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
                 ]);
             }
 
