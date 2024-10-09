@@ -17,6 +17,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 
@@ -118,6 +119,9 @@ Route::middleware('auth')->group(function () {
     Route::get('logout', function () {
         return redirect('/home');
     });
+
+    // Routes for order
+    Route::get('history', [OrderController::class, 'history'])->name('order.history');
 
     Route::prefix('/profile')->group(function () {
         Route::get('/', [ProfileController::class, 'viewProfile'])->name('user.profile');

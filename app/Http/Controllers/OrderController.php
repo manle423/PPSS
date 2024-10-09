@@ -5,11 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
+    public function history(){
+        $user = Auth::user();
+    
+        $orders = Order::with('orderItems')
+                        ->where('user_id', $user->id)
+                        ->get();
+    
+        return view('user.orders.history', compact('orders'));
+    }
+    
+
     public function showCheckoutPage()
     {
         // Hiển thị trang checkout
