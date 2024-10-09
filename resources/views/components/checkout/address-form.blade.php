@@ -1,3 +1,4 @@
+@props(['provinces'])
 <input type="hidden" name="_method" value="POST" id="address-form-method">
 <input type="hidden" name="address_id" id="address-id">
 <div class="form-group">
@@ -38,18 +39,25 @@
         const districtSelect = document.getElementById('new_district_id');
         const provinceSelect = document.getElementById('new_province_id');
 
-        provinceSelect.addEventListener('change', function() {
-            const selectedProvinceId = this.value;
+        function updateDistricts() {
+            const selectedProvinceId = provinceSelect.value;
             districtSelect.innerHTML = '<option value="">Select District</option>';
             if (selectedProvinceId) {
                 const selectedProvince = provinces.find(province => province.id == selectedProvinceId);
-                selectedProvince.districts.forEach(district => {
-                    const option = document.createElement('option');
-                    option.value = district.id;
-                    option.textContent = district.name;
-                    districtSelect.appendChild(option);
-                });
+                if (selectedProvince && selectedProvince.districts) {
+                    selectedProvince.districts.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.id;
+                        option.textContent = district.name;
+                        districtSelect.appendChild(option);
+                    });
+                }
             }
-        });
+        }
+
+        provinceSelect.addEventListener('change', updateDistricts);
+
+        // Call updateDistricts initially to populate districts if a province is already selected
+        updateDistricts();
     });
 </script>

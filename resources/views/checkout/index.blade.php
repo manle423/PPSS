@@ -1,7 +1,6 @@
+<script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}"></script>
 @extends('layouts.shop')
 @section('content')
-
-
     <!-- Single Page Header start -->
     <div class="container-fluid page-header py-5">
         <h1 class="text-center text-white display-6">Checkout</h1>
@@ -34,6 +33,7 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                    <input type="hidden" name="selected_address_id" id="selected_address_id" value="">
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="new_address" name="new_address"
@@ -157,6 +157,7 @@
         const newAddressForm = document.getElementById('new_address_form');
         const addressSelect = document.getElementById('address_id');
         const form = document.getElementById('checkout-form');
+        const selectedAddressIdInput = document.getElementById('selected_address_id');
 
         function toggleNewAddressForm() {
             const isNewAddress = newAddressCheckbox && newAddressCheckbox.checked;
@@ -182,6 +183,12 @@
         }
         toggleNewAddressForm(); // Call this initially to set the correct state
 
+        if (addressSelect) {
+            addressSelect.addEventListener('change', function() {
+                selectedAddressIdInput.value = this.value;
+            });
+        }
+
         form.addEventListener('submit', function(event) {
             if (newAddressCheckbox && newAddressCheckbox.checked) {
                 // If using a new address, ensure address_id is not sent
@@ -199,7 +206,13 @@
                 addressSelect.disabled = false;
             }
             
-            console.log('Form submitted with address_id:', addressSelect ? addressSelect.value : 'New address');
+            if (!newAddressCheckbox || !newAddressCheckbox.checked) {
+                selectedAddressIdInput.value = addressSelect.value;
+            } else {
+                selectedAddressIdInput.value = '';
+            }
+
+            console.log('Form submitted with address_id:', selectedAddressIdInput.value);
         });
     });
 </script>

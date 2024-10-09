@@ -150,9 +150,11 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::prefix('/checkout')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
     });
 
     Route::prefix('paypal')->group(function () {
+        Route::get('create', [PaypalController::class, 'create'])->name('paypal.create');
         Route::get('process', [PaypalController::class, 'process'])->name('paypal.process');
         Route::get('success', [PaypalController::class, 'success'])->name('paypal.success');
         Route::get('cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
