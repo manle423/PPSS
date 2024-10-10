@@ -19,9 +19,9 @@
         <h5>Shipping Information</h5>
         @if($shippingAddress)
             <p>{{ $shippingAddress->full_name }}<br>
-               {{ $shippingAddress->address_line_1 }}<br>
+               {{ $shippingAddress->address_line_1 }},
                @if($shippingAddress->address_line_2)
-                   {{ $shippingAddress->address_line_2 }}<br>
+                   {{ $shippingAddress->address_line_2 }},
                @endif
                {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
         @endif
@@ -73,5 +73,8 @@
         </div>
 
         <a href="{{ route('home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
-    </div>
+        @if($orderType == 'order')
+            <a href="{{ route('user.order-history', 'PENDING') }}" class="btn btn-primary mt-3">Your Order History</a>
+        @endif
+    </div>  
 @endsection

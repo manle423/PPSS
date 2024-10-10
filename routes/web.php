@@ -15,9 +15,9 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 
@@ -86,7 +86,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-// CHo người chưa đăng nhập
+// Cho người chưa đăng nhập
 Route::middleware('guest')->group(function () {
     // Login Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -131,6 +131,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/address/{id}', [ProfileController::class, 'getAddress'])->name('user.get-address');
         Route::post('/update-info', [ProfileController::class, 'updateUserInfo'])->name('user.update-info');
     });
+
+    Route::get('/order-history/{status}', [OrderController::class, 'getOrdersByStatus'])->name('user.order-history');
 });
 
 

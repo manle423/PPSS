@@ -109,7 +109,6 @@ class CartController extends Controller
 
         // Save cartItems to session
         session()->put('cartItems', $cartItems);
-
         return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
     }
 
@@ -187,21 +186,6 @@ class CartController extends Controller
 
         // Redirect back with a success message
         return redirect()->route('cart.index')->with('success', 'Product added to cart successfully!');
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
