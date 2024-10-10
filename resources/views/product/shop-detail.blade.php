@@ -12,7 +12,6 @@
     </div>
     <!-- Single Page Header End -->
 
-
     <!-- Single Product Start -->
     <div class="container-fluid py-5 mt-5">
         <div class="container py-5">
@@ -101,7 +100,7 @@
                         <div class="col-lg-6">
                             <div class="border rounded">
                                 <a href="#">
-                                    <img src="{{ asset('assets/vendor/img/food-item.jpg') }}" class="img-fluid rounded"
+                                    <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}" class="img-fluid rounded"
                                         alt="Image">
                                 </a>
                             </div>

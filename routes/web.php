@@ -120,6 +120,9 @@ Route::middleware('auth')->group(function () {
         return redirect('/home');
     });
 
+    // Routes for order
+    Route::get('history', [OrderController::class, 'history'])->name('order.history');
+
     Route::prefix('/profile')->group(function () {
         Route::get('/', [ProfileController::class, 'viewProfile'])->name('user.profile');
         Route::post('/add-address', [ProfileController::class, 'addAddress'])->name('user.add-address');

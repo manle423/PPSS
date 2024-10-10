@@ -55,7 +55,7 @@ class CartController extends Controller
             if ($query->count()) {
                 $cartItems = $query->with('product')->get();
                 foreach ($cartItems as $item) {
-                    $subtotal += $item->quantity * $item->product->price;
+                    $subtotal += $item->quantity * (optional($item->variant)->variant_price ?? $item->product->price);
                     $variantId = $item->variant ? strval($item->variant->id) : '';
                     $cartKey = $item->product->id . '-' . $variantId;
                     $sessionCart[$cartKey] = $item->quantity;
