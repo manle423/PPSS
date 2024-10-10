@@ -7,9 +7,22 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+
 
 class OrderController extends Controller
 {
+    public function getOrdersByStatus(Request $request, $status)
+    {
+        
+        if (!in_array($status, ['PENDING','SHIPPING', 'COMPLETED', 'CANCELED'])) {
+            return redirect()->back()->with('error', 'Trạng thái không hợp lệ.');
+        }
+        $orders = Auth::user()->orders()->where('status', $status)->orderBy('order_date', 'desc')->get();
+
+
+        return view('checkout.history', compact('orders', 'status'));
+    }
     public function showCheckoutPage()
     {
         // Hiển thị trang checkout
@@ -78,9 +91,5 @@ class OrderController extends Controller
         return 0; // Trả về 0 nếu API lỗi
     }
     
-    public function placeOrder(Request $request)
-    {
-        // Xử lý đơn hàng
-        // Logic xử lý lưu đơn hàng vào database, gửi email xác nhận, v.v.
-    }
+
 }

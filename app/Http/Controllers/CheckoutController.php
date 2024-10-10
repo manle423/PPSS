@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Redirect;
 
 class CheckoutController extends Controller
 {
+    
+
     public function success(Request $request)
     {
         $orderId = session()->get('order_id');
@@ -26,7 +28,7 @@ class CheckoutController extends Controller
         }
 
         $order = Order::with(['orderItems.item', 'shippingAddress', 'shippingMethod'])
-                  ->findOrFail($orderId);
+            ->findOrFail($orderId);
 
         $orderItems = $order->orderItems->map(function ($item) {
             return [
@@ -152,7 +154,7 @@ class CheckoutController extends Controller
             $cartItems = session()->get('cartItems');
             $sessionCart = session()->get('cart', []);
             $subtotal = session()->get('subtotal');
-
+           
             $orderData = [
                 'order_date' => now(),
                 'shipping_method_id' => 1, // Just for now
@@ -161,7 +163,7 @@ class CheckoutController extends Controller
                 'discount_value' => 0,
                 'final_price' => $subtotal, // total_price - discount_value, just for now
             ];
-
+           
             if ($user) {
                 $orderData['user_id'] = $user->id;
                 $orderData['shipping_address_id'] = $addressId;
@@ -179,13 +181,14 @@ class CheckoutController extends Controller
                     ]),
                     'status' => 'pending',
                     'order_date' => now(),
-                    'shipping_method_id' => $request->input('shipping_method_id'),
+                    // 'shipping_method_id' => $request->input('shipping_method_id'),
+                    'shipping_method_id' => 1,
                     'payment_method' => $request->input('payment_method'),
                     'total_price' => $subtotal,
                     'discount_value' => 0,
                     'final_price' => $subtotal,
                 ]);
-
+                dd("hello");
                 $orderData['guest_order_id'] = $guestOrder->id;
             }
 
@@ -201,7 +204,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'item_id' => $item->product->id,
                     'quantity' => $quantity,
-                    'price' => $item->variant ? $item->variant->price : $item->product->price,
+                    'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
                 ]);
             }
 

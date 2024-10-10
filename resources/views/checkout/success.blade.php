@@ -73,5 +73,6 @@
         </div>
 
         <a href="{{ route('home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
-    </div>
+        <a href="{{ route('user.order-history', 'PENDING') }}" class="btn btn-primary mt-3">Your Ordered History</a>
+    </div>  
 @endsection
