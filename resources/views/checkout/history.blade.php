@@ -1,4 +1,9 @@
+@php
+    use Carbon\Carbon;
+@endphp
+
 @extends('layouts.shop')
+
 
 @section('content')
     <div class="container">
@@ -57,8 +62,7 @@
                             <td>{{ $order->payment_method }}</td>
                             <td>{{ number_format($order->total_price, 2) }} VNĐ</td>
                             <td>{{ $order->status }}</td>
-                            {{-- <td>{{ $order->order_date->format('d/m/Y H:i:s') }}</td> --}}
-                            
+                            <td>{{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</td>
                             <td>
                                 {{-- <a href="{{ route('order.details', $order->id) }}" class="btn btn-info btn-sm">Xem chi tiết</a> --}}
                             </td>
