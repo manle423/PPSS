@@ -19,6 +19,7 @@ use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VnPayController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect
@@ -169,7 +170,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     });
 
     Route::prefix('vnpay')->group(function () {
-
+        Route::get('/create', [VnPayController::class, 'create'])->name('vnpay.create');
+        Route::get('/return', [VnPayController::class, 'return'])->name('vnpay.return');
     });
 });
 

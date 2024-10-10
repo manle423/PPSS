@@ -134,7 +134,7 @@ class CheckoutController extends Controller
                 case 'paypal':
                     return redirect()->route('paypal.process');
                 case 'vnpay':
-                    return redirect()->route('vnpay.process');
+                    return redirect()->route('vnpay.create');
                 default:
                     throw new Exception('Invalid payment method selected.');
             }
