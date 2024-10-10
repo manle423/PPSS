@@ -112,7 +112,6 @@
                             <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }} đ</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
-
                             {{-- Product variants --}}
                             @if ($variants && !$variants->isEmpty())
                                 <p class="mb-3">Variants:</p>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\GuestOrder;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Log;
 
@@ -17,9 +18,16 @@ class PaypalController extends Controller
     public function process(Request $request)
     {
         try {
-            $order = Order::findOrFail($request->order_id);
+            $orderType = session('order_type');
+            $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
 
-            Log::info('Processing PayPal payment for order: ' . $order->id);
+            if ($orderType == 'order') {
+                $order = Order::findOrFail($orderId);
+            } else {
+                $order = GuestOrder::findOrFail($orderId);
+            }
+
+            Log::info('Processing PayPal payment for ' . $orderType . ': ' . $order->id);
 
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
@@ -78,17 +86,22 @@ class PaypalController extends Controller
         $response = $provider->capturePaymentOrder($request['token']);
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-            // Assuming you have stored the order ID in the session when creating the order
-            $orderId = $request->session()->get('order_id');
+            $orderType = session('order_type');
+            $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+
             if ($orderId) {
-                $order = Order::findOrFail($orderId);
-                $order->status = Order::STATUS['pending'];
+                if ($orderType == 'order') {
+                    $order = Order::findOrFail($orderId);
+                    $order->status = Order::STATUS['pending'];
+                } else {
+                    $order = GuestOrder::findOrFail($orderId);
+                    $order->status = 'PENDING';
+                }
                 $order->save();
             }
-
             return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {
-            return redirect()->route('checkout.index')->withErrors('error', $response['message'] ?? 'Something went wrong.');
+            return redirect()->route('checkout.index')->withErrors('error', 'Order not found.');
         }
     }
 
