@@ -18,7 +18,6 @@
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
                             {{-- <a href="{{ route('cart') }}" class="dropdown-item">Cart</a> --}}
                             <a href="{{ route('checkout.index') }}" class="dropdown-item">Checkout</a>
-                            <a href="{{ route('user.order-history', 'PENDING') }}" class="dropdown-item">Ordered History</a>
                         </div>
                     </div>
 
@@ -57,6 +56,8 @@
                             </a>
                             <div class="dropdown-menu m-0 bg-secondary rounded-0">
                                 <a href="{{ route('user.profile') }}" class="dropdown-item">Profile</a>
+                                <a href="{{ route('user.order-history', 'PENDING') }}" class="dropdown-item">Ordered History</a>
+
                                 <a href="#" class="dropdown-item">Settings</a>
                                 <a href="{{ route('logout') }}" class="dropdown-item"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

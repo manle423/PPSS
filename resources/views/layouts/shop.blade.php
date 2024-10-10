@@ -24,6 +24,7 @@
     <!-- Libraries Stylesheet -->
     <link href="{{ asset('assets/vendor/libs/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/libs/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.min.css" rel="stylesheet">
 
 
     <!-- Customized Bootstrap Stylesheet -->
@@ -76,7 +77,7 @@
     <!-- Modal Register End -->
 
     <!-- Hero Start -->
-   
+
     <!-- Hero End -->
 
     @yield('content')
@@ -102,6 +103,7 @@
 
     {{-- Gọi file auth.js bên assets/js/auth.js --}}
     <script src="{{ asset('assets/js/auth.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.all.min.js"></script>
 
 </body>
 
