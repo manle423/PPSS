@@ -16,9 +16,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\District;
+use App\Services\ProfileService;
 
 class CheckoutController extends Controller
 {
+    protected $profileService;
+
+    public function __construct(ProfileService $profileService)
+    {
+        $this->profileService = $profileService;
+    }
+
     public function success(Request $request)
     {
         $orderType = session('order_type');
@@ -97,6 +105,11 @@ class CheckoutController extends Controller
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Handle new address creation if necessary
+            if ($user && $request->input('new_address')) {
+                $addressId = $this->createNewAddress($request, $user);
             }
 
             // Create order
@@ -254,5 +267,27 @@ class CheckoutController extends Controller
             // Clear the session cart in both cases
             session()->forget(['cart', 'cartItems', 'subtotal']);
         }
+    }
+
+    private function createNewAddress(Request $request, $user)
+    {
+        $validatedData = $this->profileService->validateAddressData($request);
+        $addressData = $validatedData;
+
+        $existingAddressCount = $this->profileService->getExistingAddressCount();
+
+        if ($existingAddressCount === 0) {
+            $addressData['is_default'] = true;
+            $this->profileService->resetOtherDefaultAddresses();
+        } else {
+            $addressData['is_default'] = false;
+        }
+
+        $address = $user->addresses()->create($addressData);
+
+        if ($addressData['is_default']) {
+            $this->profileService->updateUserDefaultAddress($address->id);
+        }
+        return $address->id;
     }
 }

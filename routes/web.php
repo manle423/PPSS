@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminCustomerController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 // Redirect
 Route::get('/', function () {
@@ -135,7 +135,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/order-history/{status}', [OrderController::class, 'getOrdersByStatus'])->name('user.order-history');
 });
 
-
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -175,25 +174,3 @@ Route::middleware('buyerOrGuest')->group(function () {
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
-
-//Route cho ProductController
-// Route::middleware('checkoutBuyer')->group(function () {
-//     Route::get('/products', [ProductController::class, 'index']); // Lấy danh sách sản phẩm
-//     Route::post('/products', [ProductController::class, 'store']); // Thêm sản phẩm
-//     Route::put('/products/{id}', [ProductController::class, 'update']); // Cập nhật sản phẩm
-//     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // Xóa sản phẩm
-// });
-
-//Route payment paypal
-// Route::get('paypal', [PaypalController::class, 'index'])->name('paypal');
-
-// Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
-// Route::get('paypal/payment/success', [PaypalController::class, 'paymentSuccess'])->name('paypal.payment.success');
-// Route::get('paypal/payment/cancel', [PaypalController::class, 'paymentCancel'])->name('paypal.payment.cancel');
-
-
-
-
-// Route::get('/order-success', function () {
-//     return view('payments.success');
-// })->name('orderSuccess');

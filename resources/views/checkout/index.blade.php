@@ -42,10 +42,14 @@
                                         Use a different address
                                     </label>
                                 </div>
+                                <div id="new_address_form" style="display: none;">
+                                    <x-checkout.address-form :provinces="$provinces" />
+                                </div>
+                            @else
+                                <div id="new_address_form">
+                                    <x-checkout.address-form :provinces="$provinces" />
+                                </div>
                             @endif
-                            <div id="new_address_form" style="{{ $addresses->isEmpty() ? '' : 'display: none;' }}">
-                                <x-checkout.address-form :provinces="$provinces" />
-                            </div>
                         @else
                             <x-checkout.address-form :provinces="$provinces" />
                             <div class="form-group mb-3">
@@ -160,7 +164,9 @@
         const selectedAddressIdInput = document.getElementById('selected_address_id');
 
         function toggleNewAddressForm() {
-            const isNewAddress = newAddressCheckbox && newAddressCheckbox.checked;
+            if (!newAddressCheckbox) return; // Exit if checkbox doesn't exist (no saved addresses)
+            
+            const isNewAddress = newAddressCheckbox.checked;
             if (newAddressForm) {
                 newAddressForm.style.display = isNewAddress ? 'block' : 'none';
             }
@@ -180,8 +186,8 @@
 
         if (newAddressCheckbox) {
             newAddressCheckbox.addEventListener('change', toggleNewAddressForm);
+            toggleNewAddressForm(); // Call this initially to set the correct state
         }
-        toggleNewAddressForm(); // Call this initially to set the correct state
 
         if (addressSelect) {
             addressSelect.addEventListener('change', function() {
