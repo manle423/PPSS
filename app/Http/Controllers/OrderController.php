@@ -3,94 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-
 
 class OrderController extends Controller
 {
     public function getOrdersByStatus(Request $request, $status)
     {
-        
         if (!in_array($status, ['PENDING','SHIPPING', 'COMPLETED', 'CANCELED'])) {
             return redirect()->back()->with('error', 'Trạng thái không hợp lệ.');
         }
-        $orders = Auth::user()->orders()->where('status', $status)->orderBy('order_date', 'desc')->get();
-
+        
+        $orders = Auth::user()->orders()
+            ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingMethod'])
+            ->where('status', $status)
+            ->orderBy('order_date', 'desc')
+            ->paginate(5);
 
         return view('checkout.history', compact('orders', 'status'));
     }
-    public function showCheckoutPage()
+
+    public function show(Order $order)
     {
-        // Hiển thị trang checkout
-        return view('components.modal-confirmed-checkout');
-    }
-
-    public function store(Request $request)
-    {
-        $user = auth()->user(); // Giả sử người dùng đã đăng nhập
-
-        // Tính tổng giá đơn hàng
-        $totalPrice = 0;
-        $products = $request->input('products');
-
-        foreach ($products as $productData) {
-            $product = Product::findOrFail($productData['product_id']);
-            $totalPrice += $product->price * $productData['quantity'];
-
-            // Kiểm tra tồn kho
-            if ($product->stock < $productData['quantity']) {
-                return response()->json(['error' => 'Không đủ hàng'], 400);
-            }
+        // Ensure the order belongs to the authenticated user
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
         }
 
-        // Gọi API tính phí giao hàng
-        $shippingFee = $this->calculateShippingFee($request->input('address'));
+        $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingMethod', 'orderItems.item']);
 
-        // Tạo đơn hàng
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total_price' => $totalPrice,
-            'shipping_fee' => $shippingFee,
-            'payment_method' => $request->input('payment_method'),
-            'status' => 'pending',
-        ]);
-
-        // Lưu chi tiết sản phẩm
-        foreach ($products as $productData) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productData['product_id'],
-                'quantity' => $productData['quantity'],
-                'price' => $product->price,
-            ]);
-
-            // Cập nhật tồn kho
-            $product->update(['stock' => $product->stock - $productData['quantity']]);
-        }
-
-        return response()->json(['message' => 'Đặt hàng thành công', 'order_id' => $order->id], 201);
+        return view('checkout.details', compact('order'));
     }
-
-    protected function calculateShippingFee($address)
-    {
-        // Gọi API của đơn vị giao hàng
-        $apiUrl = env('SHIPPING_API_URL');
-        $response = Http::post($apiUrl, [
-            'address' => $address,
-            'weight' => 1.0, // Giả định trọng lượng
-        ]);
-
-        if ($response->successful()) {
-            return $response->json()['shipping_fee'];
-        }
-
-        return 0; // Trả về 0 nếu API lỗi
-    }
-    
-
 }
