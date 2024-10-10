@@ -121,7 +121,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // Routes for order
-    Route::get('history', [OrderController::class, 'history'])->name('order.history');
+    Route::prefix('/order')->group(function () {
+        Route::get('/history', [OrderController::class, 'history'])->name('order.history');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('order.show');
+    });
 
     Route::prefix('/profile')->group(function () {
         Route::get('/', [ProfileController::class, 'viewProfile'])->name('user.profile');
