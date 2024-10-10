@@ -22,7 +22,7 @@ class AdminOrderController extends Controller
         return view(view:'admin.orders.list', data:compact(var_name: 'orders'));
     }
     public function show($id){
-        $order=Order::with('user')->get();
+        $order=Order::with('user')->findOrFail($id);
         return view('admin.orders.detail',compact('order'));
         
     }

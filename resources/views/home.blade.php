@@ -97,6 +97,7 @@
                         </ul>
                     </div>
                 </div>
+                {{-- @dd($popularProducts    ) --}}
                 {{-- Latest Products Content (stored in multiple tabs)--}}
                 <div class="tab-content">
                     <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -107,7 +108,7 @@
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
-                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                    <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}"
                                                         class="img-fluid w-100 rounded-top" alt="">
                                                 </div>
                                                 <div
@@ -324,7 +325,7 @@
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
-                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
+                                                    <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}"
                                                         class="img-fluid w-100 rounded-top" alt="">
                                                 </div>
                                                 <div

@@ -122,7 +122,7 @@
                                     <div class="col-md-6 col-lg-6 col-xl-4">
                                         <div class="rounded position-relative fruite-item">
                                             <div class="fruite-img">
-                                                <img src="{{ asset('assets/vendor/img/food-item.jpg') }}"
+                                                <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}"
                                                     class="img-fluid w-100 rounded-top" alt="">
                                             </div>
                                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute"

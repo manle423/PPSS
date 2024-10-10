@@ -13,9 +13,9 @@
         <p><strong>Address:</strong> {{ $order->shipping_address }}</p>
         <p><strong>Shipping method:</strong> Express delivery</p>
         <p><strong>Payment method:</strong> {{ $order->payment_method }}</p>
-        <p><strong>Coupon:</strong> {{ $order->coupon->discount_value }}</p>
-        <p><strong>Total price:</strong> {{ $order->total_price }}</p>
-        <p><strong>Discount value:</strong> {{ $order->discount_value }}</p>
+        <p><strong>Coupon:</strong> {{ $order->coupon->discount_value ?? 'N/A' }}</p>
+        <p><strong>Total price:</strong> {{ $order->total_price ?? 'N/A' }}</p>
+        <p><strong>Discount value:</strong> {{ $order->discount_value ?? 'N/A'}}</p>
         <p><strong>Final price:</strong> {{ $order->final_price }}</p>
     </div>
 
