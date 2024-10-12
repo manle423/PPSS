@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmail;
+use App\Mail\SendBillEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\District;
 use App\Models\Ward;
 use App\Services\ProfileService;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -45,7 +48,7 @@ class CheckoutController extends Controller
             $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
             $guestAddress = json_decode($order->guest_address, true);
-            
+
             $district = District::find($guestAddress['district_id']);
             $province = Province::find($guestAddress['province_id']);
             $ward = Ward::find($guestAddress['ward_id']);
@@ -117,7 +120,7 @@ class CheckoutController extends Controller
             // Create order
             DB::beginTransaction();
             $order = $this->createOrder($request, $user, $addressId);
-            
+
             // Store order type and ID in session
             if ($user) {
                 $request->session()->put('order_type', 'order');
@@ -126,7 +129,7 @@ class CheckoutController extends Controller
                 $request->session()->put('order_type', 'guest_order');
                 $request->session()->put('guest_order_id', $order->id);
             }
-            
+
             DB::commit();
 
             // Process payment based on selected method
@@ -145,6 +148,12 @@ class CheckoutController extends Controller
             Log::error('Checkout process failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during checkout. Please try again.');
         }
+    }
+
+    public function sendBillEmail(Request $request)
+    {
+        SendEmail::dispatch()->delay(now()->addMinutes(9));
+        return redirect()->back();
     }
 
     private function validateCheckoutData(Request $request, $user)
@@ -295,4 +304,6 @@ class CheckoutController extends Controller
         }
         return $address->id;
     }
+
+    
 }
