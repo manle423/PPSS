@@ -48,6 +48,7 @@ class CheckoutController extends Controller
         $sessionCart = session()->get('cart', []);
         $subtotal = session()->get('subtotal');
         $cartItems = session()->get('cartItems');
+        $usedCoupon = session()->get('usedCoupon');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
@@ -64,10 +65,6 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
-        // If $usedCoupon is not set, set it to false
-        if (!isset($usedCoupon)) {
-            $usedCoupon = false;
-        }
 
         return view('checkout.index', compact('sessionCart', 
         'subtotal', 'cartItems', 'totalAmount', 'user', 

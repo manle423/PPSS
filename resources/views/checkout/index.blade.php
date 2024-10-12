@@ -159,10 +159,10 @@
                     </div>
                 </div>
             </form>
-            <form action="{{ route('checkout.coupon') }}" method="get">
+            <form action="{{ route('checkout.coupon') }}" method="get" id="coupon-form">
                 @csrf
            
-                <input type="hidden" name="subtotal" value="{{ $subtotal }}">
+                <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
                 <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
                     name='coupon_code'>
                 @error('coupon_error')
@@ -191,6 +191,7 @@
         const addressSelect = document.getElementById('address_id');
         const form = document.getElementById('checkout-form');
         const selectedAddressIdInput = document.getElementById('selected_address_id');
+        const couponForm = document.getElementById('coupon-form');
 
         function toggleNewAddressForm() {
             const isNewAddress = newAddressCheckbox && newAddressCheckbox.checked;
@@ -248,5 +249,7 @@
 
             console.log('Form submitted with address_id:', selectedAddressIdInput.value);
         });
+
+        
     });
 </script>
