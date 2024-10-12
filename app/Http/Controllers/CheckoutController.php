@@ -64,9 +64,14 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
+        // If $usedCoupon is not set, set it to false
+        if (!isset($usedCoupon)) {
+            $usedCoupon = false;
+        }
+
         return view('checkout.index', compact('sessionCart', 
         'subtotal', 'cartItems', 'totalAmount', 'user', 
-        'addresses', 'provinces'));
+        'addresses', 'provinces','usedCoupon'));
     }
 
     public function process(Request $request)

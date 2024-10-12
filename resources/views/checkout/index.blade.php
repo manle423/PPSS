@@ -161,6 +161,7 @@
             </form>
             <form action="{{ route('checkout.coupon') }}" method="get">
                 @csrf
+           
                 <input type="hidden" name="subtotal" value="{{ $subtotal }}">
                 <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
                     name='coupon_code'>
@@ -169,8 +170,13 @@
                         <strong>{{ $message }}</strong>
                     </span>
                 @enderror
-                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
-                    Coupon</button>
+                @if ($usedCoupon == false)
+                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
+                        Coupon</button>
+                @else
+                    <button disabled class="btn border-secondary rounded-pill px-4 py-3 text-primary"
+                        type="submit">Coupon Used</button>
+                @endif
             </form>
 
         </div>

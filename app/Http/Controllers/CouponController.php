@@ -23,14 +23,15 @@ class CouponController extends Controller
         $subtotal = $request->input('subtotal');
         $code = $request->input('coupon_code');
         $coupon = Coupon::where('code', $code)->first();
-
+        
         if ($coupon) {
             if ($coupon->is_valid($subtotal)) {
                 // Coupon is valid, you can proceed with using it
                 $subtractValue = $subtotal * $coupon->discount_value;
                 $newSubtotal = $subtotal - ($subtractValue > $coupon->max_discount ? $coupon->max_discount : $subtractValue);
-                // Redirect back to the checkout page with the new subtotal
-                return redirect()->route('checkout.index')->with('subtotal', $newSubtotal);
+                // Redirect back to the checkout page with the new subtotal and used coupon
+                return redirect()->back()
+                ->with(['subtotal'=> $newSubtotal,'usedCoupon' => true]);
             } else {
                 return redirect()->back()->with('subtotal',$subtotal)->withErrors(['coupon_error'=> 'Invalid code']); // Coupon is invalid based on validation rules
             }
