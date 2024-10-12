@@ -64,7 +64,9 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
-        return view('checkout.index', compact('sessionCart', 'subtotal', 'cartItems', 'totalAmount', 'user', 'addresses', 'provinces'));
+        return view('checkout.index', compact('sessionCart', 
+        'subtotal', 'cartItems', 'totalAmount', 'user', 
+        'addresses', 'provinces'));
     }
 
     public function process(Request $request)

@@ -33,7 +33,8 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <input type="hidden" name="selected_address_id" id="selected_address_id" value="">
+                                    <input type="hidden" name="selected_address_id" id="selected_address_id"
+                                        value="">
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="new_address" name="new_address"
@@ -86,7 +87,8 @@
                                         </td>
                                         <td class="py-5">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark">{{ $subtotal }} $</p>
+                                                <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
+                                                    $</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -130,9 +132,20 @@
                             </table>
                         </div>
                         <div>
-                            <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code">
-                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply
-                                Coupon</button>
+                            <form action="{{ route('checkout.coupon') }}" method="get">
+                                @csrf
+                                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
+                                    id="coupon_code" name='coupon_code'>
+                                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary"
+                                    type="submit">Apply
+                                    Coupon</button>
+                            </form>
+                            @error('coupon_error')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+
                         </div>
                         <input type="hidden" name="total_amount" value="{{ $subtotal }}">
                         <div class="form-group mb-3">
@@ -146,6 +159,20 @@
                     </div>
                 </div>
             </form>
+            <form action="{{ route('checkout.coupon') }}" method="get">
+                @csrf
+                <input type="hidden" name="subtotal" value="{{ $subtotal }}">
+                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
+                    name='coupon_code'>
+                @error('coupon_error')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
+                    Coupon</button>
+            </form>
+
         </div>
     </div>
     <!-- Checkout Page End -->
@@ -168,7 +195,8 @@
                 addressSelect.disabled = isNewAddress;
             }
 
-            const requiredFields = newAddressForm ? newAddressForm.querySelectorAll('input[id^="new_"], select[id^="new_"]') : [];
+            const requiredFields = newAddressForm ? newAddressForm.querySelectorAll(
+                'input[id^="new_"], select[id^="new_"]') : [];
             requiredFields.forEach(field => {
                 if (isNewAddress) {
                     field.setAttribute('required', '');
@@ -205,7 +233,7 @@
                 // Enable the select to ensure its value is sent
                 addressSelect.disabled = false;
             }
-            
+
             if (!newAddressCheckbox || !newAddressCheckbox.checked) {
                 selectedAddressIdInput.value = addressSelect.value;
             } else {
