@@ -55,7 +55,7 @@
                             <td>
                                 {{ $order->shippingAddress->full_name ?? 'N/A' }}<br>
                                 {{ $order->shippingAddress->address_line_1 ?? 'N/A' }}<br>
-                                {{ $order->shippingAddress->district->name ?? 'N/A' }}, {{ $order->shippingAddress->province->name ?? 'N/A' }}
+                                {{ $order->shippingAddress->ward->name ?? 'N/A' }}, {{ $order->shippingAddress->district->name ?? 'N/A' }}, {{ $order->shippingAddress->province->name ?? 'N/A' }}
                             </td>
                             <td>{{ $order->shippingMethod->name ?? 'N/A' }}</td>
                             <td>{{ $order->payment_method }}</td>
