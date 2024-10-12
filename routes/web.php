@@ -68,7 +68,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::prefix('/orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
+        Route::get('/guest-order', [AdminOrderController::class, 'listGuestOrder'])->name('orders.list-guest-orders');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('orders.detail');
+        Route::get('/guest-order/{id}', [AdminOrderController::class, 'detailGuestOrder'])->name('orders.detail-guest-order');
     });
     Route::prefix('/customers')->group(function () {
         Route::get('/', [AdminCustomerController::class, 'list'])->name('customers.list');
@@ -137,7 +139,8 @@ Route::middleware('auth')->group(function () {
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    
+    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
+    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
 
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');

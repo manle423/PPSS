@@ -3,17 +3,17 @@
     <link href="{{ asset('assets/vendor/css/orderlist.css') }}" rel="stylesheet">
 
     <div class="order-list-container">
-        <h1>Orders list</h1>
+        <h1>Guest orders list</h1>
         <select style="margin-bottom:10px;" onchange="window.location.href=this.value;">
         <option value="" selected disabled>-- Select Order Type --</option>
         <option value="{{ route('admin.orders.list') }}">Customer orders</option>
-    <option value="{{ route('admin.orders.list-guest-orders') }}">Guest orders</option>
+        <option value="{{ route('admin.orders.list-guest-orders') }}">Guest orders</option>
 </select>
         <table class="order-table">
             <thead>
                 <tr>
                     <th>Order code</th>
-                    <th>Name</th>
+                    <th>Phone number</th>
                     <th>Ordered date</th>
                     <th>Status</th>
                     <th>Total</th>
@@ -23,8 +23,8 @@
             <tbody>
                 @foreach ($orders as $order)
                     <tr>
-                        <td>{{ $order->order_code }}</td>
-                        <td>{{ $order->user->full_name }}</td>
+                        <td>{{ $order->orders->order_code }}</td>
+                        <td>{{ $order->guest_phone_number }}</td>
                         <td>{{ $order->order_date }}</td>
                         <td>
                             @if ($order->status == 'PENDING')
@@ -39,7 +39,7 @@
                         </td>
                         <td>{{ $order->final_price }}</td>
 
-                        <td><button class="action-btn"><a href="{{ route('admin.orders.detail', $order->id) }}">Details</a></button></td>
+                        <td><button class="action-btn"><a href="{{ route('admin.orders.detail-guest-order', $order->id) }}">Details</a></button></td>
                     </tr>
                 @endforeach
             </tbody>

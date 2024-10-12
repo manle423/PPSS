@@ -3,17 +3,21 @@
 <link href="{{ asset('assets/vendor/css/orderdetail.css') }}" rel="stylesheet">
 
 <div class="order-details-container">
-    <h2>Chi Tiết Đơn Hàng</h2>
+    <h2>Guest order detail</h2>
 
     <!-- Thông tin chi tiết của đơn hàng -->
     <div class="order-info">
-        <p><strong>Order code:</strong> {{ $order->order_code }} </p>
+        <p><strong>Order code:</strong> {{ $order->orders->order_code }} </p>
         <p><strong>Ordered date:</strong> {{ $order->order_date }}</p>
-        <p><strong>Name:</strong> {{ $order->user->full_name }} </p>
-        <p><strong>Address:</strong> {{ $order->shipping_address }}</p>
-        <p><strong>Shipping method:</strong> Express delivery</p>
+        <p><strong>Name:</strong> {{ $order->orders->user->full_name }} </p>
+        <p><strong>Phone number:</strong> {{ $order->guest_phone_number }} </p>
+        <p><strong>Address:</strong> {{ $order->guest_address }}</p>
+        <p><strong>Status:</strong> {{ $order->status }} </p>
+        <p><strong>Order date:</strong> {{ $order->order_date }} </p>
+        <p><strong>Shipping method:</strong> {{ $order->shipping_method_id }} </p>
         <p><strong>Payment method:</strong> {{ $order->payment_method }}</p>
-        <p><strong>Coupon:</strong> {{ $order->coupon->discount_value ?? 'N/A' }}</p>
+        <p><strong>Promotion:</strong> {{ $order->promotion_id ?? 'N/A' }}</p>
+        <p><strong>Coupon:</strong> {{ $order->coupon_id ?? 'N/A' }}</p>
         <p><strong>Total price:</strong> {{ $order->total_price ?? 'N/A' }}</p>
         <p><strong>Discount value:</strong> {{ $order->discount_value ?? 'N/A'}}</p>
         <p><strong>Final price:</strong> {{ $order->final_price }}</p>
