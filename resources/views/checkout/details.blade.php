@@ -14,10 +14,13 @@
             </div>
             <div class="col-md-6">
                 <h3>Delivery Address</h3>
-                <p>{{ $order->shippingAddress->full_name ?? 'N/A' }}</p>
-                <p>{{ $order->shippingAddress->address_line_1 ?? 'N/A' }}</p>
-                <p>{{ $order->shippingAddress->district->name ?? 'N/A' }}, {{ $order->shippingAddress->province->name ?? 'N/A' }}</p>
-                <p>{{ $order->shippingAddress->phone_number ?? 'N/A' }}</p>
+                <p><strong>Full Name:</strong> {{ $order->shippingAddress->full_name ?? 'N/A' }}</p>
+                <p><strong>Address:</strong> {{ $order->shippingAddress->address_line_1 ?? 'N/A' }},
+                    @if($order->shippingAddress->address_line_2)
+                        {{ $order->shippingAddress->address_line_2 }},
+                    @endif
+                {{ $order->shippingAddress->ward->name ?? 'N/A' }}, {{ $order->shippingAddress->district->name ?? 'N/A' }}, {{ $order->shippingAddress->province->name ?? 'N/A' }}</p>
+                <p><strong>Phone Number:</strong> {{ $order->shippingAddress->phone_number ?? 'N/A' }}</p>
             </div>
         </div>
 

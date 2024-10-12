@@ -23,7 +23,7 @@
                @if($shippingAddress->address_line_2)
                    {{ $shippingAddress->address_line_2 }},
                @endif
-               {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
+               {{ $shippingAddress->ward->name }}, {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
         @endif
 
         <p><strong>Shipping Method:</strong> {{ $shippingMethod->name ?? 'N/A' }}</p>

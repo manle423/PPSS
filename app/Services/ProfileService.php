@@ -24,6 +24,7 @@ class ProfileService
             'address_line_2' => 'nullable|string|max:255',
             'district_id' => 'required|exists:districts,id',
             'province_id' => 'required|exists:provinces,id',
+            'ward_id' => 'required|exists:wards,id',
             'is_default' => 'nullable',
         ]);
     }

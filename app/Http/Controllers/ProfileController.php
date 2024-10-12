@@ -21,8 +21,8 @@ class ProfileController extends Controller
     public function viewProfile()
     {
         $user = Auth::user()->load('defaultAddress');
-        $addresses = $user->addresses->sortByDesc('is_default');
-        $provinces = Province::with('districts')->orderBy('name', 'asc')->get();
+        $addresses = $user->addresses->load('province.districts.wards', 'district.wards', 'ward')->sortByDesc('is_default');
+        $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
         return view('user.profile', compact('user', 'addresses', 'provinces'));
     }
 
