@@ -156,7 +156,6 @@ class CheckoutController extends Controller
             $cartItems = session()->get('cartItems');
             $sessionCart = session()->get('cart', []);
             $subtotal = session()->get('subtotal');
-
             $orderData = [
                 'order_date' => now(),
                 'shipping_method_id' => 1, // Just for now
