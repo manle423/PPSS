@@ -7,9 +7,17 @@ use App\Models\Order;
 use App\Models\GuestOrder;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CheckoutController;
 
 class PaypalController extends Controller
 {
+    protected $checkoutController;
+
+    public function __construct(CheckoutController $checkoutController)
+    {
+        $this->checkoutController = $checkoutController;
+    }
+
     public function create()
     {
         return view("payments.success");
@@ -98,6 +106,9 @@ class PaypalController extends Controller
                     $order->status = 'PENDING';
                 }
                 $order->save();
+
+                // Send order confirmation email
+                $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
             }
             return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {

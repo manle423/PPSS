@@ -6,9 +6,16 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\GuestOrder;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CheckoutController;
 
 class VnPayController extends Controller
 {
+    protected $checkoutController;
+
+    public function __construct(CheckoutController $checkoutController)
+    {
+        $this->checkoutController = $checkoutController;
+    }
 
     public function process(Request $request)
     {
@@ -106,6 +113,9 @@ class VnPayController extends Controller
                             $order->status = 'PENDING';
                         }
                         $order->save();
+
+                        // Send order confirmation email
+                        $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
                     }
 
                     return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
@@ -125,6 +135,4 @@ class VnPayController extends Controller
     {
         return redirect()->route('checkout.index')->withErrors('error', 'You have canceled the transaction.');
     }
-
-
 }

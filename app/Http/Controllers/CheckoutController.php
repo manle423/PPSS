@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendEmail;
 use App\Mail\SendBillEmail;
+use App\Mail\OrderConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -305,5 +306,9 @@ class CheckoutController extends Controller
         return $address->id;
     }
 
-    
+    public function sendOrderConfirmationEmail($order, $orderType)
+    {
+        $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
+        Mail::to($email)->send(new OrderConfirmation($order, $orderType));
+    }
 }
