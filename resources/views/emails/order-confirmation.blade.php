@@ -26,7 +26,7 @@
         <h4>Order Details</h4>
         <p><strong>Order Code:</strong> {{ $order->order_code }}</p>
         <p><strong>Order Date:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
-
+        {{-- @dd($order->shippingAddress) --}}
         <h5>Shipping Information</h5>
         @if($orderType === 'order')
             <p>{{ $order->shippingAddress->full_name }}<br>

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\GuestOrder;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\CheckoutController;
+use App\Models\Cart;
 
 class VnPayController extends Controller
 {
@@ -76,7 +77,6 @@ class VnPayController extends Controller
             }
             Log::info('Redirecting to VNPAY URL: ' . $vnp_Url);
             return redirect()->away($vnp_Url);
-
         } catch (\Exception $e) {
             Log::error('Exception in VNPAY process: ' . $e->getMessage());
             return redirect()->route('checkout.index')->withErrors('error', 'An error occurred while processing your payment. Please try again.');
@@ -97,16 +97,16 @@ class VnPayController extends Controller
             }
             $hashData = rtrim($hashData, '&');
             $secureHash = hash_hmac('sha512', $hashData, config('vnpay.vnp_HashSecret'));
-
+            dd('1');
             if ($secureHash === $vnp_SecureHash) {
                 if ($request->vnp_ResponseCode == '00') {
                     // Thanh toán thành công
                     $orderType = session('order_type');
                     $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
-
+                    dd($orderType);
                     if ($orderId) {
                         if ($orderType == 'order') {
-                            $order = Order::findOrFail($orderId);
+                            $order = Order::findOrFail($orderId)->with('shippingAddress');
                             $order->status = Order::STATUS['pending'];
                         } else {
                             $order = GuestOrder::findOrFail($orderId);
@@ -114,13 +114,35 @@ class VnPayController extends Controller
                         }
                         $order->save();
 
-                        // Send order confirmation email
+                        // Gửi email xác nhận đơn hàng
                         $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
+
+                        // Xóa cart sau khi thanh toán thành công
+                        if ($orderType == 'order') {
+                            Cart::where('user_id', $order->user_id)->delete();
+                        }
+                        session()->forget(['cart', 'cartItems', 'subtotal']);
+
+                        return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
+                    }
+                } else {
+                    // Thanh toán thất bại
+                    $orderType = session('order_type');
+                    $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+
+                    if ($orderId) {
+                        if ($orderType == 'order') {
+                            $order = Order::findOrFail($orderId);
+                            $order->status = Order::STATUS['canceled'];
+                        } else {
+                            $order = GuestOrder::findOrFail($orderId);
+                            $order->status = 'CANCELED';
+                        }
+                        $order->save();
                     }
 
-                    return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
-                } else {
-                    return redirect()->route('checkout.index')->withErrors('error', 'Payment failed. Please try again.');
+                    $errorMessage = 'Payment failed. Error code: ' . $request->vnp_ResponseCode;
+                    return redirect()->route('checkout.index')->withErrors('error', $errorMessage);
                 }
             } else {
                 return redirect()->route('checkout.index')->withErrors('error', 'Invalid payment data.');
