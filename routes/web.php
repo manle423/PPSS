@@ -19,6 +19,7 @@ use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VnPayController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect
@@ -141,7 +142,7 @@ Route::middleware('auth')->group(function () {
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    
+
 
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
@@ -169,7 +170,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     });
 
     Route::prefix('vnpay')->group(function () {
-
+        Route::get('/process', [VnPayController::class, 'process'])->name('vnpay.process');
+        Route::get('/return', [VnPayController::class, 'return'])->name('vnpay.return');
     });
 });
 
