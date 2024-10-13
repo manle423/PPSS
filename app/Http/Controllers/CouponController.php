@@ -6,6 +6,8 @@ use App\Models\Coupon;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use function Laravel\Prompts\alert;
+
 class CouponController extends Controller
 {
     /**
@@ -20,20 +22,33 @@ class CouponController extends Controller
 
     public function useCoupon(Request $request)
     {
+        $sessionCoupon = session()->get('couponCode');
         $subtotal = session()->get('subtotal');
+        $oldSubtotal = $subtotal;
+        if ($sessionCoupon) {
+            $subtotal = session()->get('oldSubtotal');
+        }
+        else {
+            $subtotal = session()->get('subtotal');
+        }
+        
         $code = $request->input('coupon_code');
+        // Reset, not using the code
+        if ($code == '') {
+            session()->put('subtotal',$oldSubtotal);
+            return redirect()->back(); // Coupon with the provided code doesn't exist
+        }
         $coupon = Coupon::where('code', $code)->first();
-
         if ($coupon) {
             if ($coupon->is_valid($subtotal)) {
                 // Coupon is valid, you can proceed with using it
-                $oldSubtotal = $subtotal;
                 $subtractValue = $subtotal * $coupon->discount_value;
                 $subtotal = $subtotal - ($subtractValue > $coupon->max_discount ? $coupon->max_discount : $subtractValue);
                 // Store the old and new subtotal in the session
                 session()->put('subtotal',$subtotal);
                 session()->put('oldSubtotal',$oldSubtotal);
                 session()->put('usedCoupon',true);
+                session()->put('couponCode',$code);
                 // Redirect back to the checkout page with the new subtotal and used coupon
                 return redirect()->back();
             } else {

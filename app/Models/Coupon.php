@@ -55,4 +55,9 @@ class Coupon extends Model
 
         return true; // Coupon is valid
     }
+
+    public function couponUsages()
+    {
+        return $this->hasMany(CouponUsage::class, 'coupon_id');
+    }
 }

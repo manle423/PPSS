@@ -162,22 +162,29 @@
             <form action="{{ route('checkout.coupon') }}" method="get" id="coupon-form">
                 @csrf
                 <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
-                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
-                    name='coupon_code'>
-                @error('coupon_error')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
-                @if ($usedCoupon == false)
+
+                @if ($couponCode == '')
+                    <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
+                        id="coupon_code" name='coupon_code'>
+                    @error('coupon_error')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
                     <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
                         Coupon</button>
                 @else
-                    <button disabled class="btn border-secondary rounded-pill px-4 py-3 text-primary"
-                        type="submit">Reset Coupon</button>
+                    <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
+                        id="coupon_code" name='coupon_code' value={{ $couponCode }}>
+                    @error('coupon_error')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Reset
+                        Coupon</button>
                 @endif
             </form>
-
         </div>
     </div>
     <!-- Checkout Page End -->
@@ -249,6 +256,6 @@
             console.log('Form submitted with address_id:', selectedAddressIdInput.value);
         });
 
-        
+
     });
 </script>

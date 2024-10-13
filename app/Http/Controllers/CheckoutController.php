@@ -40,6 +40,9 @@ class CheckoutController extends Controller
         $shippingAddress = $order->shippingAddress;
         $shippingMethod = $order->shippingMethod;
 
+        // Reset the coupon usage state
+        session()->forget('couponCode');
+
         return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod'));
     }
 
@@ -49,6 +52,7 @@ class CheckoutController extends Controller
         $subtotal = session()->get('subtotal');
         $cartItems = session()->get('cartItems');
         $usedCoupon = session()->get('usedCoupon');
+        $couponCode = session()->get('couponCode');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
@@ -68,7 +72,7 @@ class CheckoutController extends Controller
 
         return view('checkout.index', compact('sessionCart', 
         'subtotal', 'cartItems', 'totalAmount', 'user', 
-        'addresses', 'provinces','usedCoupon'));
+        'addresses', 'provinces','usedCoupon','couponCode'));
     }
 
     public function process(Request $request)
