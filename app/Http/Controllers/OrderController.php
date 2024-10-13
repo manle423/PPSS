@@ -15,7 +15,7 @@ class OrderController extends Controller
         }
         
         $orders = Auth::user()->orders()
-            ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingMethod'])
+            ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod'])
             ->where('status', $status)
             ->orderBy('order_date', 'desc')
             ->paginate(5);
@@ -30,7 +30,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingMethod', 'orderItems.item']);
+        $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod', 'orderItems.item']);
 
         return view('checkout.details', compact('order'));
     }

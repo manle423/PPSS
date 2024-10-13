@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\District;
+use App\Models\Ward;
 use App\Services\ProfileService;
 
 class CheckoutController extends Controller
@@ -37,7 +38,7 @@ class CheckoutController extends Controller
         }
 
         if ($orderType == 'order') {
-            $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingMethod'])
+            $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
                 ->findOrFail($orderId);
             $shippingAddress = $order->shippingAddress;
         } else {
@@ -47,13 +48,14 @@ class CheckoutController extends Controller
             
             $district = District::find($guestAddress['district_id']);
             $province = Province::find($guestAddress['province_id']);
-            
+            $ward = Ward::find($guestAddress['ward_id']);
             $shippingAddress = (object) [
                 'full_name' => $order->guest_name,
                 'address_line_1' => $guestAddress['address_line_1'],
                 'address_line_2' => $guestAddress['address_line_2'] ?? null,
                 'district' => $district,
                 'province' => $province,
+                'ward' => $ward,
             ];
         }
 
@@ -85,7 +87,7 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
         $addresses = [];
-        $provinces = Province::with('districts')->orderBy('name', 'asc')->get();
+        $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
 
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
@@ -159,6 +161,7 @@ class CheckoutController extends Controller
                 'address_line_1' => 'required|string|max:255',
                 'district_id' => 'required|exists:districts,id',
                 'province_id' => 'required|exists:provinces,id',
+                'ward_id' => 'required|exists:wards,id',
             ]);
         } else {
             $rules = array_merge($rules, [
@@ -173,6 +176,7 @@ class CheckoutController extends Controller
                     'address_line_2' => 'nullable|string|max:255',
                     'district_id' => 'required|exists:districts,id',
                     'province_id' => 'required|exists:provinces,id',
+                    'ward_id' => 'required|exists:wards,id',
                 ]);
             } else {
                 $rules['selected_address_id'] = 'required|exists:addresses,id';
@@ -237,6 +241,7 @@ class CheckoutController extends Controller
                         'address_line_2' => $request->input('address_line_2'),
                         'district_id' => $request->input('district_id'),
                         'province_id' => $request->input('province_id'),
+                        'ward_id' => $request->input('ward_id'),
                     ], JSON_UNESCAPED_UNICODE),
                     'status' => 'pending',
                     'order_date' => now(),
