@@ -266,11 +266,20 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($cartKey, $id)
     {
         // Find the cart item by its ID and delete it
         $cartItem = Cart::findOrFail($id);
         $cartItem->delete();
+
+        // Get the cart item from the session
+        $sessionCart = session()->get('cart', []);
+
+        // Remove the item from session cart
+        unset($sessionCart[$cartKey]);
+
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Item removed from the cart.');
