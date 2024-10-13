@@ -33,14 +33,14 @@ class CouponController extends Controller
                 // Store the old and new subtotal in the session
                 session()->put('subtotal',$subtotal);
                 session()->put('oldSubtotal',$oldSubtotal);
+                session()->put('usedCoupon',true);
                 // Redirect back to the checkout page with the new subtotal and used coupon
-                return redirect()->back()
-                ->with(['usedCoupon' => true]);
+                return redirect()->back();
             } else {
-                return redirect()->back()->with('subtotal',$subtotal)->withErrors(['coupon_error'=> 'Invalid code']); // Coupon is invalid based on validation rules
+                return redirect()->back()->withErrors(['coupon_error'=> 'Invalid code']); // Coupon is invalid based on validation rules
             }
         } else {
-            return redirect()->back()->with('subtotal',$subtotal)->withErrors(['coupon_error'=> 'Code not exist']); // Coupon with the provided code doesn't exist
+            return redirect()->back()->withErrors(['coupon_error'=> 'Code not exist']); // Coupon with the provided code doesn't exist
         }
     }
 

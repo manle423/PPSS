@@ -161,7 +161,6 @@
             </form>
             <form action="{{ route('checkout.coupon') }}" method="get" id="coupon-form">
                 @csrf
-           
                 <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
                 <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
                     name='coupon_code'>
@@ -175,7 +174,7 @@
                         Coupon</button>
                 @else
                     <button disabled class="btn border-secondary rounded-pill px-4 py-3 text-primary"
-                        type="submit">Coupon Used</button>
+                        type="submit">Reset Coupon</button>
                 @endif
             </form>
 
