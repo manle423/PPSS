@@ -23,7 +23,6 @@ class VnPayController extends Controller
             }
 
             Log::info('Processing VNPAY payment for ' . $orderType . ': ' . $order->id);
-
             // Lấy thông tin config từ file config vnpay.php
             $vnp_TmnCode = config('vnpay.vnp_TmnCode');
             $vnp_HashSecret = config('vnpay.vnp_HashSecret');
@@ -32,7 +31,6 @@ class VnPayController extends Controller
 
             $total_amount = $order->total_price * 100000;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
             Log::info('Order total amount: ' . $total_amount);
-
             $inputData = array(
                 "vnp_Version" => "2.1.0",
                 "vnp_TmnCode" => $vnp_TmnCode,
@@ -42,7 +40,7 @@ class VnPayController extends Controller
                 "vnp_CurrCode" => "VND",
                 "vnp_IpAddr" => $request->ip(),
                 "vnp_Locale" => 'vn',
-                "vnp_OrderInfo" => 'Payment for order ' . $order->id,
+                "vnp_OrderInfo" => 'Payment for order ' . $order->order_code,
                 "vnp_OrderType" => "billpayment",
                 "vnp_ReturnUrl" => $vnp_ReturnUrl,
                 "vnp_TxnRef" => $order->id,
@@ -69,7 +67,6 @@ class VnPayController extends Controller
                 $vnpSecureHash = hash_hmac('sha512', trim($hashdata, '&'), $vnp_HashSecret);
                 $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
-
             Log::info('Redirecting to VNPAY URL: ' . $vnp_Url);
             return redirect()->away($vnp_Url);
 
