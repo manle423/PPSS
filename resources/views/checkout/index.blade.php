@@ -88,10 +88,10 @@
                                         <td class="py-5">
                                             <div class="py-3 border-bottom border-top">
                                                 <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
-                                                    $</p>
+                                                    đ</p>
                                                 @isset($couponCode)
                                                 <p class="mb-0 text-muted text-decoration-line-through " name="subtotal" id="subtotal">{{ $oldSubtotal }}
-                                                    $</p>
+                                                    đ</p>
                                                 @endisset
                                                 
                                             </div>

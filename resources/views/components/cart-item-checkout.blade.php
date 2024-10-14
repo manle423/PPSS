@@ -13,7 +13,7 @@
         {{ optional($item->variant)->variant_name ?? '' }}
     </td>
     <td class="py-5" scope="row">
-        {{ (optional($item->variant)->variant_price ?? $item->product->price)}} $
+        {{ (optional($item->variant)->variant_price ?? $item->product->price)}} đ
     </td>
     <td class="py-5" scope="row">
         @php
@@ -22,6 +22,6 @@
         {{ $sessionCart[$cartKey] }}
     </td>
     <td class="py-5" scope="row">
-        {{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 2) }} $
+        {{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 2) }} đ
     </td>
 </tr>
