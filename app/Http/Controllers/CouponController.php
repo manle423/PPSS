@@ -25,7 +25,7 @@ class CouponController extends Controller
         if ($code == '') {
             session()->put('subtotal', $oldSubtotal);
             session()->forget(['couponCode', 'usedCoupon']);
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
 
         $coupon = Coupon::where('code', $code)->first();
@@ -35,7 +35,7 @@ class CouponController extends Controller
                 ->exists();
 
             if ($couponUsage) {
-                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.']);
+                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.'])->withInput();
             }
 
             if ($coupon->is_valid($oldSubtotal)) {
@@ -48,12 +48,12 @@ class CouponController extends Controller
                 session()->put('usedCoupon', true);
                 session()->put('couponCode', $code);
 
-                return redirect()->back();
+                return redirect()->back()->withInput();
             } else {
-                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code']);
+                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code'])->withInput();
             }
         } else {
-            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist']);
+            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist'])->withInput();
         }
     }
 }

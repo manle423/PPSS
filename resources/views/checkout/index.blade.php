@@ -4,11 +4,6 @@
     <!-- Single Page Header start -->
     <div class="container-fluid page-header py-5">
         <h1 class="text-center text-white display-6">Checkout</h1>
-        <ol class="breadcrumb justify-content-center mb-0">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-            <li class="breadcrumb-item active text-white">Checkout</li>
-        </ol>
     </div>
     <!-- Single Page Header End -->
 
@@ -28,7 +23,8 @@
                                     <select name="address_id" id="address_id" class="form-control">
                                         <option value="">Select an address</option>
                                         @foreach ($addresses as $address)
-                                            <option value="{{ $address->id }}">
+                                            <option value="{{ $address->id }}"
+                                                {{ old('address_id', request('address_id')) == $address->id ? 'selected' : '' }}>
                                                 {{ $address->full_name }} - {{ $address->address_line_1 }}
                                             </option>
                                         @endforeach
@@ -38,7 +34,7 @@
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="new_address" name="new_address"
-                                        value="1">
+                                        value="1" {{ old('new_address', request('new_address')) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="new_address">
                                         Use a different address
                                     </label>
@@ -94,10 +90,11 @@
                                                 <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
                                                     đ</p>
                                                 @isset($couponCode)
-                                                <p class="mb-0 text-muted text-decoration-line-through " name="subtotal" id="subtotal">{{ $oldSubtotal }}
-                                                    đ</p>
+                                                    <p class="mb-0 text-muted text-decoration-line-through " name="subtotal"
+                                                        id="subtotal">{{ $oldSubtotal }}
+                                                        đ</p>
                                                 @endisset
-                                                
+
                                             </div>
                                         </td>
                                     </tr>
@@ -140,22 +137,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div>
-                            {{-- <form action="{{ route('checkout.coupon') }}" method="get">
-                                @csrf
-                                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
-                                    id="coupon_code" name='coupon_code'>
-                                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary"
-                                    type="submit">Apply
-                                    Coupon</button>
-                            </form> --}}
-                            @error('coupon_error')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-
-                        </div>
                         <input type="hidden" name="total_amount" value="{{ $subtotal }}">
                         <div class="form-group mb-3">
                             <label for="payment_method">Payment Method</label>
@@ -171,9 +152,18 @@
             <form action="{{ route('checkout.coupon') }}" method="get" id="coupon-form">
                 @csrf
                 <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
+                <input type="hidden" name="address_id" value="{{ request('address_id') }}">
+                <input type="hidden" name="new_address" value="{{ request('new_address') }}">
+                <input type="hidden" name="new_full_name" value="{{ old('new_full_name') }}">
+                <input type="hidden" name="new_phone_number" value="{{ old('new_phone_number') }}">
+                <input type="hidden" name="new_province_id" value="{{ old('new_province_id') }}">
+                <input type="hidden" name="new_district_id" value="{{ old('new_district_id') }}">
+                <input type="hidden" name="new_ward_id" value="{{ old('new_ward_id') }}">
+                <input type="hidden" name="new_address_line_1" value="{{ old('new_address_line_1') }}">
+                <input type="hidden" name="new_address_line_2" value="{{ old('new_address_line_2') }}">
 
                 <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
-                    name='coupon_code' value={{ $couponCode }}>
+                    name='coupon_code' value="{{ $couponCode }}">
 
                 <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
                     Coupon</button>
@@ -186,5 +176,6 @@
         </div>
     </div>
     <!-- Checkout Page End -->
+
     <script src="{{ asset('assets/js/checkout.js') }}"></script>
 @endsection

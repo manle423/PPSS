@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const addressSelect = document.getElementById('address_id');
     const form = document.getElementById('checkout-form');
     const selectedAddressIdInput = document.getElementById('selected_address_id');
+    const couponForm = document.getElementById('coupon-form');
 
     function toggleNewAddressForm() {
-        if (!newAddressCheckbox) return; // Exit if checkbox doesn't exist (no saved addresses)
+        if (!newAddressCheckbox) return;
         
         const isNewAddress = newAddressCheckbox.checked;
         if (newAddressForm) {
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (newAddressCheckbox) {
         newAddressCheckbox.addEventListener('change', toggleNewAddressForm);
-        toggleNewAddressForm(); // Call this initially to set the correct state
+        toggleNewAddressForm();
     }
 
     if (addressSelect) {
@@ -39,28 +40,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     form.addEventListener('submit', function(event) {
         if (newAddressCheckbox && newAddressCheckbox.checked) {
-            // If using a new address, ensure address_id is not sent
             if (addressSelect) {
                 addressSelect.disabled = true;
             }
+            selectedAddressIdInput.value = ''; // Clear selected address ID when using a new address
         } else if (addressSelect) {
-            // If using an existing address, ensure it's selected
             if (addressSelect.value === '') {
                 event.preventDefault();
                 alert('Please select an address or create a new one.');
                 return;
             }
-            // Enable the select to ensure its value is sent
             addressSelect.disabled = false;
+            selectedAddressIdInput.value = addressSelect.value;
         }
         
-        if (!newAddressCheckbox || !newAddressCheckbox.checked) {
-            selectedAddressIdInput.value = addressSelect.value;
-        } else {
-            selectedAddressIdInput.value = '';
-        }
+        const newAddressFields = newAddressForm.querySelectorAll('input, select');
+        newAddressFields.forEach(field => {
+            const hiddenInput = couponForm.querySelector(`input[name="new_${field.name}"]`);
+            if (hiddenInput) {
+                hiddenInput.value = field.value;
+            }
+        });
 
         console.log('Form submitted with address_id:', selectedAddressIdInput.value);
     });
-});
 
+    couponForm.addEventListener('submit', function(event) {
+        const newAddressFields = newAddressForm.querySelectorAll('input, select');
+        newAddressFields.forEach(field => {
+            const hiddenInput = couponForm.querySelector(`input[name="new_${field.name}"]`);
+            if (hiddenInput) {
+                hiddenInput.value = field.value;
+            }
+        });
+
+        if (!newAddressCheckbox || !newAddressCheckbox.checked) {
+            couponForm.querySelector('input[name="address_id"]').value = addressSelect.value;
+        } else {
+            couponForm.querySelector('input[name="address_id"]').value = '';
+        }
+    });
+});
