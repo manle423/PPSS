@@ -45,14 +45,16 @@
         @endguest
     </td>
     <td>
+        <p class="mb-0 mt-4">
         {{(optional($item->variant)->variant_price ?? $item->product->price)  }}đ
+        </p>
     </td>
     <td>
         <p class="mb-0 mt-4">{{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 2) }}đ</p>
     </td>
     <td>
         @auth
-            <form action="{{ route('cart.destroy', $item) }}" method="POST">
+            <form action="{{ route('cart.destroy',['cartKey' => $cartKey, 'product' => $item]) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-md rounded-circle bg-light border mt-4">
@@ -63,7 +65,6 @@
         @guest
             <form action="{{ route('cart.destroy-session', $cartKey) }}" method="POST">
                 @csrf
-                @method('DELETE')
                 <button class="btn btn-md rounded-circle bg-light border mt-4">
                     <i class="fas fa-trash"></i>
                 </button>
