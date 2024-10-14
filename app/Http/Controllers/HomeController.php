@@ -91,4 +91,12 @@ class HomeController extends Controller
     {
         return view('webshop.contact');
     }
+
+    public function aboutUs(){
+        return view('webshop.about-us');
+    }
+
+    public function privacyPolicy(){
+        return view('webshop.privacy-policy');
+    }
 }
