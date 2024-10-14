@@ -17,6 +17,7 @@ class GhnController extends Controller
     public function getProvinces()
     {
         $provinces = $this->ghnService->getProvinces();
+        \Log::info('Provinces from GHN', $provinces);
         return response()->json($provinces);
     }
 

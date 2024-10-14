@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GhnService
 {
@@ -17,7 +18,7 @@ class GhnService
     protected function request($endpoint, $method = 'GET', $data = [])
     {
         $response = Http::withHeaders([
-            'Token' => $this->token,
+            'token' => $this->token,
             'Content-Type' => 'application/json',
         ])->$method($this->baseUrl . $endpoint, $data);
 
@@ -26,7 +27,9 @@ class GhnService
 
     public function getProvinces()
     {
-        return $this->request('master-data/province');
+        $response = $this->request('master-data/province');
+        Log::info('GHN Provinces Response', $response);
+        return $response;
     }
 
     public function getDistricts($provinceId)
