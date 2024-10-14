@@ -69,13 +69,14 @@ class CheckoutController extends Controller
         $cartItems = session()->get('cartItems');
         $usedCoupon = session()->get('usedCoupon');
         $couponCode = session()->get('couponCode');
+        $oldSubtotal = session()->get('oldSubtotal');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
             return Redirect::route('home')->with('info', 'Your cart is empty. Please add some items before checking out.');
         }
 
-        $totalAmount = $subtotal;
+     
 
         $user = Auth::user();
         $addresses = [];
@@ -90,7 +91,7 @@ class CheckoutController extends Controller
             'sessionCart',
             'subtotal',
             'cartItems',
-            'totalAmount',
+            'oldSubtotal',
             'user',
             'addresses',
             'provinces',

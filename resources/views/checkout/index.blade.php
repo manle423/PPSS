@@ -89,6 +89,11 @@
                                             <div class="py-3 border-bottom border-top">
                                                 <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
                                                     $</p>
+                                                @isset($couponCode)
+                                                <p class="mb-0 text-muted text-decoration-line-through " name="subtotal" id="subtotal">{{ $oldSubtotal }}
+                                                    $</p>
+                                                @endisset
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -163,16 +168,16 @@
                 @csrf
                 <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
 
-                    <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
-                        id="coupon_code" name='coupon_code'  value={{ $couponCode }}>
-                    
-                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
-                        Coupon</button>
-                        @error('coupon_error')
-                        <p class="text-danger" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </p>
-                    @enderror
+                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
+                    name='coupon_code' value={{ $couponCode }}>
+
+                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
+                    Coupon</button>
+                @error('coupon_error')
+                    <p class="text-danger" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </p>
+                @enderror
             </form>
         </div>
     </div>
