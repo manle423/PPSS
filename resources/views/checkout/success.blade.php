@@ -12,6 +12,10 @@
             <p class="mb-0">Thank you for your purchase.</p>
         </div>
 
+        <div class="alert alert-info mt-3">
+            <p class="mb-0">An order confirmation with details has been sent to your email address. Please check your inbox.</p>
+        </div>
+
         <h4>Order Details</h4>
         <p><strong>Order Code:</strong> {{ $order->order_code }}</p>
         <p><strong>Order Date:</strong> {{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>

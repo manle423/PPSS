@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmail;
+use App\Mail\SendBillEmail;
+use App\Mail\OrderConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Province;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\GuestOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -18,6 +23,7 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\District;
 use App\Models\Ward;
 use App\Services\ProfileService;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -45,7 +51,7 @@ class CheckoutController extends Controller
             $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
             $guestAddress = json_decode($order->guest_address, true);
-            
+
             $district = District::find($guestAddress['district_id']);
             $province = Province::find($guestAddress['province_id']);
             $ward = Ward::find($guestAddress['ward_id']);
@@ -57,6 +63,21 @@ class CheckoutController extends Controller
                 'province' => $province,
                 'ward' => $ward,
             ];
+        }
+
+        // Record coupon usage if applicable
+        $couponCode = session()->get('couponCode');
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            // Mark the coupon as used by the user
+            CouponUsage::create([
+                'user_id' => Auth::id(),
+                'coupon_id' => $coupon->id,
+                'order_id' => $orderId, // You need to have an order ID available here
+            ]);
+
+            // Reset the coupon usage state
+            session()->forget('couponCode');
         }
 
         $orderItems = $order->orderItems->map(function ($item) {
@@ -77,13 +98,16 @@ class CheckoutController extends Controller
         $sessionCart = session()->get('cart', []);
         $subtotal = session()->get('subtotal');
         $cartItems = session()->get('cartItems');
+        $usedCoupon = session()->get('usedCoupon');
+        $couponCode = session()->get('couponCode');
+        $oldSubtotal = session()->get('oldSubtotal');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
             return Redirect::route('home')->with('info', 'Your cart is empty. Please add some items before checking out.');
         }
 
-        $totalAmount = $subtotal;
+     
 
         $user = Auth::user();
         $addresses = [];
@@ -93,7 +117,18 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
-        return view('checkout.index', compact('sessionCart', 'subtotal', 'cartItems', 'totalAmount', 'user', 'addresses', 'provinces'));
+
+        return view('checkout.index', compact(
+            'sessionCart',
+            'subtotal',
+            'cartItems',
+            'oldSubtotal',
+            'user',
+            'addresses',
+            'provinces',
+            'usedCoupon',
+            'couponCode'
+        ));
     }
 
     public function process(Request $request)
@@ -109,24 +144,31 @@ class CheckoutController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Handle new address creation if necessary
-            if ($user && $request->input('new_address')) {
-                $addressId = $this->createNewAddress($request, $user);
+            // Handle address creation or selection
+            if ($user) {
+                $hasAddresses = $user->addresses()->exists();
+
+                if (!$hasAddresses || $request->input('new_address')) {
+                    // Create new address if user has no addresses or chooses to create a new one
+                    $addressId = $this->createNewAddress($request, $user);
+                } else {
+                    // Use selected address
+                    $addressId = $request->input('selected_address_id');
+                }
             }
 
             // Create order
             DB::beginTransaction();
             $order = $this->createOrder($request, $user, $addressId);
-            
+
             // Store order type and ID in session
-            if ($user) {
-                $request->session()->put('order_type', 'order');
-                $request->session()->put('order_id', $order->id);
-            } else {
-                $request->session()->put('order_type', 'guest_order');
-                $request->session()->put('guest_order_id', $order->id);
-            }
-            
+            $orderType = $user ? 'order' : 'guest_order';
+            $request->session()->put('order_type', $orderType);
+            $request->session()->put($orderType . '_id', $order->id);
+
+            // Send order confirmation email
+            // $this->sendOrderConfirmationEmail($order, $orderType);
+
             DB::commit();
 
             // Process payment based on selected method
@@ -147,8 +189,15 @@ class CheckoutController extends Controller
         }
     }
 
+    public function sendBillEmail(Request $request)
+    {
+        SendEmail::dispatch()->delay(now()->addMinutes(9));
+        return redirect()->back();
+    }
+
     private function validateCheckoutData(Request $request, $user)
     {
+        // dd($request->all());
         $rules = [
             'payment_method' => 'required|in:paypal,vnpay',
         ];
@@ -164,11 +213,11 @@ class CheckoutController extends Controller
                 'ward_id' => 'required|exists:wards,id',
             ]);
         } else {
-            $rules = array_merge($rules, [
-                'new_address' => 'sometimes|boolean',
-            ]);
+            // Kiểm tra xem người dùng đã có địa chỉ nào chưa
+            $hasAddresses = $user->addresses()->exists();
 
-            if ($request->input('new_address')) {
+            if (!$hasAddresses) {
+                // Nếu chưa có địa chỉ, yêu cầu nhập thông tin địa chỉ mới
                 $rules = array_merge($rules, [
                     'full_name' => 'required|string|max:255',
                     'phone_number' => 'required|string|max:15',
@@ -179,7 +228,22 @@ class CheckoutController extends Controller
                     'ward_id' => 'required|exists:wards,id',
                 ]);
             } else {
-                $rules['selected_address_id'] = 'required|exists:addresses,id';
+                // Nếu đã có địa chỉ, cho phép chọn địa chỉ hiện có hoặc tạo mới
+                $rules['new_address'] = 'sometimes|boolean';
+                
+                if ($request->input('new_address')) {
+                    $rules = array_merge($rules, [
+                        'full_name' => 'required|string|max:255',
+                        'phone_number' => 'required|string|max:15',
+                        'address_line_1' => 'required|string|max:255',
+                        'address_line_2' => 'nullable|string|max:255',
+                        'district_id' => 'required|exists:districts,id',
+                        'province_id' => 'required|exists:provinces,id',
+                        'ward_id' => 'required|exists:wards,id',
+                    ]);
+                } else {
+                    $rules['selected_address_id'] = 'required|exists:addresses,id';
+                }
             }
         }
 
@@ -226,8 +290,8 @@ class CheckoutController extends Controller
                     ]);
                 }
 
-                // Clear cart for authenticated user
-                Cart::where('user_id', $user->id)->delete();
+                // Không xóa cart ở đây nữa
+                // Cart::where('user_id', $user->id)->delete();
 
                 return $order;
             } else {
@@ -269,8 +333,8 @@ class CheckoutController extends Controller
                 return $guestOrder;
             }
         } finally {
-            // Clear the session cart in both cases
-            session()->forget(['cart', 'cartItems', 'subtotal']);
+            // Không xóa session cart ở đây nữa
+            // session()->forget(['cart', 'cartItems', 'subtotal']);
         }
     }
 
@@ -294,5 +358,11 @@ class CheckoutController extends Controller
             $this->profileService->updateUserDefaultAddress($address->id);
         }
         return $address->id;
+    }
+
+    public function sendOrderConfirmationEmail($order, $orderType)
+    {
+        $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
+        Mail::to($email)->send(new OrderConfirmation($order, $orderType));
     }
 }

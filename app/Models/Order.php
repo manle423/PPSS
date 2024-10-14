@@ -26,6 +26,7 @@ class Order extends Model
         'total_price',
         'discount_value',
         'final_price',
+        'verification_code',
     ];
 
     const STATUS = [
