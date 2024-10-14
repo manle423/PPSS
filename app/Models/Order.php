@@ -18,7 +18,7 @@ class Order extends Model
         'guest_order_id',
         'status',
         'order_date',
-        'shipping_address_id',  // Thay đổi từ shipping_address
+        'shipping_address_id',
         'shipping_method_id',
         'payment_method',
         'promotion_id',

@@ -172,7 +172,6 @@ Route::middleware('buyerOrGuest')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
-        Route::post('/send-bill-email', [CheckoutController::class, 'sendBillEmail'])->name('checkout.send-bill-email');
         Route::get('/coupon', [CouponController::class, 'useCoupon'])->name('checkout.coupon');
     });
 

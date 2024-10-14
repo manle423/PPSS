@@ -13,54 +13,47 @@ class CouponController extends Controller
 {
     public function useCoupon(Request $request)
     {
-        // Check if the user is logged in
         $userId = auth()->id();
         if (!$userId) {
             return redirect()->back()->withErrors(['coupon_error' => 'Please login to use coupon']);
         }
 
-        $sessionCoupon = session()->get('couponCode');
-        $subtotal = session()->get('subtotal');
-        $oldSubtotal = session()->get('oldSubtotal');
-        if ($sessionCoupon) {
-            $subtotal = session()->get('oldSubtotal');
-        } else {
-            $subtotal = session()->get('subtotal');
-        }
-
         $code = $request->input('coupon_code');
-        // Reset, not using the code
+        $oldSubtotal = session()->get('oldSubtotal', session()->get('subtotal'));
+        $subtotal = session()->get('subtotal');
+
         if ($code == '') {
             session()->put('subtotal', $oldSubtotal);
-            session()->forget('couponCode');
+            session()->forget(['couponCode', 'usedCoupon']);
             return redirect()->back();
         }
+
         $coupon = Coupon::where('code', $code)->first();
         if ($coupon) {
-            // Check if the coupon has already been used by the user
             $couponUsage = CouponUsage::where('user_id', $userId)
                 ->where('coupon_id', $coupon->id)
                 ->exists();
 
             if ($couponUsage) {
-                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.']); // Prevent duplicate usage
+                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.']);
             }
-            if ($coupon->is_valid($subtotal)) {
-                // Coupon is valid, you can proceed with using it
-                $subtractValue = $subtotal * $coupon->discount_value;
-                $subtotal = $subtotal - ($subtractValue > $coupon->max_discount ? $coupon->max_discount : $subtractValue);
-                // Store the old and new subtotal in the session
-                session()->put('subtotal', $subtotal);
+
+            if ($coupon->is_valid($oldSubtotal)) {
+                $discount = $oldSubtotal * $coupon->discount_value;
+                $discount = min($discount, $coupon->max_discount);
+                $newSubtotal = $oldSubtotal - $discount;
+
+                session()->put('subtotal', $newSubtotal);
                 session()->put('oldSubtotal', $oldSubtotal);
                 session()->put('usedCoupon', true);
                 session()->put('couponCode', $code);
-                // Redirect back to the checkout page with the new subtotal and used coupon
+
                 return redirect()->back();
             } else {
-                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code']); // Coupon is invalid based on validation rules
+                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code']);
             }
         } else {
-            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist']); // Coupon with the provided code doesn't exist
+            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist']);
         }
     }
 }

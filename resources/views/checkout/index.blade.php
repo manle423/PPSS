@@ -187,4 +187,4 @@
     </div>
     <!-- Checkout Page End -->
     <script src="{{ asset('assets/js/checkout.js') }}"></script>
-@endsection()
+@endsection
