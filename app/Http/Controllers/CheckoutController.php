@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Province;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\GuestOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -26,7 +28,22 @@ class CheckoutController extends Controller
         }
 
         $order = Order::with(['orderItems.item', 'shippingAddress', 'shippingMethod'])
-                  ->findOrFail($orderId);
+            ->findOrFail($orderId);
+
+        // Record coupon usage if applicable
+        $couponCode = session()->get('couponCode');
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            // Mark the coupon as used by the user
+            CouponUsage::create([
+                'user_id' => auth()->id,
+                'coupon_id' => $coupon->id,
+                'order_id' => $orderId, // You need to have an order ID available here
+            ]);
+
+            // Reset the coupon usage state
+            session()->forget('couponCode');
+        }
 
         $orderItems = $order->orderItems->map(function ($item) {
             return [
@@ -40,8 +57,7 @@ class CheckoutController extends Controller
         $shippingAddress = $order->shippingAddress;
         $shippingMethod = $order->shippingMethod;
 
-        // Reset the coupon usage state
-        session()->forget('couponCode');
+
 
         return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod'));
     }
@@ -70,9 +86,17 @@ class CheckoutController extends Controller
         }
 
 
-        return view('checkout.index', compact('sessionCart', 
-        'subtotal', 'cartItems', 'totalAmount', 'user', 
-        'addresses', 'provinces','usedCoupon','couponCode'));
+        return view('checkout.index', compact(
+            'sessionCart',
+            'subtotal',
+            'cartItems',
+            'totalAmount',
+            'user',
+            'addresses',
+            'provinces',
+            'usedCoupon',
+            'couponCode'
+        ));
     }
 
     public function process(Request $request)
