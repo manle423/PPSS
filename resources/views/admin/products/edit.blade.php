@@ -139,7 +139,8 @@
 
             <button type="submit" class="submit-button">Update Product</button>
             <a href="{{ route('admin.products.list') }}"><button type="button" class="submit-button" style="background-color:yellow; margin-right:10px; margin-left:10px;">Cancel</button></a>
-            <button type="button" class="submit-button" style="background-color:blue;">Revenue</button>
+        
+            <a href="{{ route('admin.products.sale',$product->id) }}"><button type="button" class="submit-button" style="background-color:blue;">Revenue</button></a>
         </form>
     </div>
 

@@ -61,7 +61,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
         Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
         Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
-
+        Route::get('/sale/{id}', [AdminProductController::class, 'sale'])->name('products.sale');
+        Route::post('/search', [AdminProductController::class, 'search'])->name('products.search');
         // variant
         Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
     });

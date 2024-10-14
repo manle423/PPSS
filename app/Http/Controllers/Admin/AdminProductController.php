@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Carbon\Carbon;
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Category;
 use App\Models\ProductVariant;
 use App\Http\Controllers\Controller;
@@ -261,4 +263,50 @@ class AdminProductController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function sale($id){
+        //lay chi tiet hoa don tu id san pham
+        $product_sales = OrderItem::where('item_id', $id)->get();
+       //lay variant
+       $variants = $product_sales->pluck('variant_id')->unique();
+       $product = Product::find($id);
+
+       // Kiểm tra nếu sản phẩm không tồn tại
+       if (!$product) {
+           return redirect()->back()->withErrors(['message' => 'Product not found.']);
+       }
+   
+       return view('admin.products.sale', [
+           'productName' => $product->name,
+           'productId' => $product->id,
+        
+           'productSales' => $product_sales,  // Truyền dữ liệu OrderItem vào view
+       ]);
+       
+    }
+    public function search(Request $request)
+{
+  
+    $request->validate([
+        'date' => 'required|date',
+    ]);
+     $id=$request->input('id');
+    $date = $request->input('date');
+    $product = Product::find($id);
+    // Lọc doanh thu sản phẩm theo ngày
+    $productSales = OrderItem::whereDate('created_at', $date)
+        ->where('item_id',$id)
+        ->with('order') 
+        ->get();
+   
+    return view('admin.products.sale', [
+        'productSales' => $productSales,
+        'productName' =>  $product->name,// Thay thế bằng tên sản phẩm thật nếu cần
+        'productId' =>$product->id, // Hoặc id sản phẩm nếu cần
+    ]);
+}
+
+
+   
+   
 }
