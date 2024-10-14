@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\GhnController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
@@ -181,6 +182,14 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::prefix('vnpay')->group(function () {
         Route::get('/process', [VnPayController::class, 'process'])->name('vnpay.process');
         Route::get('/return', [VnPayController::class, 'return'])->name('vnpay.return');
+    });
+
+    Route::prefix('ghn')->name('ghn.')->group(function () {
+        Route::get('/provinces', [GhnController::class, 'getProvinces'])->name('provinces');
+        Route::get('/districts/{provinceId}', [GhnController::class, 'getDistricts'])->name('districts');
+        Route::get('/wards/{districtId}', [GhnController::class, 'getWards'])->name('wards');
+        Route::post('/shipping-fee', [GhnController::class, 'calculateShippingFee'])->name('shipping-fee');
+        Route::post('/create-order', [GhnController::class, 'createOrder'])->name('create-order');
     });
 });
 
