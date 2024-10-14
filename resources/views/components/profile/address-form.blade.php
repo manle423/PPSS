@@ -26,6 +26,12 @@
         </select>
     </div>
     <div class="form-group">
+        <label for="ward" style="font-weight: bold;">Ward</label>
+        <select class="form-control" id="ward_id" name="ward_id" required>
+            <option value="">Select Ward</option>
+        </select>
+    </div>
+    <div class="form-group">
         <label for="address_line_1" style="font-weight: bold;">Address Line 1</label>
         <input type="text" class="form-control" id="address_line_1" name="address_line_1" required>
     </div>
@@ -41,16 +47,17 @@
     <button type="button" id="cancel-address-form" class="btn btn-secondary">Cancel</button>
 </form>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const provinces = @json($provinces);
         const districtSelect = document.getElementById('district_id');
+        const wardSelect = document.getElementById('ward_id');
         const provinceSelect = document.getElementById('province_id');
 
         provinceSelect.addEventListener('change', function() {
             const selectedProvinceId = this.value;
             districtSelect.innerHTML = '<option value="">Select District</option>';
+            wardSelect.innerHTML = '<option value="">Select Ward</option>';
             if (selectedProvinceId) {
                 const selectedProvince = provinces.find(province => province.id == selectedProvinceId);
                 selectedProvince.districts.forEach(district => {
@@ -58,6 +65,23 @@
                     option.value = district.id;
                     option.textContent = district.name;
                     districtSelect.appendChild(option);
+                });
+            }
+        });
+
+        districtSelect.addEventListener('change', function() {
+            const selectedDistrictId = this.value;
+            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+            if (selectedDistrictId) {
+                const selectedProvince = provinces.find(province => 
+                    province.districts.some(district => district.id == selectedDistrictId)
+                );
+                const selectedDistrict = selectedProvince.districts.find(district => district.id == selectedDistrictId);
+                selectedDistrict.wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.id;
+                    option.textContent = ward.name;
+                    wardSelect.appendChild(option);
                 });
             }
         });

@@ -12,6 +12,10 @@
             <p class="mb-0">Thank you for your purchase.</p>
         </div>
 
+        <div class="alert alert-info mt-3">
+            <p class="mb-0">An order confirmation with details has been sent to your email address. Please check your inbox.</p>
+        </div>
+
         <h4>Order Details</h4>
         <p><strong>Order Code:</strong> {{ $order->order_code }}</p>
         <p><strong>Order Date:</strong> {{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
@@ -19,11 +23,11 @@
         <h5>Shipping Information</h5>
         @if($shippingAddress)
             <p>{{ $shippingAddress->full_name }}<br>
-               {{ $shippingAddress->address_line_1 }}<br>
+               {{ $shippingAddress->address_line_1 }},
                @if($shippingAddress->address_line_2)
-                   {{ $shippingAddress->address_line_2 }}<br>
+                   {{ $shippingAddress->address_line_2 }},
                @endif
-               {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
+               {{ $shippingAddress->ward->name }}, {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
         @endif
 
         <p><strong>Shipping Method:</strong> {{ $shippingMethod->name ?? 'N/A' }}</p>
@@ -73,5 +77,8 @@
         </div>
 
         <a href="{{ route('home') }}" class="btn btn-primary mt-3">Continue Shopping</a>
-    </div>
+        @if($orderType == 'order')
+            <a href="{{ route('user.order-history', 'PENDING') }}" class="btn btn-primary mt-3">Your Order History</a>
+        @endif
+    </div>  
 @endsection

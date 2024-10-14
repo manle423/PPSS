@@ -5,7 +5,7 @@
         <div class="address-view">
             <p><strong>Full Name:</strong> {{ $address->full_name }}</p>
             <p><strong>Phone Number:</strong> {{ $address->phone_number }}</p>
-            <p><strong>Address:</strong> {{ $address->address_line_1 }}, {{ $address->address_line_2 ?? '' }}, {{ $address->district->name }}, {{ $address->province->name }}</p>
+            <p><strong>Address:</strong> {{ $address->address_line_1 }}, {{ $address->address_line_2 ?? '' }}, {{ $address->ward->name }}, {{ $address->district->name }}, {{ $address->province->name }}</p>
             <p><strong>Is Default:</strong> {{ $address->is_default ? 'Yes' : 'No' }}</p>
             <button class="btn btn-secondary btn-edit-address" data-id="{{ $address->id }}">Edit</button>
             <form action="{{ route('user.delete-address', $address->id) }}" method="POST" style="display:inline;">
@@ -28,7 +28,7 @@
                 </div>
                 <div class="form-group">
                     <label for="province_{{ $address->id }}">Province</label>
-                    <select class="form-control" id="province_{{ $address->id }}" name="province_id" required>
+                    <select class="form-control" id="province_{{ $address->id }}" name="province_id" required data-original-value="{{ $address->province_id }}">
                         <option value="">Select Province</option>
                         @foreach($provinces as $province)
                             <option value="{{ $province->id }}" {{ $address->province_id == $province->id ? 'selected' : '' }}>{{ $province->name }}</option>
@@ -37,10 +37,19 @@
                 </div>
                 <div class="form-group">
                     <label for="district_{{ $address->id }}">District</label>
-                    <select class="form-control" id="district_{{ $address->id }}" name="district_id" required>
+                    <select class="form-control" id="district_{{ $address->id }}" name="district_id" required data-original-value="{{ $address->district_id }}">
                         <option value="">Select District</option>
                         @foreach($address->province->districts as $district)
                             <option value="{{ $district->id }}" {{ $address->district_id == $district->id ? 'selected' : '' }}>{{ $district->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ward_{{ $address->id }}">Ward</label>
+                    <select class="form-control" id="ward_{{ $address->id }}" name="ward_id" required data-original-value="{{ $address->ward_id }}">
+                        <option value="">Select Ward</option>
+                        @foreach($address->district->wards as $ward)
+                            <option value="{{ $ward->id }}" {{ $address->ward_id == $ward->id ? 'selected' : '' }}>{{ $ward->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -62,17 +71,18 @@
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const provinces = @json($provinces);
         const addressId = {{$address->id}};
         const districtSelect = document.getElementById('district_' + addressId);
         const provinceSelect = document.getElementById('province_' + addressId);
+        const wardSelect = document.getElementById('ward_' + addressId);
 
         provinceSelect.addEventListener('change', function() {
             const selectedProvinceId = this.value;
             districtSelect.innerHTML = '<option value="">Select District</option>';
+            wardSelect.innerHTML = '<option value="">Select Ward</option>';
             if (selectedProvinceId) {
                 const selectedProvince = provinces.find(province => province.id == selectedProvinceId);
                 selectedProvince.districts.forEach(district => {
@@ -83,5 +93,33 @@
                 });
             }
         });
+
+        districtSelect.addEventListener('change', function() {
+            const selectedDistrictId = this.value;
+            const selectedProvinceId = provinceSelect.value;
+            wardSelect.innerHTML = '<option value="">Select Ward</option>';
+            if (selectedDistrictId && selectedProvinceId) {
+                const selectedProvince = provinces.find(province => province.id == selectedProvinceId);
+                const selectedDistrict = selectedProvince.districts.find(district => district.id == selectedDistrictId);
+                if (selectedDistrict && selectedDistrict.wards) {
+                    selectedDistrict.wards.forEach(ward => {
+                        const option = document.createElement('option');
+                        option.value = ward.id;
+                        option.textContent = ward.name;
+                        wardSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+
+        // Trigger initial load of districts and wards
+        provinceSelect.dispatchEvent(new Event('change'));
+        setTimeout(() => {
+            districtSelect.value = {{ $address->district_id }};
+            districtSelect.dispatchEvent(new Event('change'));
+            setTimeout(() => {
+                wardSelect.value = {{ $address->ward_id ?? 'null' }};
+            }, 100);
+        }, 100);
     });
 </script>

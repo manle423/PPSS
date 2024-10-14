@@ -13,6 +13,8 @@ class GuestOrder extends Model
     protected $table = 'guest_orders';
 
     protected $fillable = [
+        'order_code',
+        'guest_name',
         'guest_email',
         'guest_phone_number',
         'guest_address',
@@ -25,7 +27,20 @@ class GuestOrder extends Model
         'total_price',
         'discount_value',
         'final_price',
+        'digital_signature',
     ];
+
+    protected static function boot()
+    {
+        // Chuẩn order_code: GT + ngày tháng năm + số thứ tự order ngày hôm đó
+        parent::boot();
+
+        static::creating(function ($order) {
+            $date = now()->format('dmy');
+            $orderCount = self::whereDate('created_at', now()->toDateString())->count();
+            $order->order_code = 'GT' . $date . str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT);
+        });
+    }
 
     public function shippingMethod()
     {
@@ -40,5 +55,10 @@ class GuestOrder extends Model
     public function contracts()
     {
         return $this->hasOne(Contract::class, 'guest_id', 'id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'guest_order_id', 'id');
     }
 }

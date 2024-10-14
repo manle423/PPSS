@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\GuestOrder;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CheckoutController;
+use App\Models\Cart;
 
 class PaypalController extends Controller
 {
+    protected $checkoutController;
+
+    public function __construct(CheckoutController $checkoutController)
+    {
+        $this->checkoutController = $checkoutController;
+    }
+
     public function create()
     {
         return view("payments.success");
@@ -17,9 +27,16 @@ class PaypalController extends Controller
     public function process(Request $request)
     {
         try {
-            $order = Order::findOrFail($request->order_id);
+            $orderType = session('order_type');
+            $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
 
-            Log::info('Processing PayPal payment for order: ' . $order->id);
+            if ($orderType == 'order') {
+                $order = Order::findOrFail($orderId);
+            } else {
+                $order = GuestOrder::findOrFail($orderId);
+            }
+
+            Log::info('Processing PayPal payment for ' . $orderType . ': ' . $order->id);
 
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
@@ -77,18 +94,75 @@ class PaypalController extends Controller
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request['token']);
 
+        $orderType = session('order_type');
+        $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+
+        if (!$orderId) {
+            return redirect()->route('checkout.index')->withErrors('error', 'Order not found.');
+        }
+
+        if ($orderType == 'order') {
+            $order = Order::findOrFail($orderId);
+        } else {
+            $order = GuestOrder::findOrFail($orderId);
+        }
+        // dd($response);
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-            // Assuming you have stored the order ID in the session when creating the order
-            $orderId = $request->session()->get('order_id');
-            if ($orderId) {
-                $order = Order::findOrFail($orderId);
-                $order->status = Order::STATUS['pending'];
-                $order->save();
+            // dd('thành công');
+            // Thanh toán thành công
+            $order->status = $orderType == 'order' ? Order::STATUS['pending'] : 'PENDING';
+            $order->save();
+
+            // Gửi email xác nhận đơn hàng
+            $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
+
+            // Xóa cart sau khi thanh toán thành công
+            if ($orderType == 'order') {
+                Cart::where('user_id', $order->user_id)->delete();
             }
+            session()->forget(['cart', 'cartItems', 'subtotal']);
 
             return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {
-            return redirect()->route('checkout.index')->withErrors('error', $response['message'] ?? 'Something went wrong.');
+            // dd('Thất bại');
+            // Thanh toán thất bại
+            $order->status = $orderType == 'order' ? Order::STATUS['canceled'] : 'CANCELED';
+            $order->save();
+
+            $errorMessage = 'Payment failed. ';
+            
+            // Xử lý các trường hợp lỗi cụ thể
+            if (isset($response['name']) && $response['name'] == 'UNPROCESSABLE_ENTITY') {
+                switch ($response['details'][0]['issue'] ?? '') {
+                    case 'INSTRUMENT_DECLINED':
+                        $errorMessage .= 'Your payment method was declined. Please try a different payment method.';
+                        break;
+                    case 'PAYER_CANNOT_PAY':
+                        $errorMessage .= 'There was an issue with your PayPal account. Please check your account or try a different payment method.';
+                        break;
+                    case 'PAYER_ACCOUNT_RESTRICTED':
+                        $errorMessage .= 'Your PayPal account is restricted. Please contact PayPal support.';
+                        break;
+                    case 'PAYER_ACCOUNT_LOCKED_OR_CLOSED':
+                        $errorMessage .= 'Your PayPal account is locked or closed. Please contact PayPal support.';
+                        break;
+                    case 'PAYEE_ACCOUNT_RESTRICTED':
+                        $errorMessage .= 'There is an issue with the merchant\'s PayPal account. Please try again later or use a different payment method.';
+                        break;
+                    case 'CURRENCY_NOT_SUPPORTED_FOR_COUNTRY':
+                        $errorMessage .= 'The currency is not supported for your country. Please try a different payment method.';
+                        break;
+                    default:
+                        $errorMessage .= 'An unexpected error occurred. Please try again or use a different payment method.';
+                }
+            } else {
+                $errorMessage .= $response['message'] ?? 'Please try again or use a different payment method.';
+            }
+
+            // Log the error for debugging
+            Log::error('PayPal payment failed: ' . json_encode($response));
+
+            return redirect()->route('checkout.index')->withErrors('error', $errorMessage);
         }
     }
 

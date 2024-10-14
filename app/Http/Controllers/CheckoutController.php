@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmail;
+use App\Mail\SendBillEmail;
+use App\Mail\OrderConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -15,18 +18,50 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\District;
+use App\Models\Ward;
+use App\Services\ProfileService;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
+    protected $profileService;
+
+    public function __construct(ProfileService $profileService)
+    {
+        $this->profileService = $profileService;
+    }
+
     public function success(Request $request)
     {
-        $orderId = session()->get('order_id');
+        $orderType = session('order_type');
+        $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+
         if (!$orderId) {
             return redirect()->route('home')->with('error', 'Order not found.');
         }
 
-        $order = Order::with(['orderItems.item', 'shippingAddress', 'shippingMethod'])
-                  ->findOrFail($orderId);
+        if ($orderType == 'order') {
+            $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
+                ->findOrFail($orderId);
+            $shippingAddress = $order->shippingAddress;
+        } else {
+            $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
+                ->findOrFail($orderId);
+            $guestAddress = json_decode($order->guest_address, true);
+
+            $district = District::find($guestAddress['district_id']);
+            $province = Province::find($guestAddress['province_id']);
+            $ward = Ward::find($guestAddress['ward_id']);
+            $shippingAddress = (object) [
+                'full_name' => $order->guest_name,
+                'address_line_1' => $guestAddress['address_line_1'],
+                'address_line_2' => $guestAddress['address_line_2'] ?? null,
+                'district' => $district,
+                'province' => $province,
+                'ward' => $ward,
+            ];
+        }
 
         $orderItems = $order->orderItems->map(function ($item) {
             return [
@@ -37,10 +72,8 @@ class CheckoutController extends Controller
             ];
         });
 
-        $shippingAddress = $order->shippingAddress;
-        $shippingMethod = $order->shippingMethod;
-
-        return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod'));
+        $shippingMethod = $order->shippingMethod ?? 'N/A';
+        return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod', 'orderType'));
     }
 
     public function index()
@@ -58,7 +91,7 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
         $addresses = [];
-        $provinces = Province::with('districts')->orderBy('name', 'asc')->get();
+        $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
 
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
@@ -80,10 +113,31 @@ class CheckoutController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            // Handle address creation or selection
+            if ($user) {
+                $hasAddresses = $user->addresses()->exists();
+
+                if (!$hasAddresses || $request->input('new_address')) {
+                    // Create new address if user has no addresses or chooses to create a new one
+                    $addressId = $this->createNewAddress($request, $user);
+                } else {
+                    // Use selected address
+                    $addressId = $request->input('selected_address_id');
+                }
+            }
+
             // Create order
             DB::beginTransaction();
             $order = $this->createOrder($request, $user, $addressId);
-            $request->session()->put('order_id', $order->id);
+
+            // Store order type and ID in session
+            $orderType = $user ? 'order' : 'guest_order';
+            $request->session()->put('order_type', $orderType);
+            $request->session()->put($orderType . '_id', $order->id);
+
+            // Send order confirmation email
+            // $this->sendOrderConfirmationEmail($order, $orderType);
+
             DB::commit();
 
             // Process payment based on selected method
@@ -91,9 +145,9 @@ class CheckoutController extends Controller
 
             switch ($paymentMethod) {
                 case 'paypal':
-                    return redirect()->route('paypal.process', ['order_id' => $order->id]);
+                    return redirect()->route('paypal.process');
                 case 'vnpay':
-                    return redirect()->route('vnpay.process', ['order_id' => $order->id]);
+                    return redirect()->route('vnpay.process');
                 default:
                     throw new Exception('Invalid payment method selected.');
             }
@@ -104,8 +158,15 @@ class CheckoutController extends Controller
         }
     }
 
+    public function sendBillEmail(Request $request)
+    {
+        SendEmail::dispatch()->delay(now()->addMinutes(9));
+        return redirect()->back();
+    }
+
     private function validateCheckoutData(Request $request, $user)
     {
+        // dd($request->all());
         $rules = [
             'payment_method' => 'required|in:paypal,vnpay',
         ];
@@ -118,13 +179,14 @@ class CheckoutController extends Controller
                 'address_line_1' => 'required|string|max:255',
                 'district_id' => 'required|exists:districts,id',
                 'province_id' => 'required|exists:provinces,id',
+                'ward_id' => 'required|exists:wards,id',
             ]);
         } else {
-            $rules = array_merge($rules, [
-                'new_address' => 'sometimes|boolean',
-            ]);
+            // Kiểm tra xem người dùng đã có địa chỉ nào chưa
+            $hasAddresses = $user->addresses()->exists();
 
-            if ($request->input('new_address')) {
+            if (!$hasAddresses) {
+                // Nếu chưa có địa chỉ, yêu cầu nhập thông tin địa chỉ mới
                 $rules = array_merge($rules, [
                     'full_name' => 'required|string|max:255',
                     'phone_number' => 'required|string|max:15',
@@ -132,9 +194,25 @@ class CheckoutController extends Controller
                     'address_line_2' => 'nullable|string|max:255',
                     'district_id' => 'required|exists:districts,id',
                     'province_id' => 'required|exists:provinces,id',
+                    'ward_id' => 'required|exists:wards,id',
                 ]);
             } else {
-                $rules['selected_address_id'] = 'required|exists:addresses,id';
+                // Nếu đã có địa chỉ, cho phép chọn địa chỉ hiện có hoặc tạo mới
+                $rules['new_address'] = 'sometimes|boolean';
+                
+                if ($request->input('new_address')) {
+                    $rules = array_merge($rules, [
+                        'full_name' => 'required|string|max:255',
+                        'phone_number' => 'required|string|max:15',
+                        'address_line_1' => 'required|string|max:255',
+                        'address_line_2' => 'nullable|string|max:255',
+                        'district_id' => 'required|exists:districts,id',
+                        'province_id' => 'required|exists:provinces,id',
+                        'ward_id' => 'required|exists:wards,id',
+                    ]);
+                } else {
+                    $rules['selected_address_id'] = 'required|exists:addresses,id';
+                }
             }
         }
 
@@ -152,71 +230,108 @@ class CheckoutController extends Controller
             $cartItems = session()->get('cartItems');
             $sessionCart = session()->get('cart', []);
             $subtotal = session()->get('subtotal');
-
-            $orderData = [
-                'order_date' => now(),
-                'shipping_method_id' => 1, // Just for now
-                'payment_method' => $request->input('payment_method'),
-                'total_price' => $subtotal,
-                'discount_value' => 0,
-                'final_price' => $subtotal, // total_price - discount_value, just for now
-            ];
-
             if ($user) {
-                $orderData['user_id'] = $user->id;
-                $orderData['shipping_address_id'] = $addressId;
-            } else {
-                // Create GuestOrder
-                $guestOrder = GuestOrder::create([
-                    'guest_email' => $request->input('email'),
-                    'guest_phone_number' => $request->input('phone_number'),
-                    'guest_address' => json_encode([
-                        'full_name' => $request->input('full_name'),
-                        'address_line_1' => $request->input('address_line_1'),
-                        'address_line_2' => $request->input('address_line_2'),
-                        'district_id' => $request->input('district_id'),
-                        'province_id' => $request->input('province_id'),
-                    ]),
-                    'status' => 'pending',
+                // Create Order for authenticated user
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'shipping_address_id' => $addressId,
                     'order_date' => now(),
-                    'shipping_method_id' => $request->input('shipping_method_id'),
+                    'shipping_method_id' => 1, // Just for now
                     'payment_method' => $request->input('payment_method'),
                     'total_price' => $subtotal,
                     'discount_value' => 0,
                     'final_price' => $subtotal,
+                    'status' => 'pending'
                 ]);
 
-                $orderData['guest_order_id'] = $guestOrder->id;
-            }
+                // Create OrderItems for authenticated user
+                foreach ($cartItems as $item) {
+                    $variantId = $item->variant ? strval($item->variant->id) : '';
+                    $cartKey = $item->product->id . '-' . $variantId;
+                    $quantity = $sessionCart[$cartKey] ?? 0;
 
-            $order = Order::create($orderData);
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'item_id' => $item->product->id,
+                        'variant_id' => $item->variant ? $item->variant->id : null,
+                        'quantity' => $quantity,
+                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
+                    ]);
+                }
 
-            // Create OrderItems
-            foreach ($cartItems as $item) {
-                $variantId = $item->variant ? strval($item->variant->id) : '';
-                $cartKey = $item->product->id . '-' . $variantId;
-                $quantity = $sessionCart[$cartKey] ?? 0;
+                // Không xóa cart ở đây nữa
+                // Cart::where('user_id', $user->id)->delete();
 
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'item_id' => $item->product->id,
-                    'quantity' => $quantity,
-                    'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
+                return $order;
+            } else {
+                // Create GuestOrder for non-authenticated user
+                $guestOrder = GuestOrder::create([
+                    'guest_name' => $request->input('full_name'),
+                    'guest_email' => $request->input('email'),
+                    'guest_phone_number' => $request->input('phone_number'),
+                    'guest_address' => json_encode([
+                        'address_line_1' => $request->input('address_line_1'),
+                        'address_line_2' => $request->input('address_line_2'),
+                        'district_id' => $request->input('district_id'),
+                        'province_id' => $request->input('province_id'),
+                        'ward_id' => $request->input('ward_id'),
+                    ], JSON_UNESCAPED_UNICODE),
+                    'status' => 'pending',
+                    'order_date' => now(),
+                    'shipping_method_id' => 1, // Just for now
+                    'payment_method' => $request->input('payment_method'),
+                    'total_price' => $subtotal,
+                    'discount_value' => 0, // Just for now
+                    'final_price' => $subtotal,
+                    'digital_signature' => '' // Just for now
                 ]);
-            }
 
-            // // Clear the cart after creating the order
+                // Create OrderItems for guest
+                foreach ($cartItems as $item) {
+                    $variantId = $item->variant ? strval($item->variant->id) : '';
+                    $cartKey = $item->product->id . '-' . $variantId;
+                    $quantity = $sessionCart[$cartKey] ?? 0;
+                    OrderItem::create([
+                        'guest_order_id' => $guestOrder->id,
+                        'item_id' => $item->product->id,
+                        'variant_id' => $item->variant ? $item->variant->id : null,
+                        'quantity' => $quantity,
+                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
+                    ]);
+                }
+                return $guestOrder;
+            }
+        } finally {
+            // Không xóa session cart ở đây nữa
             // session()->forget(['cart', 'cartItems', 'subtotal']);
-
-            // // Delete cart items from database for authenticated users
-            // if ($user) {
-            //     Cart::where('user_id', $user->id)->delete();
-            // }
-
-            return $order;
-        } catch (Exception $e) {
-            Log::error('Order creation failed: ' . $e->getMessage());
-            throw $e; // Re-throw the exception to be caught in the main try-catch block
         }
+    }
+
+    private function createNewAddress(Request $request, $user)
+    {
+        $validatedData = $this->profileService->validateAddressData($request);
+        $addressData = $validatedData;
+
+        $existingAddressCount = $this->profileService->getExistingAddressCount();
+
+        if ($existingAddressCount === 0) {
+            $addressData['is_default'] = true;
+            $this->profileService->resetOtherDefaultAddresses();
+        } else {
+            $addressData['is_default'] = false;
+        }
+
+        $address = $user->addresses()->create($addressData);
+
+        if ($addressData['is_default']) {
+            $this->profileService->updateUserDefaultAddress($address->id);
+        }
+        return $address->id;
+    }
+
+    public function sendOrderConfirmationEmail($order, $orderType)
+    {
+        $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
+        Mail::to($email)->send(new OrderConfirmation($order, $orderType));
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminCustomerController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -15,11 +14,13 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VnPayController;
+use Illuminate\Support\Facades\Route;
 
 // Redirect
 Route::get('/', function () {
@@ -88,7 +89,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
-// CHo người chưa đăng nhập
+// Cho người chưa đăng nhập
 Route::middleware('guest')->group(function () {
     // Login Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -123,7 +124,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // Routes for order
-    Route::get('history', [OrderController::class, 'history'])->name('order.history');
+    Route::prefix('/order')->group(function () {
+        Route::get('/history', [OrderController::class, 'history'])->name('order.history');
+        Route::get('/{order}', [OrderController::class, 'show'])->name('order.show');
+    });
 
     Route::prefix('/profile')->group(function () {
         Route::get('/', [ProfileController::class, 'viewProfile'])->name('user.profile');
@@ -133,8 +137,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/address/{id}', [ProfileController::class, 'getAddress'])->name('user.get-address');
         Route::post('/update-info', [ProfileController::class, 'updateUserInfo'])->name('user.update-info');
     });
-});
 
+    Route::get('/order-history/{status}', [OrderController::class, 'getOrdersByStatus'])->name('user.order-history');
+});
 
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
@@ -158,6 +163,7 @@ Route::middleware('buyerOrGuest')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+        Route::post('/send-bill-email', [CheckoutController::class, 'sendBillEmail'])->name('checkout.send-bill-email');
     });
 
     Route::prefix('paypal')->group(function () {
@@ -168,7 +174,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     });
 
     Route::prefix('vnpay')->group(function () {
-
+        Route::get('/process', [VnPayController::class, 'process'])->name('vnpay.process');
+        Route::get('/return', [VnPayController::class, 'return'])->name('vnpay.return');
     });
 });
 
@@ -176,25 +183,3 @@ Route::middleware('buyerOrGuest')->group(function () {
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
-
-//Route cho ProductController
-// Route::middleware('checkoutBuyer')->group(function () {
-//     Route::get('/products', [ProductController::class, 'index']); // Lấy danh sách sản phẩm
-//     Route::post('/products', [ProductController::class, 'store']); // Thêm sản phẩm
-//     Route::put('/products/{id}', [ProductController::class, 'update']); // Cập nhật sản phẩm
-//     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // Xóa sản phẩm
-// });
-
-//Route payment paypal
-// Route::get('paypal', [PaypalController::class, 'index'])->name('paypal');
-
-// Route::post('paypal/payment', [PaypalController::class, 'payment'])->name('paypal.payment');
-// Route::get('paypal/payment/success', [PaypalController::class, 'paymentSuccess'])->name('paypal.payment.success');
-// Route::get('paypal/payment/cancel', [PaypalController::class, 'paymentCancel'])->name('paypal.payment.cancel');
-
-
-
-
-// Route::get('/order-success', function () {
-//     return view('payments.success');
-// })->name('orderSuccess');

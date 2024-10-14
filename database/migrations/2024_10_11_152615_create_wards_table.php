@@ -11,22 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('provinces', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('codename');
-            $table->integer('province_code');
-            $table->timestamps();
+        Schema::table('districts', function (Blueprint $table) {
+            $table->integer('district_code')->after('codename');
         });
 
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create('wards', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('codename');
-            $table->integer('province_id');
+            $table->integer('district_id');
             $table->timestamps();
         });
-        
     }
 
     /**
@@ -34,7 +29,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('provinces');
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('wards');
+        Schema::table('districts', function (Blueprint $table) {
+            $table->dropColumn('district_code');
+        });
     }
 };
