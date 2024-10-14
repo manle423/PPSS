@@ -165,13 +165,14 @@
 
                     <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
                         id="coupon_code" name='coupon_code'  value={{ $couponCode }}>
-                    @error('coupon_error')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                    
                     <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
                         Coupon</button>
+                        @error('coupon_error')
+                        <p class="text-danger" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </p>
+                    @enderror
             </form>
         </div>
     </div>

@@ -23,6 +23,12 @@ class CouponController extends Controller
 
     public function useCoupon(Request $request)
     {
+        // Check if the user is logged in
+        $userId = auth()->id();
+        if (!$userId) {
+            return redirect()->back()->withErrors(['coupon_error' => 'Please login to use coupon']);
+        }
+
         $sessionCoupon = session()->get('couponCode');
         $subtotal = session()->get('subtotal');
         $oldSubtotal = session()->get('oldSubtotal');
@@ -42,7 +48,7 @@ class CouponController extends Controller
         $coupon = Coupon::where('code', $code)->first();
         if ($coupon) {
             // Check if the coupon has already been used by the user
-            $couponUsage = CouponUsage::where('user_id', auth()->id())
+            $couponUsage = CouponUsage::where('user_id', $userId)
                 ->where('coupon_id', $coupon->id)
                 ->exists();
 
