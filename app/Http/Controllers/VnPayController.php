@@ -97,13 +97,11 @@ class VnPayController extends Controller
             }
             $hashData = rtrim($hashData, '&');
             $secureHash = hash_hmac('sha512', $hashData, config('vnpay.vnp_HashSecret'));
-            dd('1');
             if ($secureHash === $vnp_SecureHash) {
                 if ($request->vnp_ResponseCode == '00') {
                     // Thanh toán thành công
                     $orderType = session('order_type');
                     $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
-                    dd($orderType);
                     if ($orderId) {
                         if ($orderType == 'order') {
                             $order = Order::findOrFail($orderId)->with('shippingAddress');
