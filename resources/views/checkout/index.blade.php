@@ -132,14 +132,14 @@
                             </table>
                         </div>
                         <div>
-                            <form action="{{ route('checkout.coupon') }}" method="get">
+                            {{-- <form action="{{ route('checkout.coupon') }}" method="get">
                                 @csrf
                                 <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
                                     id="coupon_code" name='coupon_code'>
                                 <button class="btn border-secondary rounded-pill px-4 py-3 text-primary"
                                     type="submit">Apply
                                     Coupon</button>
-                            </form>
+                            </form> --}}
                             @error('coupon_error')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -163,9 +163,8 @@
                 @csrf
                 <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
 
-                @if ($couponCode == '')
                     <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
-                        id="coupon_code" name='coupon_code'>
+                        id="coupon_code" name='coupon_code'  value={{ $couponCode }}>
                     @error('coupon_error')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -173,17 +172,6 @@
                     @enderror
                     <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
                         Coupon</button>
-                @else
-                    <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
-                        id="coupon_code" name='coupon_code' value={{ $couponCode }}>
-                    @error('coupon_error')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                    <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Reset
-                        Coupon</button>
-                @endif
             </form>
         </div>
     </div>

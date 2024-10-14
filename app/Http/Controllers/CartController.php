@@ -106,9 +106,13 @@ class CartController extends Controller
 
         // Save the subtotal to session
         session()->put('subtotal', $subtotal);
+        session()->put('oldSubtotal', $subtotal);
 
         // Save cartItems to session
         session()->put('cartItems', $cartItems);
+
+        // Reset the coupon usage state
+        session()->forget('couponCode');
 
         return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
     }

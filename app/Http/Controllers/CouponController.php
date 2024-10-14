@@ -24,7 +24,7 @@ class CouponController extends Controller
     {
         $sessionCoupon = session()->get('couponCode');
         $subtotal = session()->get('subtotal');
-        $oldSubtotal = $subtotal;
+        $oldSubtotal = session()->get('oldSubtotal');
         if ($sessionCoupon) {
             $subtotal = session()->get('oldSubtotal');
         }
@@ -36,7 +36,8 @@ class CouponController extends Controller
         // Reset, not using the code
         if ($code == '') {
             session()->put('subtotal',$oldSubtotal);
-            return redirect()->back(); // Coupon with the provided code doesn't exist
+            session()->forget('couponCode');
+            return redirect()->back(); 
         }
         $coupon = Coupon::where('code', $code)->first();
         if ($coupon) {
