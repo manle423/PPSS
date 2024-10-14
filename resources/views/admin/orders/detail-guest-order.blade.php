@@ -1,58 +1,58 @@
 @extends('layouts.admin')
 @section('content')
-<link href="{{ asset('assets/vendor/css/orderdetail.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/vendor/css/orderdetail.css') }}" rel="stylesheet">
 
-<div class="order-details-container">
-    <h2>Guest order detail</h2>
+    <div class="order-details-container">
+        <h2>Guest Order Details</h2>
 
-    <!-- Thông tin chi tiết của đơn hàng -->
-    <div class="order-info">
-        <p><strong>Order code:</strong> {{ $order->orders->order_code }} </p>
-        <p><strong>Ordered date:</strong> {{ $order->order_date }}</p>
-        <p><strong>Name:</strong> {{ $order->orders->user->full_name }} </p>
-        <p><strong>Phone number:</strong> {{ $order->guest_phone_number }} </p>
-        <p><strong>Address:</strong> {{ $order->guest_address }}</p>
-        <p><strong>Status:</strong> {{ $order->status }} </p>
-        <p><strong>Order date:</strong> {{ $order->order_date }} </p>
-        <p><strong>Shipping method:</strong> {{ $order->shipping_method_id }} </p>
-        <p><strong>Payment method:</strong> {{ $order->payment_method }}</p>
-        <p><strong>Promotion:</strong> {{ $order->promotion_id ?? 'N/A' }}</p>
-        <p><strong>Coupon:</strong> {{ $order->coupon_id ?? 'N/A' }}</p>
-        <p><strong>Total price:</strong> {{ $order->total_price ?? 'N/A' }}</p>
-        <p><strong>Discount value:</strong> {{ $order->discount_value ?? 'N/A'}}</p>
-        <p><strong>Final price:</strong> {{ $order->final_price }}</p>
+        <div class="order-info">
+            <p><strong>Order code:</strong> {{ $order->order_code }}</p>
+            <p><strong>Ordered date:</strong> {{ $order->order_date }}</p>
+            <p><strong>Name:</strong> {{ $order->guest_name }}</p>
+            <p><strong>Phone number:</strong> {{ $order->guest_phone_number }}</p>
+            <p><strong>Email:</strong> {{ $order->guest_email }}</p>
+            <p><strong>Address:</strong>
+                @php
+                    $address = json_decode($order->guest_address, true);
+                    $addressLine = $address['address_line_1'];
+                    if (!empty($address['address_line_2'])) {
+                        $addressLine .= ', ' . $address['address_line_2'];
+                    }
+                    $ward = \App\Models\Ward::find($address['ward_id']);
+                    $district = \App\Models\District::find($address['district_id']);
+                    $province = \App\Models\Province::find($address['province_id']);
+                @endphp
+                {{ $addressLine }}, {{ $ward->name }}, {{ $district->name }}, {{ $province->name }}
+            </p>
+            <p><strong>Shipping method:</strong> {{ $order->shippingMethod->name ?? 'N/A' }}</p>
+            <p><strong>Payment method:</strong> {{ $order->payment_method }}</p>
+            <p><strong>Coupon:</strong> {{ $order->coupon->code ?? 'N/A' }}</p>
+            <p><strong>Total price:</strong> {{ number_format($order->total_price, 0, ',', '.') }} VND</p>
+            <p><strong>Discount value:</strong> {{ number_format($order->discount_value, 0, ',', '.') }} VND</p>
+            <p><strong>Final price:</strong> {{ number_format($order->final_price, 0, ',', '.') }} VND</p>
+        </div>
+
+        <table class="order-items">
+            <thead>
+                <tr>
+                    <th>Product Image</th>
+                    <th>Product name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($order->orderItems as $orderItem)
+                    <tr>
+                        <td><img src="{{ $orderItem->item->image_url }}" alt="{{ $orderItem->item->name }}" width="50"></td>
+                        <td>{{ $orderItem->item->name }}</td>
+                        <td>{{ $orderItem->quantity }}</td>
+                        <td>{{ number_format($orderItem->price, 0, ',', '.') }} VND</td>
+                        <td>{{ number_format($orderItem->quantity * $orderItem->price, 0, ',', '.') }} VND</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
-
-    <!-- Bảng hiển thị chi tiết các sản phẩm trong đơn hàng -->
-    <table class="order-items">
-        <thead>
-            <tr>
-                <th>Product Image</th>
-                <th>Product name</th>
-                <th>Type</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Promotion</th>
-                <th>Last Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Giả sử bạn sẽ thay thế các giá trị này bằng dữ liệu thực -->
-            
-            @foreach ($order->orderItems as $orderItem)
-            <tr>
-    <td>{{ $orderItem->item->image }}</td>
-    <td>{{ $orderItem->item->name }}</td>
-    <td>{{ $orderItem->variant_id }}</td>
-    <td>{{ $orderItem->quantity }}</td>
-    <td>{{ $orderItem->item->price }}</td>
-    <td>promotion</td>
-    <td>{{ $order->final_price }}</td>
-</tr>
-            @endforeach
-
-        </tbody>
-    </table>
-</div>
-
 @endsection

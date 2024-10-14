@@ -23,9 +23,9 @@
             <tbody>
                 @foreach ($orders as $order)
                     <tr>
-                        <td>{{ $order->orders->order_code }}</td>
-                        <td>{{ $order->guest_phone_number }}</td>
-                        <td>{{ $order->order_date }}</td>
+                        <td>{{ $order->order_code ?? 'N/A' }}</td>
+                        <td>{{ $order->guest_phone_number ?? 'N/A' }}</td>
+                        <td>{{ $order->order_date ?? 'N/A' }}</td>
                         <td>
                             @if ($order->status == 'PENDING')
                                 <span class="status pending">Pending</span>
@@ -37,7 +37,7 @@
                                 <span class="status shipping">Shipping</span>
                             @endif
                         </td>
-                        <td>{{ $order->final_price }}</td>
+                        <td>{{ $order->final_price ?? 'N/A' }}</td>
 
                         <td><button class="action-btn"><a href="{{ route('admin.orders.detail-guest-order', $order->id) }}">Details</a></button></td>
                     </tr>
