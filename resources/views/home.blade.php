@@ -569,10 +569,6 @@
         <div class="container">
             <div class="bg-light p-5 rounded">
                 <div class="row g-4 justify-content-center">
-                    <form action="{{route('checkout.send-bill-email')}}" method="post">
-                        @csrf
-                        <button type="submit">Submit</button>
-                    </form>
                     <div class="col-md-6 col-lg-6 col-xl-3">
                         <div class="counter bg-white rounded p-5">
                             <i class="fa fa-users text-secondary"></i>
