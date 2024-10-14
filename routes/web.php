@@ -19,6 +19,7 @@ use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VnPayController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect
@@ -70,6 +71,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::prefix('/orders')->group(function () {
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('orders.detail');
+        Route::get('/guest-order/{id}', [AdminOrderController::class, 'detailGuestOrder'])->name('orders.detail-guest-order');
     });
     Route::prefix('/customers')->group(function () {
         Route::get('/', [AdminCustomerController::class, 'list'])->name('customers.list');
@@ -124,7 +126,7 @@ Route::middleware('auth')->group(function () {
     // Routes for order
     Route::prefix('/order')->group(function () {
         Route::get('/history', [OrderController::class, 'history'])->name('order.history');
-        Route::get('/{order}', [OrderController::class, 'show'])->name('order.show');
+        Route::get('/show/{order}', [OrderController::class, 'show'])->name('order.show');
     });
 
     Route::prefix('/profile')->group(function () {
@@ -142,7 +144,14 @@ Route::middleware('auth')->group(function () {
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    
+    Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
+    Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
+
+    Route::prefix('/order')->group(function () {
+        Route::get('/search', [OrderController::class, 'searchForm'])->name('order.search');
+        Route::post('/search', [OrderController::class, 'search'])->name('order.search.post');
+        Route::post('/verify', [OrderController::class, 'verifyAndShowOrder'])->name('order.verify');
+    });
 
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
@@ -160,6 +169,7 @@ Route::middleware('buyerOrGuest')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
+        Route::post('/send-bill-email', [CheckoutController::class, 'sendBillEmail'])->name('checkout.send-bill-email');
     });
 
     Route::prefix('paypal')->group(function () {
@@ -170,7 +180,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     });
 
     Route::prefix('vnpay')->group(function () {
-
+        Route::get('/process', [VnPayController::class, 'process'])->name('vnpay.process');
+        Route::get('/return', [VnPayController::class, 'return'])->name('vnpay.return');
     });
 });
 
