@@ -306,7 +306,24 @@ class AdminProductController extends Controller
     ]);
 }
 
+    public function find(Request $request){
+        $queryInput = $request->input('query');
 
+        // Truy vấn sản phẩm dựa trên tên và tên danh mục
+        $products = Product::where('name', 'LIKE', "%{$queryInput}%")
+            ->orWhereHas('category', function ($query) use ($queryInput) {
+                $query->where('name', 'LIKE', "%{$queryInput}%");
+            })
+            ->paginate(5);
+    
+       
+        if ($products->isEmpty()) {
+            session()->flash('message', 'Product not found.');
+            return view('admin.products.index', compact('queryInput', 'products'));
+        }
+    
+        return view('admin.products.index', compact('products', 'queryInput'));
+    }
    
    
 }

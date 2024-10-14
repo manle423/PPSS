@@ -31,6 +31,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', function () {
         return redirect(route('admin.dashboard'));
     });
+   
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
 
@@ -62,6 +63,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
         Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
         Route::get('/sale/{id}', [AdminProductController::class, 'sale'])->name('products.sale');
+       
         Route::post('/search', [AdminProductController::class, 'search'])->name('products.search');
         // variant
         Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
