@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Province;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\GuestOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -63,6 +65,21 @@ class CheckoutController extends Controller
             ];
         }
 
+        // Record coupon usage if applicable
+        $couponCode = session()->get('couponCode');
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            // Mark the coupon as used by the user
+            CouponUsage::create([
+                'user_id' => Auth::id(),
+                'coupon_id' => $coupon->id,
+                'order_id' => $orderId, // You need to have an order ID available here
+            ]);
+
+            // Reset the coupon usage state
+            session()->forget('couponCode');
+        }
+
         $orderItems = $order->orderItems->map(function ($item) {
             return [
                 'name' => $item->item->name,
@@ -81,13 +98,16 @@ class CheckoutController extends Controller
         $sessionCart = session()->get('cart', []);
         $subtotal = session()->get('subtotal');
         $cartItems = session()->get('cartItems');
+        $usedCoupon = session()->get('usedCoupon');
+        $couponCode = session()->get('couponCode');
+        $oldSubtotal = session()->get('oldSubtotal');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
             return Redirect::route('home')->with('info', 'Your cart is empty. Please add some items before checking out.');
         }
 
-        $totalAmount = $subtotal;
+     
 
         $user = Auth::user();
         $addresses = [];
@@ -97,7 +117,18 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
-        return view('checkout.index', compact('sessionCart', 'subtotal', 'cartItems', 'totalAmount', 'user', 'addresses', 'provinces'));
+
+        return view('checkout.index', compact(
+            'sessionCart',
+            'subtotal',
+            'cartItems',
+            'oldSubtotal',
+            'user',
+            'addresses',
+            'provinces',
+            'usedCoupon',
+            'couponCode'
+        ));
     }
 
     public function process(Request $request)

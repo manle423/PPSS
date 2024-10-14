@@ -33,7 +33,8 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <input type="hidden" name="selected_address_id" id="selected_address_id" value="">
+                                    <input type="hidden" name="selected_address_id" id="selected_address_id"
+                                        value="">
                                 </div>
                                 <div class="form-check mb-3">
                                     <input class="form-check-input" type="checkbox" id="new_address" name="new_address"
@@ -90,7 +91,13 @@
                                         </td>
                                         <td class="py-5">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark">{{ $subtotal }} $</p>
+                                                <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
+                                                    đ</p>
+                                                @isset($couponCode)
+                                                <p class="mb-0 text-muted text-decoration-line-through " name="subtotal" id="subtotal">{{ $oldSubtotal }}
+                                                    đ</p>
+                                                @endisset
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -134,9 +141,20 @@
                             </table>
                         </div>
                         <div>
-                            <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code">
-                            <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply
-                                Coupon</button>
+                            {{-- <form action="{{ route('checkout.coupon') }}" method="get">
+                                @csrf
+                                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code"
+                                    id="coupon_code" name='coupon_code'>
+                                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary"
+                                    type="submit">Apply
+                                    Coupon</button>
+                            </form> --}}
+                            @error('coupon_error')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+
                         </div>
                         <input type="hidden" name="total_amount" value="{{ $subtotal }}">
                         <div class="form-group mb-3">
@@ -149,6 +167,21 @@
                         <button type="submit" class="btn btn-primary">Place Order</button>
                     </div>
                 </div>
+            </form>
+            <form action="{{ route('checkout.coupon') }}" method="get" id="coupon-form">
+                @csrf
+                <input type="hidden" name="subtotal" value="{{ isset($oldSubtotal) ? $oldSubtotal : $subtotal }}">
+
+                <input type="text" class="border-1 rounded me-5 py-3 mb-4" placeholder="Coupon Code" id="coupon_code"
+                    name='coupon_code' value={{ $couponCode }}>
+
+                <button class="btn border-secondary rounded-pill px-4 py-3 text-primary" type="submit">Apply
+                    Coupon</button>
+                @error('coupon_error')
+                    <p class="text-danger" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </p>
+                @enderror
             </form>
         </div>
     </div>
