@@ -46,11 +46,12 @@
     </td>
     <td>
         <p class="mb-0 mt-4">
-        {{(optional($item->variant)->variant_price ?? $item->product->price)  }}đ
+        {{number_format(optional($item->variant)->variant_price ?? $item->product->price, 0,'.',',')
+            }} đ
         </p>
     </td>
     <td>
-        <p class="mb-0 mt-4">{{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 2) }}đ</p>
+        <p class="mb-0 mt-4">{{ number_format($item->quantity * (optional($item->variant)->variant_price ?? $item->product->price), 0,'.',',') }} đ</p>
     </td>
     <td>
         @auth

@@ -138,16 +138,16 @@
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                                     @if ($product->variants->count() == 0)
                                                         <div class="price"style="width:234px; height:65px;">
-                                                        <p class="text-dark fs-5 fw-bold mb-0" >{{ $product->price }} đ</p>
+                                                        <p class="text-dark fs-5 fw-bold mb-0" >{{ number_format($product->price,0,'.',',') }} đ</p>
                                                         </div>
                                                     @elseif ($product->variants->count() == 1)
                                                     <div class="price"style="width:234px; height:65px;">
-                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants[0]->variant_price }} đ</p>
+                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ number_format($product->variants[0]->variant_price,0,'.',',') }} đ</p>
                                                     {{--Show price in format (lowest variant price) - (highest variant price)--}}
                                                     </div>
                                                     @else
                                                     <div class="price"style="width:234px; height:65px;">
-                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants->min('variant_price') }} -
+                                                    <p class="text-dark fs-5 fw-bold mb-0">{{ number_format($product->variants->min('variant_price'),0,'.',',') }} -
                                                         {{ $product->variants->max('variant_price') }} đ</p>
                                                         </div>
                                                         @endif

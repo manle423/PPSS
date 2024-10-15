@@ -38,7 +38,7 @@
 
                             <div class="d-flex justify-content-between mb-4">
                                 <h4 class="mb-0 me-4">Subtotal:</h4>
-                                <p class="mb-0">{{ $subtotal }} đ</p>
+                                <p class="mb-0">{{ number_format($subtotal,0,'.',',') }} đ</p>
                             </div>
 
                         </div>
