@@ -50,6 +50,31 @@ class PaypalController extends Controller
             $total_amount = number_format($order->total_price, 2, '.', '');
             Log::info('Order total amount: ' . $total_amount);
 
+            // Lấy tỉ giá hối đoái ngoại tệ từ API
+            $api_key = env('YOUR_API_KEY');
+            $base_currency = 'VND';
+            $target_currency = 'USD';
+
+
+            $url = "https://openexchangerates.org/api/latest.json?app_id=" . $api_key;
+
+           
+            $response = file_get_contents($url);
+            $data = json_decode($response, true);
+
+            $data = json_decode($response, true);
+
+            
+            if ($data && isset($data->rates->$target_currency)) {
+                $exchange_rate = $data->rates->$target_currency;
+            } else {
+                // Gán cứng nếu không tìm được
+                $exchange_rate = 0.000040;
+            }
+
+            // Chuyển đổi giá cả từ VND sang USD
+            $total_amount_usd = number_format($total_amount * $exchange_rate, 2, '.', '');
+
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
                 "application_context" => [
@@ -60,7 +85,7 @@ class PaypalController extends Controller
                     0 => [
                         "amount" => [
                             "currency_code" => "USD",
-                            "value" => $total_amount
+                            "value" => $total_amount_usd
                         ]
                     ]
                 ]
@@ -130,7 +155,7 @@ class PaypalController extends Controller
             $order->save();
 
             $errorMessage = 'Payment failed. ';
-            
+
             // Xử lý các trường hợp lỗi cụ thể
             if (isset($response['name']) && $response['name'] == 'UNPROCESSABLE_ENTITY') {
                 switch ($response['details'][0]['issue'] ?? '') {
