@@ -51,7 +51,7 @@ class PaypalController extends Controller
             Log::info('Order total amount: ' . $total_amount);
 
             // Lấy tỉ giá hối đoái ngoại tệ từ API
-            $api_key = env('YOUR_API_KEY');
+            $api_key = env('CURRENCY_API_KEY');
             $target_currency = 'VND';
             $url = "https://openexchangerates.org/api/latest.json?app_id=" . $api_key;
             $response = file_get_contents($url);
