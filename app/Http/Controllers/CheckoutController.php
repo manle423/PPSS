@@ -158,7 +158,7 @@ class CheckoutController extends Controller
             $couponCode = session()->get('couponCode');
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
             $finalPrice = $oldSubtotal - $discountValue;
-            $totalPrice = $couponCode ? $oldSubtotal : $subtotal;
+            $totalPrice = $couponCode ? $subtotal : $oldSubtotal;
 
             $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice);
 
