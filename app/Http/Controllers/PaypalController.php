@@ -52,29 +52,21 @@ class PaypalController extends Controller
 
             // Lấy tỉ giá hối đoái ngoại tệ từ API
             $api_key = env('YOUR_API_KEY');
-            $base_currency = 'VND';
-            $target_currency = 'USD';
-
-
+            $target_currency = 'VND';
             $url = "https://openexchangerates.org/api/latest.json?app_id=" . $api_key;
-
-           
             $response = file_get_contents($url);
             $data = json_decode($response, true);
-
-            $data = json_decode($response, true);
-
             
-            if ($data && isset($data->rates->$target_currency)) {
-                $exchange_rate = $data->rates->$target_currency;
+            // Kiểm tra tìm được tỉ giá hối đoái ngoại tệ từ API hay không
+            if ($data) {
+                $exchange_rate = $data['rates'][$target_currency];
             } else {
                 // Gán cứng nếu không tìm được
-                $exchange_rate = 0.000040;
+                $exchange_rate = 24000;
             }
-
             // Chuyển đổi giá cả từ VND sang USD
-            $total_amount_usd = number_format($total_amount * $exchange_rate, 2, '.', '');
-
+            $total_amount_usd = number_format($total_amount / $exchange_rate, 2, '.', '');
+            
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
                 "application_context" => [
