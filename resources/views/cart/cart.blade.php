@@ -30,7 +30,7 @@
                                 @endphp
                                 <div class="row text-start align-items-center mb-3">
                                     <div class="col-1">
-                                        <input type="checkbox" name="selectedItems[]" value="{{ $item->id }}">
+                                        <input type="checkbox" name="selectedItems[]" value="{{ $item->product->id }}">
                                     </div>
                                     <div class="col-2">{{ $item->product->name }}</div>
                                     <div class="col-2">{{ $item->variant ? $item->variant->name : 'N/A' }}</div>
