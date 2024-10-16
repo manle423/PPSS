@@ -109,7 +109,7 @@ class VnPayController extends Controller
                     $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
                     if ($orderId) {
                         if ($orderType == 'order') {
-                            $order = Order::findOrFail($orderId)->with('shippingAddress');
+                            $order = Order::findOrFail($orderId);
                             $order->status = Order::STATUS['pending'];
                         } else {
                             $order = GuestOrder::findOrFail($orderId);

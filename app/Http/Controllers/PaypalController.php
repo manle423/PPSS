@@ -31,7 +31,6 @@ class PaypalController extends Controller
             $orderType = session('order_type');
             $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
             $totalAmount = session('order_total');
-
             if (!$totalAmount) {
                 throw new \Exception('Total amount not found in session.');
             }
@@ -47,15 +46,13 @@ class PaypalController extends Controller
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $paypalToken = $provider->getAccessToken();
-
             if (!$paypalToken) {
                 Log::error('Failed to get PayPal access token');
                 return redirect()->route('checkout.index')->withErrors('error', 'Failed to connect to PayPal. Please try again.');
             }
 
-            $total_amount = number_format($order->total_price, 2, '.', '');
+            $total_amount = number_format($order->final_price, 2, '.', '');
             Log::info('Order total amount: ' . $total_amount);
-
             // Lấy tỉ giá hối đoái ngoại tệ từ API
             $api_key = env('CURRENCY_API_KEY');
             $target_currency = 'VND';
@@ -72,7 +69,8 @@ class PaypalController extends Controller
             }
             // Chuyển đổi giá cả từ VND sang USD
             $total_amount_usd = number_format($total_amount / $exchange_rate, 2, '.', '');
-            
+
+
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
                 "application_context" => [

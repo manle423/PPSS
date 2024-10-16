@@ -163,14 +163,13 @@ class CheckoutController extends Controller
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
             $shippingFee = session()->get('shipping_fee', 0);
             $finalPrice = session('total'); // Đây là tổng cộng cuối cùng, bao gồm cả phí vận chuyển
-
+            
             $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $oldSubtotal, $discountValue, $finalPrice, $shippingFee);
 
             $orderType = $user ? 'order' : 'guest_order';
             $request->session()->put('order_type', $orderType);
             $request->session()->put($orderType . '_id', $order->id);
             $request->session()->put('order_total', $finalPrice);
-
             DB::commit();
 
             $paymentMethod = $request->input('payment_method');
@@ -191,7 +190,6 @@ class CheckoutController extends Controller
 
     private function validateCheckoutData(Request $request, $user)
     {
-        // dd($request->all());
         $rules = [
             'payment_method' => 'required|in:paypal,vnpay',
         ];
@@ -217,24 +215,24 @@ class CheckoutController extends Controller
                     'phone_number' => 'required|string|max:15',
                     'address_line_1' => 'required|string|max:255',
                     'address_line_2' => 'nullable|string|max:255',
-                    'district_id' => 'required|exists:districts,id',
-                    'province_id' => 'required|exists:provinces,id',
-                    'ward_id' => 'required|exists:wards,id',
+                    'district_id' => 'required',
+                    'province_id' => 'required',
+                    'ward_id' => 'required',
                 ]);
             } else {
                 // Nếu đã có địa chỉ, cho phép chọn địa chỉ hiện có hoặc tạo mới
                 $rules['new_address'] = 'sometimes|boolean';
-                
                 if ($request->input('new_address')) {
                     $rules = array_merge($rules, [
                         'full_name' => 'required|string|max:255',
                         'phone_number' => 'required|string|max:15',
                         'address_line_1' => 'required|string|max:255',
                         'address_line_2' => 'nullable|string|max:255',
-                        'district_id' => 'required|exists:districts,id',
-                        'province_id' => 'required|exists:provinces,id',
-                        'ward_id' => 'required|exists:wards,id',
+                        'district_id' => 'required',
+                        'province_id' => 'required',
+                        'ward_id' => 'required',
                     ]);
+
                 } else {
                     $rules['selected_address_id'] = 'required|exists:addresses,id';
                 }
@@ -262,7 +260,6 @@ class CheckoutController extends Controller
         } else {
             $addressData['is_default'] = false;
         }
-
         $address = $user->addresses()->create($addressData);
 
         if ($addressData['is_default']) {
