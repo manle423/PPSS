@@ -54,6 +54,33 @@
             <div id="variants-container">
                 <h3>Product Variants</h3>
                 <button type="button" class="btn btn-primary mb-3" id="add-variant-button">Add Variant</button>
+                <template id="variant-template">
+                    <div class="variant-group card mt-3">
+                        <div class="card-body">
+                            <button type="button" class="btn btn-danger remove-variant-button">Remove</button>
+                            <div class="input-group mt-2">
+                                <label for="variant_name">Variant Name</label>
+                                <input type="text" name="variants[__INDEX__][variant_name]">
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_price">Variant Price ($)</label>
+                                <input type="number" name="variants[__INDEX__][variant_price]" step="0.01">
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_stock">Stock Quantity</label>
+                                <input type="number" name="variants[__INDEX__][stock_quantity]">
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_exp_date">Expiration Date</label>
+                                <input type="date" name="variants[__INDEX__][exp_date]">
+                            </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_image">Variant Image</label>
+                                <input type="file" name="variants[__INDEX__][variant_image]" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </template>
                 @if(old('variants'))
                     @foreach(old('variants') as $index => $variant)
                         <div class="variant-group card mt-3">
@@ -113,20 +140,20 @@
             <div id="measurements-container">
                 <h3>Measurements</h3>
                 <div class="input-group">
-                    <label for="weight">Weight</label>
-                    <input type="number" id="weight" name="weight" value="" required>
+                    <label for="weight">Weight (g)</label>
+                    <input type="number" id="weight" name="weight" value="" min="0" max="2147483647" >
                 </div>
                 <div class="input-group">
-                    <label for="stock">Length</label>
-                    <input type="number" id="length" name="length" value="" required>
+                    <label for="stock">Length (cm)</label>
+                    <input type="number" id="length" name="length" value="" min="0" max="2147483647" >
                 </div>
                 <div class="input-group">
-                    <label for="stock">Width</label>
-                    <input type="number" id="width" name="width" value="" required>
+                    <label for="stock">Width (cm)</label>
+                    <input type="number" id="width" name="width" value="" min="0" max="2147483647" >
                 </div>
                 <div class="input-group">
-                    <label for="stock">Height</label>
-                    <input type="number" id="height" name="height" value="" required>
+                    <label for="stock">Height (cm)</label>
+                    <input type="number" id="height" name="height" value="" min="0" max="2147483647" >
                 </div>
             </div>
             <div  style="text-align:center;"> 

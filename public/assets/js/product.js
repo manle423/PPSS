@@ -2,13 +2,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const addVariantButton = document.getElementById("add-variant-button");
     const variantsContainer = document.getElementById("variants-container");
     const variantTemplate = document.getElementById("variant-template");
-    alert('click');
-    if (addVariantButton && variantsContainer && variantTemplate) {
+    if (addVariantButton && variantsContainer /*&& variantTemplate*/) {
+        
         addVariantButton.addEventListener("click", function () {
-            const variantGroups = variantsContainer.getElementsByClassName("variant-group");
-            const newIndex = variantGroups.length;
-            const newVariantGroup = variantTemplate.content.cloneNode(true).firstElementChild;
             
+            const variantGroups = variantsContainer.getElementsByClassName("variant-group");
+        
+            const newIndex = variantGroups.length;
+   
+            const newVariantGroup = variantTemplate.content.cloneNode(true).firstElementChild;
+     
             newVariantGroup.querySelectorAll("input, select").forEach((input) => {
                 const name = input.getAttribute("name");
                 if (name) {
