@@ -37,11 +37,11 @@
             "dropdown": [
                 {
                     "name": "Information",
-                    "url": "#"
+                    "url": "shop"
                 },
                 {
                     "name": "Change",
-                    "url": "#"
+                    "url": "update-shop"
                 }
             ]
         }
