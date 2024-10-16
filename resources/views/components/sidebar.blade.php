@@ -5,7 +5,7 @@
 <div class="sidebar pe-4 pb-3">
     <nav class="navbar bg-light navbar-light">
         <a class="navbar-brand mx-4 mb-3" href="{{ route('admin.dashboard') }}">
-            <h3 class="text-primary">{{ config('app.name', 'Laravel') }}</h3>
+            <h3 class="text-primary">{{ config('app.store.name', 'Laravel') }}</h3>
         </a>
         <div class="d-flex align-items-center ms-4 mb-4">
             <div class="position-relative">

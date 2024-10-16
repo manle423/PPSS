@@ -30,6 +30,11 @@ class PaypalController extends Controller
         try {
             $orderType = session('order_type');
             $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+            $totalAmount = session('order_total');
+
+            if (!$totalAmount) {
+                throw new \Exception('Total amount not found in session.');
+            }
 
             if ($orderType == 'order') {
                 $order = Order::findOrFail($orderId);
@@ -157,7 +162,7 @@ class PaypalController extends Controller
             if ($orderType == 'order') {
                 Cart::where('user_id', $order->user_id)->delete();
             }
-            session()->forget(['cart', 'cartItems', 'subtotal']);
+            session()->forget(['cart', 'cartItems', 'subtotal', 'shippingFee']);
 
             return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {

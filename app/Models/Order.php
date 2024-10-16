@@ -27,12 +27,13 @@ class Order extends Model
         'discount_value',
         'final_price',
         'verification_code',
+        'shipping_fee',
     ];
 
     const STATUS = [
         'pending' => 'PENDING',
         'completed' => 'COMPLETED',
-        'canceled' => 'CANCELLED',
+        'canceled' => 'CANCELED',
         'shipping' => 'SHIPPING',
     ];
 
