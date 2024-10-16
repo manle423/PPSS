@@ -16,7 +16,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="footer-item">
                     <h4 class="text-light mb-3">Why People Like us!</h4>
-                    <p class="mb-4">Customers appreciate product quality and secure payment. User-friendly website interface..</p>
+                    <p class="mb-4">{{$storeInfo->footer_why_people_like_us }}</p>
                     <a href="" class="btn border-secondary py-2 px-4 rounded-pill text-primary">Read
                         More</a>
                 </div>
@@ -46,9 +46,9 @@
             <div class="col-lg-3 col-md-6">
                 <div class="footer-item">
                     <h4 class="text-light mb-3">Contact</h4>
-                    <p>Address: 1429 Netus Rd, NY 48247</p>
-                    <p>Email: Example@gmail.com</p>
-                    <p>Phone: +0123 4567 8910</p>
+                    <p>Address: {{ $storeInfo->address}}</p>
+                    <p>Email: {{ $storeInfo->email}}</p>
+                    <p>Phone: {{$storeInfo->phone}}</p>
                     <p>Payment Accepted</p>
                     <img src="{{ asset('assets/vendor/img/payment.png') }}" class="img-fluid" alt="">
                 </div>
@@ -69,7 +69,7 @@
                 <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
                 <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
                 <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
-                Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                Designed By <a class="border-bottom" href="https://htmlcodex.com">{{ config('app.store.team')}}</a>
             </div>
         </div>
     </div>

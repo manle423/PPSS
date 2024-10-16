@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\StoreInfo;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -93,10 +93,12 @@ class HomeController extends Controller
     }
 
     public function aboutUs(){
-        return view('webshop.about-us');
+        $info=StoreInfo::first();
+        return view('webshop.about-us',compact('info'));
     }
 
     public function privacyPolicy(){
         return view('webshop.privacy-policy');
     }
+
 }

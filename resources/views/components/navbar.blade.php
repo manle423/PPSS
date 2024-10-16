@@ -2,7 +2,7 @@
     <div class="container px-0">
         <nav class="navbar bg-white navbar-expand-xl">
             <a href="{{ route('home') }}" class="navbar-brand">
-                <h1 class="text-primary display-6">Pet Product Shop</h1>
+                <h1 class="text-primary display-6">{{ config('app.name', 'Laravel') }}</h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarCollapse">

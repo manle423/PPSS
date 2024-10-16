@@ -37,7 +37,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
-
+  
+    Route::get('/shop', [AdminController::class, 'showInfo'])->name('shop');
+    Route::get('/update-shop', [AdminController::class, 'edit'])->name('shop-info');
+    Route::post('/update-shop', [AdminController::class, 'update'])->name('update-shop-info');
+  
     Route::prefix('/categories')->group(function () {
         Route::get('/', [AdminCategoryController::class, 'list'])->name('category.list');
         Route::get('/create', [AdminCategoryController::class, 'create'])->name('category.create');
