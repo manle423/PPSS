@@ -40,33 +40,41 @@ class AdminProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
+            'weight' => 'required|numeric|min:0', 
+            'length' => 'required|numeric|min:0',
+            'width' => 'required|numeric|min:0', 
+            'height' => 'required|numeric|min:0', 
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
+            'variants.*.weight' => 'nullable|numeric|min:0', 
+            'variants.*.length' => 'nullable|numeric|min:0', 
+            'variants.*.width' => 'nullable|numeric|min:0', 
+            'variants.*.height' => 'nullable|numeric|min:0', 
             'variants.*.exp_date' => 'nullable|date',
             'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         DB::beginTransaction();
-
+    
         try {
-            // Check if product is already exists
+            // Check if product already exists
             $existingProduct = Product::where('name', $request->name)
                 ->where('category_id', $request->category_id)
                 ->whereNull('deleted_at')
                 ->first();
-
+    
             if ($existingProduct) {
                 throw new \Exception('This product already exists in the selected category.');
             }
-
+    
             if ($request->hasFile('image')) {
                 $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
             } else {
                 throw new \Exception('Image upload failed.');
             }
-
+            
             $product = Product::create([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -74,35 +82,44 @@ class AdminProductController extends Controller
                 'price' => $request->price,
                 'image' => $uploadedFileUrl,
                 'stock_quantity' => $request->stock_quantity,
+                'weight' => $request->weight, 
+                'length' => $request->length, 
+                'width' => $request->width, 
+                'height' => $request->height, 
                 'created_at' => now(),
             ]);
-
+    
             if ($request->has('variants')) {
                 foreach ($request->variants as $index => $variant) {
                     $variantImageUrl = null;
                     if (isset($variant['variant_image']) && $variant['variant_image'] instanceof \Illuminate\Http\UploadedFile) {
                         $variantImageUrl = Cloudinary::upload($variant['variant_image']->getRealPath())->getSecurePath();
                     }
-
+    
                     ProductVariant::create([
                         'product_id' => $product->id,
                         'variant_name' => $variant['variant_name'],
                         'variant_price' => $variant['variant_price'],
                         'stock_quantity' => $variant['stock_quantity'],
+                        'weight' => $variant['weight'], 
+                        'length' => $variant['length'], 
+                        'width' => $variant['width'], 
+                        'height' => $variant['height'], 
                         'exp_date' => $variant['exp_date'],
                         'image' => $variantImageUrl,
                     ]);
                 }
             }
-
+           
             DB::commit();
-
+           
             return redirect()->route('admin.products.create')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+    
 
     public function edit($id)
     {
@@ -118,29 +135,37 @@ class AdminProductController extends Controller
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'stock_quantity' => 'required|integer|min:0',
+            'weight' => 'required|numeric|min:0', 
+            'length' => 'required|numeric|min:0', 
+            'width' => 'required|numeric|min:0', 
+            'height' => 'required|numeric|min:0', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
+            'variants.*.weight' => 'required|numeric|min:0', 
+            'variants.*.length' => 'required|numeric|min:0', 
+            'variants.*.width' => 'required|numeric|min:0', 
+            'variants.*.height' => 'required|numeric|min:0',
             'variants.*.exp_date' => 'nullable|date',
             'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         DB::beginTransaction();
-
+    
         try {
             $product = Product::findOrFail($id);
-
+    
             $uploadedFileUrl = $product->image;
-
+    
             if ($request->hasFile('image')) {
                 if ($product->image) {
                     $this->deleteImageFromCloudinary($product->image);
                 }
                 $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
             }
-
+    
             $product->update([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -148,10 +173,14 @@ class AdminProductController extends Controller
                 'price' => $request->price,
                 'image' => $uploadedFileUrl,
                 'stock_quantity' => $request->stock_quantity,
+                'weight' => $request->weight, // cập nhật weight
+                'length' => $request->length, // cập nhật length
+                'width' => $request->width, // cập nhật width
+                'height' => $request->height, // cập nhật height
                 'updated_at' => now(),
             ]);
-
-            // Update or create variants
+    
+        
             $updatedVariantIds = [];
             if ($request->has('variants')) {
                 foreach ($request->variants as $variantData) {
@@ -162,10 +191,14 @@ class AdminProductController extends Controller
                                 'variant_name' => $variantData['variant_name'],
                                 'variant_price' => $variantData['variant_price'],
                                 'stock_quantity' => $variantData['stock_quantity'],
+                                'weight' => $variantData['weight'], // cập nhật weight cho variant
+                                'length' => $variantData['length'], // cập nhật length cho variant
+                                'width' => $variantData['width'], // cập nhật width cho variant
+                                'height' => $variantData['height'], // cập nhật height cho variant
                                 'exp_date' => $variantData['exp_date'],
                             ]
                         );
-
+    
                         if (isset($variantData['variant_image']) && $variantData['variant_image'] instanceof \Illuminate\Http\UploadedFile) {
                             if ($variant->image) {
                                 $this->deleteImageFromCloudinary($variant->image);
@@ -174,17 +207,16 @@ class AdminProductController extends Controller
                             $variant->image = $variantImageUrl;
                             $variant->save();
                         }
-
+    
                         $updatedVariantIds[] = $variant->id;
                     }
                 }
             }
-
-            // Delete removed variants
+    
             $existingVariantIds = $product->variants->pluck('id')->toArray();
             $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
             ProductVariant::destroy($variantsToDelete);
-
+    
             DB::commit();
             return redirect()->route('admin.products.list')->with('success', 'Product updated successfully!');
         } catch (\Exception $e) {
@@ -192,12 +224,13 @@ class AdminProductController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+    
 
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
 
-        // Delete the product image from Cloudinary if it exists
+      
         if ($product->image) {
             $this->deleteImageFromCloudinary($product->image);
         }
@@ -268,7 +301,7 @@ class AdminProductController extends Controller
         //lay chi tiet hoa don tu id san pham
         $product_sales = OrderItem::where('item_id', $id)->get();
        //lay variant
-       $variants = $product_sales->pluck('variant_id')->unique();
+     
        $product = Product::find($id);
 
        // Kiểm tra nếu sản phẩm không tồn tại
