@@ -11,6 +11,14 @@
                 <p><strong>Order Date:</strong> {{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
                 <p><strong>Payment Method:</strong> {{ $order->payment_method }}</p>
                 <p><strong>Shipping Method:</strong> {{ $order->shippingMethod->name ?? 'N/A' }}</p>
+                
+                @if($order->status === 'PENDING')
+                    <form action="{{ route('order.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    </form>
+                @endif
             </div>
             <div class="col-md-6">
                 <h3>Delivery Address</h3>

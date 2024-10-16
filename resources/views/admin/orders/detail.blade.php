@@ -58,6 +58,14 @@
             @endif
             <p><strong>Total price:</strong> {{ number_format($order->final_price, 2) }}</p>
             <p><strong>Order Status:</strong> {{ ucfirst($order->status) }}</p>
+            
+            @if($order->status === 'PENDING')
+                <form action="{{ route('admin.orders.cancel', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                </form>
+            @endif
         </div>
 
         <table class="order-items">

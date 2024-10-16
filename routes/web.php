@@ -80,6 +80,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/', [AdminOrderController::class, 'list'])->name('orders.list');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->name('orders.detail');
         Route::get('/guest-order/{id}', [AdminOrderController::class, 'detailGuestOrder'])->name('orders.detail-guest-order');
+        Route::patch('/{order}/cancel', [AdminOrderController::class, 'cancelOrder'])->name('orders.cancel');
     });
     Route::prefix('/customers')->group(function () {
         Route::get('/', [AdminCustomerController::class, 'list'])->name('customers.list');
@@ -138,6 +139,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/order')->group(function () {
         Route::get('/history', [OrderController::class, 'history'])->name('order.history');
         Route::get('/show/{order}', [OrderController::class, 'show'])->name('order.show');
+        Route::patch('/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('order.cancel');
     });
 
     Route::prefix('/profile')->group(function () {
