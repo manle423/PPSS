@@ -79,10 +79,10 @@
                                         <h4 class="mb-2">Price Range</h4>
                                         <label for="minPrice">Min Price:</label>
                                         <input type="number" class="form-control" id="minPrice" name="min_price"
-                                            min="0" max="500" value="{{ request('min_price') ?? 0 }}">
+                                            min="0" max="2147483647" value="{{ request('min_price') ?? 0 }}">
                                         <label for="maxPrice">Max Price:</label>
                                         <input type="number" class="form-control" id="maxPrice" name="max_price"
-                                            min="0" max="500" value="{{ request('max_price') ?? 500 }}">
+                                            min="0" max="2147483647" value="{{ request('max_price') ?? 500 }}">
                                     </div>
                                 </div>
                                 <div class="col-lg-12">
