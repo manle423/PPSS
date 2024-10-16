@@ -41,7 +41,7 @@
 <link href="{{ asset('storage/' . config('app.store.logo')) }}" type="image/png" rel="icon">
 
 <body>
-    <div class="container-fluid position-relative bg-white d-flex p-0">
+    <div class="container-fluid position-relative d-flex p-0">
         <!-- Spinner Start -->
         <div id="spinner"
             class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">

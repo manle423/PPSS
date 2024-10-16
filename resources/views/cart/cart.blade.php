@@ -8,7 +8,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Product</th>
+                        <th>Product</th>
                         <th>Variant</th>
                         <th>In Stock</th>
                         <th>Quantity</th>
