@@ -73,3 +73,4 @@ document.querySelector('.btn-cancel-edit-user-info').addEventListener('click', f
     document.querySelector('.user-info-view').style.display = 'block';
     document.querySelector('.user-info-edit').style.display = 'none';
 });
+

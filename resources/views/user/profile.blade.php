@@ -69,7 +69,7 @@
                     <p>N/A</p>
                 @else
                     @foreach ($addresses as $address)
-                        <x-profile.address-card :address="$address" :provinces="$provinces" />
+                        <x-profile.address-card :address="$address" />
                     @endforeach
                 @endif
             </div>

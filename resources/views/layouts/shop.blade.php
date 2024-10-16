@@ -77,10 +77,6 @@
     @include('components.modal-register')
     <!-- Modal Register End -->
 
-    <!-- Hero Start -->
-
-    <!-- Hero End -->
-
     @yield('content')
 
     <!-- Footer Start -->

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendEmail;
-use App\Mail\SendBillEmail;
 use App\Mail\OrderConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,14 +22,23 @@ use App\Models\District;
 use App\Models\Ward;
 use App\Services\ProfileService;
 use Illuminate\Support\Facades\Mail;
+use App\Services\OrderService;
+use App\Services\CouponService;
+use App\Services\ShippingService;
 
 class CheckoutController extends Controller
 {
     protected $profileService;
+    protected $orderService;
+    protected $couponService;
+    protected $shippingService;
 
-    public function __construct(ProfileService $profileService)
+    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService, ShippingService $shippingService)
     {
         $this->profileService = $profileService;
+        $this->orderService = $orderService;
+        $this->couponService = $couponService;
+        $this->shippingService = $shippingService;
     }
 
     public function success(Request $request)
@@ -101,13 +108,12 @@ class CheckoutController extends Controller
         $usedCoupon = session()->get('usedCoupon');
         $couponCode = session()->get('couponCode');
         $oldSubtotal = session()->get('oldSubtotal');
+        $shippingFee = session()->get('shippingFee');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
             return Redirect::route('home')->with('info', 'Your cart is empty. Please add some items before checking out.');
         }
-
-     
 
         $user = Auth::user();
         $addresses = [];
@@ -116,7 +122,6 @@ class CheckoutController extends Controller
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
-
 
         return view('checkout.index', compact(
             'sessionCart',
@@ -137,43 +142,38 @@ class CheckoutController extends Controller
             $user = Auth::user();
             $addressId = $request->input('selected_address_id');
 
-            // Validate input
             $validator = $this->validateCheckoutData($request, $user);
-
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Handle address creation or selection
             if ($user) {
                 $hasAddresses = $user->addresses()->exists();
-
                 if (!$hasAddresses || $request->input('new_address')) {
-                    // Create new address if user has no addresses or chooses to create a new one
                     $addressId = $this->createNewAddress($request, $user);
-                } else {
-                    // Use selected address
-                    $addressId = $request->input('selected_address_id');
                 }
             }
 
-            // Create order
             DB::beginTransaction();
-            $order = $this->createOrder($request, $user, $addressId);
+            $cartItems = session()->get('cartItems');
+            $sessionCart = session()->get('cart', []);
+            $subtotal = session()->get('subtotal');
+            $oldSubtotal = session()->get('oldSubtotal', $subtotal);
+            $couponCode = session()->get('couponCode');
+            $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
+            $shippingFee = session()->get('shipping_fee', 0);
+            $finalPrice = session('total'); // Đây là tổng cộng cuối cùng, bao gồm cả phí vận chuyển
 
-            // Store order type and ID in session
+            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $oldSubtotal, $discountValue, $finalPrice, $shippingFee);
+
             $orderType = $user ? 'order' : 'guest_order';
             $request->session()->put('order_type', $orderType);
             $request->session()->put($orderType . '_id', $order->id);
-
-            // Send order confirmation email
-            // $this->sendOrderConfirmationEmail($order, $orderType);
+            $request->session()->put('order_total', $finalPrice);
 
             DB::commit();
 
-            // Process payment based on selected method
             $paymentMethod = $request->input('payment_method');
-
             switch ($paymentMethod) {
                 case 'paypal':
                     return redirect()->route('paypal.process');
@@ -187,12 +187,6 @@ class CheckoutController extends Controller
             Log::error('Checkout process failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during checkout. Please try again.');
         }
-    }
-
-    public function sendBillEmail(Request $request)
-    {
-        SendEmail::dispatch()->delay(now()->addMinutes(9));
-        return redirect()->back();
     }
 
     private function validateCheckoutData(Request $request, $user)
@@ -255,89 +249,6 @@ class CheckoutController extends Controller
         return Validator::make($request->all(), $rules, $messages);
     }
 
-    private function createOrder(Request $request, $user, $addressId)
-    {
-        try {
-            $cartItems = session()->get('cartItems');
-            $sessionCart = session()->get('cart', []);
-            $subtotal = session()->get('subtotal');
-            if ($user) {
-                // Create Order for authenticated user
-                $order = Order::create([
-                    'user_id' => $user->id,
-                    'shipping_address_id' => $addressId,
-                    'order_date' => now(),
-                    'shipping_method_id' => 1, // Just for now
-                    'payment_method' => $request->input('payment_method'),
-                    'total_price' => $subtotal,
-                    'discount_value' => 0,
-                    'final_price' => $subtotal,
-                    'status' => 'pending'
-                ]);
-
-                // Create OrderItems for authenticated user
-                foreach ($cartItems as $item) {
-                    $variantId = $item->variant ? strval($item->variant->id) : '';
-                    $cartKey = $item->product->id . '-' . $variantId;
-                    $quantity = $sessionCart[$cartKey] ?? 0;
-
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'item_id' => $item->product->id,
-                        'variant_id' => $item->variant ? $item->variant->id : null,
-                        'quantity' => $quantity,
-                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
-                    ]);
-                }
-
-                // Không xóa cart ở đây nữa
-                // Cart::where('user_id', $user->id)->delete();
-
-                return $order;
-            } else {
-                // Create GuestOrder for non-authenticated user
-                $guestOrder = GuestOrder::create([
-                    'guest_name' => $request->input('full_name'),
-                    'guest_email' => $request->input('email'),
-                    'guest_phone_number' => $request->input('phone_number'),
-                    'guest_address' => json_encode([
-                        'address_line_1' => $request->input('address_line_1'),
-                        'address_line_2' => $request->input('address_line_2'),
-                        'district_id' => $request->input('district_id'),
-                        'province_id' => $request->input('province_id'),
-                        'ward_id' => $request->input('ward_id'),
-                    ], JSON_UNESCAPED_UNICODE),
-                    'status' => 'pending',
-                    'order_date' => now(),
-                    'shipping_method_id' => 1, // Just for now
-                    'payment_method' => $request->input('payment_method'),
-                    'total_price' => $subtotal,
-                    'discount_value' => 0, // Just for now
-                    'final_price' => $subtotal,
-                    'digital_signature' => '' // Just for now
-                ]);
-
-                // Create OrderItems for guest
-                foreach ($cartItems as $item) {
-                    $variantId = $item->variant ? strval($item->variant->id) : '';
-                    $cartKey = $item->product->id . '-' . $variantId;
-                    $quantity = $sessionCart[$cartKey] ?? 0;
-                    OrderItem::create([
-                        'guest_order_id' => $guestOrder->id,
-                        'item_id' => $item->product->id,
-                        'variant_id' => $item->variant ? $item->variant->id : null,
-                        'quantity' => $quantity,
-                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
-                    ]);
-                }
-                return $guestOrder;
-            }
-        } finally {
-            // Không xóa session cart ở đây nữa
-            // session()->forget(['cart', 'cartItems', 'subtotal']);
-        }
-    }
-
     private function createNewAddress(Request $request, $user)
     {
         $validatedData = $this->profileService->validateAddressData($request);
@@ -364,5 +275,37 @@ class CheckoutController extends Controller
     {
         $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
         Mail::to($email)->send(new OrderConfirmation($order, $orderType));
+    }
+
+    public function calculateShippingFee(Request $request)
+    {
+        $request->validate([
+            'to_district_id' => 'required|numeric',
+            'to_ward_code' => 'required|string',
+            'weight' => 'nullable|numeric',
+        ]);
+
+        $shippingFee = $this->shippingService->calculateShippingFee(
+            $request->to_district_id,
+            $request->to_ward_code,
+            $request->weight ?? 1000,
+        );
+
+        if ($shippingFee['code'] === 200) {
+            $subtotal = session('subtotal', 0);
+            $shippingFeeValue = $shippingFee['data']['total'];
+            $finalPrice = $subtotal + $shippingFeeValue;
+
+            session([
+                'shipping_fee' => $shippingFeeValue,
+                'total' => $finalPrice,
+            ]);
+
+            $shippingFee['data']['shipping_fee'] = $shippingFeeValue;
+            $shippingFee['data']['subtotal'] = $subtotal;
+            $shippingFee['data']['total'] = $finalPrice;
+        }
+
+        return response()->json($shippingFee);
     }
 }

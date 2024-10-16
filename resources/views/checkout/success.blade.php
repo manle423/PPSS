@@ -1,5 +1,31 @@
 @php
     use Carbon\Carbon;
+    use Illuminate\Support\Facades\Http;
+
+    function getLocationName($type, $id, $districtId = null) {
+        $apiToken = env('GHN_TOKEN');
+        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
+        
+        $response = Http::withHeaders([
+            'Token' => $apiToken,
+            'Content-Type' => 'application/json',
+        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
+
+        $data = $response->json()['data'] ?? [];
+        
+        if ($type === 'province') {
+            $item = collect($data)->firstWhere('ProvinceID', $id);
+            return $item ? $item['ProvinceName'] : 'Unknown Province';
+        } elseif ($type === 'district') {
+            $item = collect($data)->firstWhere('DistrictID', $id);
+            return $item ? $item['DistrictName'] : 'Unknown District';
+        } elseif ($type === 'ward') {
+            $item = collect($data)->firstWhere('WardCode', $id);
+            return $item ? $item['WardName'] : 'Unknown Ward';
+        }
+        
+        return 'Unknown';
+    }
 @endphp
 @extends('layouts.shop')
 
@@ -27,7 +53,21 @@
                @if($shippingAddress->address_line_2)
                    {{ $shippingAddress->address_line_2 }},
                @endif
-               {{ $shippingAddress->ward->name }}, {{ $shippingAddress->district->name }}, {{ $shippingAddress->province->name }}</p>
+               {{ getLocationName('ward', $shippingAddress->ward_id, $shippingAddress->district_id) }}, 
+               {{ getLocationName('district', $shippingAddress->district_id) }}, 
+               {{ getLocationName('province', $shippingAddress->province_id) }}</p>
+        @elseif($orderType == 'guest_order')
+            @php
+                $guestAddress = json_decode($order->guest_address, true);
+            @endphp
+            <p>{{ $order->guest_name }}<br>
+               {{ $guestAddress['address_line_1'] }},
+               @if(isset($guestAddress['address_line_2']) && $guestAddress['address_line_2'])
+                   {{ $guestAddress['address_line_2'] }},
+               @endif
+               {{ getLocationName('ward', $guestAddress['ward_id'], $guestAddress['district_id']) }}, 
+               {{ getLocationName('district', $guestAddress['district_id']) }}, 
+               {{ getLocationName('province', $guestAddress['province_id']) }}</p>
         @endif
 
         <p><strong>Shipping Method:</strong> {{ $shippingMethod->name ?? 'N/A' }}</p>
@@ -47,8 +87,8 @@
                     <tr>
                         <td>{{ $item['name'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{{ $item['price'] }}</td>
-                        <td>{{ $item['total'] }}</td>
+                        <td>{{ number_format($item['price'], 2) }}</td>
+                        <td>{{ number_format($item['total'], 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -56,6 +96,9 @@
 
         <div class="mt-3">
             <strong>Subtotal:</strong> {{ number_format($order->total_price, 2) }}
+        </div>
+        <div class="mt-1">
+            <strong>Shipping Fee:</strong> {{ number_format($order->shipping_fee, 2) ?? 0 }}
         </div>
 
         @if($order->discount_value > 0)

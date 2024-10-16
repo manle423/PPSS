@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\PaypalController;
@@ -123,6 +124,9 @@ Route::middleware('auth')->group(function () {
     Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');
     Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
     Route::post('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth')->name('verification.notice');
 
     // Logout Route
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
@@ -176,8 +180,8 @@ Route::middleware('buyerOrGuest')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
-        Route::post('/send-bill-email', [CheckoutController::class, 'sendBillEmail'])->name('checkout.send-bill-email');
         Route::get('/coupon', [CouponController::class, 'useCoupon'])->name('checkout.coupon');
+        Route::post('/calculate-shipping-fee', [CheckoutController::class, 'calculateShippingFee'])->name('checkout.calculate.shipping.fee');
     });
 
     Route::prefix('paypal')->group(function () {
@@ -197,3 +201,11 @@ Route::middleware('buyerOrGuest')->group(function () {
 Route::get('/404', function () {
     return view('errors.404');
 })->name('404');
+
+Route::get('/api/provinces', [LocationController::class, 'getProvinces'])->name('api.provinces');
+Route::get('/api/districts/{province_id}', [LocationController::class, 'getDistricts'])->name('api.districts');
+Route::get('/api/wards/{district_id}', [LocationController::class, 'getWards'])->name('api.wards');
+
+Route::get('/api/province/{province_id}', [LocationController::class, 'getProvinceName'])->name('api.province.name');
+Route::get('/api/district/{district_id}', [LocationController::class, 'getDistrictName'])->name('api.district.name');
+Route::get('/api/ward/{ward_id}', [LocationController::class, 'getWardName'])->name('api.ward.name');

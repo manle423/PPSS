@@ -11,114 +11,64 @@ use function Laravel\Prompts\alert;
 
 class CouponController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-
-
     public function useCoupon(Request $request)
     {
-        // Check if the user is logged in
         $userId = auth()->id();
         if (!$userId) {
             return redirect()->back()->withErrors(['coupon_error' => 'Please login to use coupon']);
         }
 
-        $sessionCoupon = session()->get('couponCode');
-        $subtotal = session()->get('subtotal');
-        $oldSubtotal = session()->get('oldSubtotal');
-        if ($sessionCoupon) {
-            $subtotal = session()->get('oldSubtotal');
-        } else {
-            $subtotal = session()->get('subtotal');
-        }
-
         $code = $request->input('coupon_code');
-        // Reset, not using the code
+        $oldSubtotal = session()->get('oldSubtotal', session()->get('subtotal'));
+        $subtotal = session()->get('subtotal');
+
         if ($code == '') {
             session()->put('subtotal', $oldSubtotal);
-            session()->forget('couponCode');
-            return redirect()->back();
+            session()->forget(['couponCode', 'usedCoupon', 'coupon_discount']);
+            $this->recalculateTotal();
+            return redirect()->back()->withInput();
         }
+
         $coupon = Coupon::where('code', $code)->first();
         if ($coupon) {
-            // Check if the coupon has already been used by the user
             $couponUsage = CouponUsage::where('user_id', $userId)
                 ->where('coupon_id', $coupon->id)
                 ->exists();
 
             if ($couponUsage) {
-                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.']); // Prevent duplicate usage
+                return redirect()->back()->withErrors(['coupon_error' => 'Coupon has already been used.'])->withInput();
             }
-            if ($coupon->is_valid($subtotal)) {
-                // Coupon is valid, you can proceed with using it
-                $subtractValue = $subtotal * $coupon->discount_value;
-                $subtotal = $subtotal - ($subtractValue > $coupon->max_discount ? $coupon->max_discount : $subtractValue);
-                // Store the old and new subtotal in the session
-                session()->put('subtotal', $subtotal);
-                session()->put('oldSubtotal', $oldSubtotal);
-                session()->put('usedCoupon', true);
-                session()->put('couponCode', $code);
-                // Redirect back to the checkout page with the new subtotal and used coupon
-                return redirect()->back();
+
+            if ($coupon->is_valid($oldSubtotal)) {
+                $discount = $oldSubtotal * $coupon->discount_value;
+                $discount = min($discount, $coupon->max_discount);
+                $newSubtotal = $oldSubtotal - $discount;
+                $shippingFee = session('shipping_fee', 0);
+                $total = $newSubtotal + $shippingFee;
+
+                session([
+                    'subtotal' => $newSubtotal,
+                    'oldSubtotal' => $oldSubtotal,
+                    'usedCoupon' => true,
+                    'couponCode' => $code,
+                    'coupon_discount' => $discount,
+                    'total' => $total,
+                ]);
+
+                return redirect()->back()->withInput()->with('success', 'Coupon applied successfully');
             } else {
-                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code']); // Coupon is invalid based on validation rules
+                return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code'])->withInput();
             }
         } else {
-            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist']); // Coupon with the provided code doesn't exist
+            return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist'])->withInput();
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    private function recalculateTotal()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Coupon $coupon)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Coupon $coupon)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Coupon $coupon)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Coupon $coupon)
-    {
-        //
+        $subtotal = session('subtotal', 0);
+        $shippingFee = session('shipping_fee', 0);
+        $total = $subtotal + $shippingFee;
+        session(['total' => $total]);
     }
 }
