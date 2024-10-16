@@ -1,4 +1,5 @@
 <!-- Footer Start -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
     <div class="container py-5">
         <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5) ;">
@@ -27,30 +28,28 @@
                     <a class="btn-link" href="{{route('about-us')}}">About Us</a>
                     <a class="btn-link" href="">Contact Us</a>
                     <a class="btn-link" href="{{route('privacy-policy')}}">Privacy Policy</a>
-                    <a class="btn-link" href="">Terms & Condition</a>
-                    <a class="btn-link" href="">Return Policy</a>
-                    <a class="btn-link" href="">FAQs & Help</a>
+                    <a class="btn-link" href="{{route('terms-condition')}}">Terms & Condition</a>
+                    <a class="btn-link" href="{{route('faqs-help')}}">FAQs & Help</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="d-flex flex-column text-start footer-item">
                     <h4 class="text-light mb-3">Account</h4>
-                    <a class="btn-link" href="">My Account</a>
-                    <a class="btn-link" href="">Shop details</a>
-                    <a class="btn-link" href="">Shopping Cart</a>
-                    <a class="btn-link" href="">Wishlist</a>
+                    <a class="btn-link" href="{{ url('/my-account') }}">My Account</a>
+                    <a class="btn-link" href="{{ url('/guest-cart') }}">Shopping Cart</a>
                     <a class="btn-link" href="">Order History</a>
-                    <a class="btn-link" href="">International Orders</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="footer-item">
                     <h4 class="text-light mb-3">Contact</h4>
-                    <p>Address: 1429 Netus Rd, NY 48247</p>
-                    <p>Email: Example@gmail.com</p>
-                    <p>Phone: +0123 4567 8910</p>
+                    <p>Address: 17A CongHoa Rd, D.TanBinh, C.HoChiMinh</p>
                     <p>Payment Accepted</p>
-                    <img src="{{ asset('assets/vendor/img/payment.png') }}" class="img-fluid" alt="">
+                    <i class="fa-regular fa-money-bill-1 fa-2x"></i>
+                    <i class="fa-brands fa-cc-paypal fa-2x"></i>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70px" height="70px" viewBox="0 0 20 20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 48 48"><path fill="none" stroke="currentColor" stroke-linejoin="round" d="m28.622 37.722l14.445-14.444c.577-.578.577-1.733 0-2.311L34.4 12.3c-.578-.578-1.733-.578-2.311 0l-6.356 6.356L16.49 9.41c-.578-.578-1.734-.578-2.311 0l-9.245 9.245c-.578.577-.578 1.733 0 2.31L21.69 37.723c1.733 1.734 5.2 1.734 6.933 0Z"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m25.733 18.656l-8.089 8.089q-3.466 3.465-6.933 0"/><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.222 30.789q-1.732 1.734-3.467 0m22.534-15.6c-1.262-1.156-2.89-.578-4.045.578L18.222 30.789m0-15.022c-4.622-4.622-10.4 1.155-5.778 5.778l5.2 5.2l-5.2-5.2m10.978-.578l-4.044-4.045"/><path d="m21.689 22.7l-4.622-4.622c-.578-.578-1.445-1.445-2.311-1.156m0 3.467c-.578-.578-1.445-1.444-1.156-2.311m5.778 6.933l-4.622-4.622"/></g></svg>
                 </div>
             </div>
         </div>
@@ -70,9 +69,10 @@
                 <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
                 <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
                 <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
-                Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
             </div>
         </div>
     </div>
 </div>
 <!-- Copyright End -->
+
+

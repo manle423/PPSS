@@ -8,6 +8,14 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
+
+                @if (session('message'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ session('message') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 

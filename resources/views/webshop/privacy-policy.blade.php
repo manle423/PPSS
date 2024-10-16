@@ -2,8 +2,8 @@
 @section('content')
 <link href="{{ asset('assets/vendor/css/privacypolicy.css') }}" rel="stylesheet">
 
-    <!-- Privacy Policy  Page Start -->
-    <div class="container">
+<!-- Privacy Policy Page Start -->
+<div class="privacy-policy-container">
     <h1>Privacy Policy</h1>
     <p>At Pet Store, we are committed to safeguarding the privacy and security of our customers. This Privacy Policy outlines how we handle your personal information when you visit and use our website.</p>
 
@@ -18,7 +18,6 @@
 
     <h2>Data Security</h2>
     <p>We use encryption and other advanced security technologies to ensure the safety of your personal and payment information during transactions. Our systems are regularly updated to meet current industry standards for data protection.</p>
-    
 </div>
-      <!-- Privacy Policy Page End -->
-@endsection()
+<!-- Privacy Policy Page End -->
+@endsection

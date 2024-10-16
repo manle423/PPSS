@@ -1,7 +1,7 @@
-/* Chỉ định phạm vi CSS cho trang Privacy Policy để tránh ảnh hưởng toàn bộ trang */
-.privacy-policy-container {
+/* Chỉ định phạm vi CSS để tránh ảnh hưởng các phần khác */
+.terms-container {
     max-width: 900px;
-    margin: 100px auto; /* Căn giữa và thêm khoảng trống để tránh bị header che */
+    margin: 100px auto; /* Đảm bảo không bị header che */
     padding: 30px;
     background-color: #ffffff;
     border-radius: 12px;
@@ -10,7 +10,7 @@
 }
 
 /* Tiêu đề chính */
-.privacy-policy-container h1 {
+.terms-container h1 {
     font-size: 2.5em;
     color: #495057;
     text-align: center;
@@ -20,7 +20,7 @@
 }
 
 /* Tiêu đề phụ */
-.privacy-policy-container h2 {
+.terms-container h2 {
     font-size: 2em;
     color: #495057;
     margin-top: 30px;
@@ -30,30 +30,31 @@
 }
 
 /* Nội dung văn bản */
-.privacy-policy-container p {
+.terms-container p {
     color: #6c757d;
     margin-bottom: 20px;
     line-height: 1.8;
     font-size: 1.1em;
 }
 
-.privacy-policy-container p:last-child {
+/* Văn bản in đậm cho đoạn cuối */
+.terms-container p:last-child {
     font-weight: bold;
     color: #495057;
 }
 
 /* Responsive cho thiết bị nhỏ */
 @media (max-width: 768px) {
-    .privacy-policy-container {
+    .terms-container {
         margin: 80px auto; /* Điều chỉnh cho thiết bị nhỏ hơn */
         padding: 20px;
     }
 
-    .privacy-policy-container h1 {
+    .terms-container h1 {
         font-size: 2em;
     }
 
-    .privacy-policy-container h2 {
+    .terms-container h2 {
         font-size: 1.8em;
     }
 }

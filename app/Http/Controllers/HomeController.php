@@ -99,4 +99,10 @@ class HomeController extends Controller
     public function privacyPolicy(){
         return view('webshop.privacy-policy');
     }
+    public function termsCondition(){
+        return view('webshop.terms-condition');
+    }
+    public function faqsHelp(){
+        return view('webshop.faqs-help');
+    }
 }

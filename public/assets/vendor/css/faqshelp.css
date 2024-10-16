@@ -1,0 +1,67 @@
+/* Chỉ định CSS cho trang FAQs & Help */
+.faqs-container {
+    max-width: 900px;
+    margin: 100px auto; /* Khoảng cách tránh bị header che khuất */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #ffcc00;
+}
+
+/* Tiêu đề chính */
+.faqs-container h1 {
+    font-size: 2.5em;
+    color: #343a40;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Tiêu đề phụ */
+.faqs-container h2 {
+    font-size: 2em;
+    color: #495057;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #343a40;
+    padding-bottom: 5px;
+}
+
+/* Các mục FAQ */
+.faq-item {
+    margin-bottom: 20px;
+}
+
+.faq-item h3 {
+    font-size: 1.5em;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    color: #6c757d;
+    line-height: 1.8;
+    font-size: 1.1em;
+}
+
+/* Responsive cho thiết bị nhỏ */
+@media (max-width: 768px) {
+    .faqs-container {
+        margin: 80px auto;
+        padding: 20px;
+    }
+
+    .faqs-container h1 {
+        font-size: 2em;
+    }
+
+    .faqs-container h2 {
+        font-size: 1.8em;
+    }
+
+    .faq-item h3 {
+        font-size: 1.3em;
+    }
+}

@@ -94,6 +94,7 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
 
+
     // Registration Routes...
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('register', [RegisterController::class, 'register']);
@@ -120,8 +121,9 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('logout', function () {
         return redirect('/home');
-    });
 
+    });
+       
     // Routes for order
     Route::get('history', [OrderController::class, 'history'])->name('order.history');
 
@@ -138,10 +140,21 @@ Route::middleware('auth')->group(function () {
 
 // Cho người mua (chưa đăng nhập hoặc đã đăng nhập)
 Route::middleware('buyerOrGuest')->group(function () {
+    // Footer check 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('about-us');
     Route::get('/privacy-policy', [HomeController::class, 'privacyPolicy'])->name('privacy-policy');
-
+    Route::get('/terms-condition', [HomeController::class, 'termsCondition'])->name('terms-condition');
+    Route::get('/faqs-help', [HomeController::class, 'faqsHelp'])->name('faqs-help');
+Route::get('/my-account', function () {
+    // Kiểm tra nếu user đã đăng nhập
+    if (Auth::check()) {
+        return redirect('/profile'); // Nếu đăng nhập, chuyển đến dashboard
+    }
+    // Nếu chưa đăng nhập, chuyển đến trang đăng ký kèm thông báo
+    return redirect('/register')->with('message', 'You do not have an account. Register now.');
+});
+// Route::get('/guest-cart',[HomeController::class,'cartGuest'])->name('guest-cart');
     //Routes for products
     Route::get('/shop', [ProductController::class, 'index'])->name('product.index');
     Route::get('/shop/{product}', [ProductController::class, 'show'])->name('product.show');
@@ -170,6 +183,7 @@ Route::middleware('buyerOrGuest')->group(function () {
     Route::prefix('vnpay')->group(function () {
 
     });
+
 });
 
 // Not found page
@@ -178,7 +192,7 @@ Route::get('/404', function () {
 })->name('404');
 
 //Route cho ProductController
-// Route::middleware('checkoutBuyer')->group(function () {
+// Route::'middle'ware('checkoutBuyer')->group(function () {
 //     Route::get('/products', [ProductController::class, 'index']); // Lấy danh sách sản phẩm
 //     Route::post('/products', [ProductController::class, 'store']); // Thêm sản phẩm
 //     Route::put('/products/{id}', [ProductController::class, 'update']); // Cập nhật sản phẩm
