@@ -1,4 +1,10 @@
 <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}"></script>
+<script>
+    window.GHNConfig = {
+        token: "{{ env('GHN_TOKEN') }}",
+        shopId: "{{ env('GHN_SHOP_ID') }}"
+    };
+</script>
 @extends('layouts.shop')
 @section('content')
     <!-- Single Page Header start -->
@@ -16,44 +22,10 @@
                 @csrf
                 <div class="row g-5">
                     <div class="col-md-12 col-lg-6 col-xl-5">
-                        @if (Auth::check())
-                            @if ($addresses->isNotEmpty())
-                                <div class="form-group mb-3">
-                                    <label for="address_id">Select Address</label>
-                                    <select name="address_id" id="address_id" class="form-control">
-                                        <option value="">Select an address</option>
-                                        @foreach ($addresses as $address)
-                                            <option value="{{ $address->id }}"
-                                                {{ old('address_id', request('address_id')) == $address->id ? 'selected' : '' }}>
-                                                {{ $address->full_name }} - {{ $address->address_line_1 }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <input type="hidden" name="selected_address_id" id="selected_address_id"
-                                        value="">
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="new_address" name="new_address"
-                                        value="1" {{ old('new_address', request('new_address')) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="new_address">
-                                        Use a different address
-                                    </label>
-                                </div>
-                                <div id="new_address_form" style="display: none;">
-                                    <x-checkout.address-form :provinces="$provinces" />
-                                </div>
-                            @else
-                                <div id="new_address_form">
-                                    <x-checkout.address-form :provinces="$provinces" />
-                                </div>
-                            @endif
-                        @else
-                            <x-checkout.address-form :provinces="$provinces" />
-                            <div class="form-group mb-3">
-                                <label for="email">Email Address<sup>*</sup></label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                        @endif
+                        <!-- Remove the address form here -->
+                        <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#shippingModal">
+                            Select Shipping Address
+                        </a>
                     </div>
                     <div class="col-md-12 col-lg-6 col-xl-7">
                         <div class="table-responsive">
@@ -100,30 +72,14 @@
                                     </tr>
 
                                     <tr>
-                                        <th scope="row">
-                                        </th>
-                                        <td class="py-5">
-                                            <p class="mb-0 text-dark py-4">Shipping</p>
-                                        </td>
-                                        <td colspan="3" class="py-5">
-                                            <div class="form-check text-start">
-                                                <input type="checkbox" class="form-check-input bg-primary border-0"
-                                                    id="Shipping-1" name="Shipping-1" value="Shipping">
-                                                <label class="form-check-label" for="Shipping-1">Free Shipping</label>
-                                            </div>
-                                            <div class="form-check text-start">
-                                                <input type="checkbox" class="form-check-input bg-primary border-0"
-                                                    id="Shipping-2" name="Shipping-1" value="Shipping">
-                                                <label class="form-check-label" for="Shipping-2">Flat rate: $15.00</label>
-                                            </div>
-                                            <div class="form-check text-start">
-                                                <input type="checkbox" class="form-check-input bg-primary border-0"
-                                                    id="Shipping-3" name="Shipping-1" value="Shipping">
-                                                <label class="form-check-label" for="Shipping-3">Local Pickup:
-                                                    $8.00</label>
-                                            </div>
-                                        </td>
+                                        <th scope="row"></th>
+                                        <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
+                                            data-bs-target="#shippingModal">
+                                        </a>
+                                        @include('components.modal-shipping', ['provinces' => $provinces, 'addresses' => $addresses])
+
                                     </tr>
+                                    
                                     <tr>
                                         <td class="py-3">
                                             <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>

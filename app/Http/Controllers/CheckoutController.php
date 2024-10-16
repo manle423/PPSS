@@ -24,6 +24,7 @@ use App\Services\ProfileService;
 use Illuminate\Support\Facades\Mail;
 use App\Services\OrderService;
 use App\Services\CouponService;
+use App\Services\ShippingService;
 
 class CheckoutController extends Controller
 {
@@ -105,6 +106,7 @@ class CheckoutController extends Controller
         $usedCoupon = session()->get('usedCoupon');
         $couponCode = session()->get('couponCode');
         $oldSubtotal = session()->get('oldSubtotal');
+        $shippingFee = session()->get('shippingFee');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
@@ -158,7 +160,7 @@ class CheckoutController extends Controller
             $couponCode = session()->get('couponCode');
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
             $finalPrice = $oldSubtotal - $discountValue;
-            $totalPrice = $couponCode ? $oldSubtotal : $subtotal;
+            $totalPrice = $couponCode ? $subtotal : $oldSubtotal;
 
             $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice);
 
@@ -270,5 +272,24 @@ class CheckoutController extends Controller
     {
         $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
         Mail::to($email)->send(new OrderConfirmation($order, $orderType));
+    }
+
+    public function calculateShippingFee(Request $request)
+    {
+        $addressId = $request->input('address_id');
+        $address = Address::find($addressId);
+
+        if (!$address) {
+            return response()->json(['success' => false, 'message' => 'Address not found.']);
+        }
+
+        $shippingService = new ShippingService();
+        $feeData = $shippingService->calculateShippingFee($address);
+
+        if (isset($feeData['code']) && $feeData['code'] == 200) {
+            return response()->json(['success' => true, 'fee' => $feeData['data']['total']]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Failed to calculate shipping fee.']);
     }
 }
