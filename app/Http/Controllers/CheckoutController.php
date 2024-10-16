@@ -24,18 +24,21 @@ use App\Services\ProfileService;
 use Illuminate\Support\Facades\Mail;
 use App\Services\OrderService;
 use App\Services\CouponService;
+use App\Services\ShippingService;
 
 class CheckoutController extends Controller
 {
     protected $profileService;
     protected $orderService;
     protected $couponService;
+    protected $shippingService;
 
-    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService)
+    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService, ShippingService $shippingService)
     {
         $this->profileService = $profileService;
         $this->orderService = $orderService;
         $this->couponService = $couponService;
+        $this->shippingService = $shippingService;
     }
 
     public function success(Request $request)
@@ -105,6 +108,7 @@ class CheckoutController extends Controller
         $usedCoupon = session()->get('usedCoupon');
         $couponCode = session()->get('couponCode');
         $oldSubtotal = session()->get('oldSubtotal');
+        $shippingFee = session()->get('shippingFee');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
@@ -157,14 +161,15 @@ class CheckoutController extends Controller
             $oldSubtotal = session()->get('oldSubtotal', $subtotal);
             $couponCode = session()->get('couponCode');
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
-            $finalPrice = $oldSubtotal - $discountValue;
-            $totalPrice = $couponCode ? $subtotal : $oldSubtotal;
+            $shippingFee = session()->get('shipping_fee', 0);
+            $finalPrice = session('total'); // Đây là tổng cộng cuối cùng, bao gồm cả phí vận chuyển
 
-            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice);
+            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $oldSubtotal, $discountValue, $finalPrice, $shippingFee);
 
             $orderType = $user ? 'order' : 'guest_order';
             $request->session()->put('order_type', $orderType);
             $request->session()->put($orderType . '_id', $order->id);
+            $request->session()->put('order_total', $finalPrice);
 
             DB::commit();
 
@@ -270,5 +275,37 @@ class CheckoutController extends Controller
     {
         $email = $orderType === 'order' ? $order->user->email : $order->guest_email;
         Mail::to($email)->send(new OrderConfirmation($order, $orderType));
+    }
+
+    public function calculateShippingFee(Request $request)
+    {
+        $request->validate([
+            'to_district_id' => 'required|numeric',
+            'to_ward_code' => 'required|string',
+            'weight' => 'nullable|numeric',
+        ]);
+
+        $shippingFee = $this->shippingService->calculateShippingFee(
+            $request->to_district_id,
+            $request->to_ward_code,
+            $request->weight ?? 1000,
+        );
+
+        if ($shippingFee['code'] === 200) {
+            $subtotal = session('subtotal', 0);
+            $shippingFeeValue = $shippingFee['data']['total'];
+            $finalPrice = $subtotal + $shippingFeeValue;
+
+            session([
+                'shipping_fee' => $shippingFeeValue,
+                'total' => $finalPrice,
+            ]);
+
+            $shippingFee['data']['shipping_fee'] = $shippingFeeValue;
+            $shippingFee['data']['subtotal'] = $subtotal;
+            $shippingFee['data']['total'] = $finalPrice;
+        }
+
+        return response()->json($shippingFee);
     }
 }

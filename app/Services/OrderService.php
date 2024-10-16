@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderService
 {
-    public function createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice)
+    public function createOrder($request, $user, $addressId, $cartItems, $sessionCart, $subtotal, $discountValue, $finalPrice, $shippingFee)
     {
         if ($user) {
             $order = Order::create([
@@ -18,10 +18,11 @@ class OrderService
                 'order_date' => now(),
                 'shipping_method_id' => 1,
                 'payment_method' => $request->input('payment_method'),
-                'total_price' => $totalPrice,
+                'total_price' => $subtotal,
                 'discount_value' => $discountValue,
                 'final_price' => $finalPrice,
-                'status' => 'pending'
+                'status' => 'pending',
+                'shipping_fee' => $shippingFee
             ]);
 
             $this->createOrderItems($order->id, $cartItems, $sessionCart, 'order_id');
@@ -42,9 +43,10 @@ class OrderService
                 'order_date' => now(),
                 'shipping_method_id' => 1,
                 'payment_method' => $request->input('payment_method'),
-                'total_price' => $totalPrice,
+                'total_price' => $subtotal,
                 'discount_value' => $discountValue,
                 'final_price' => $finalPrice,
+                'shipping_fee' => $shippingFee,
                 'digital_signature' => ''
             ]);
 

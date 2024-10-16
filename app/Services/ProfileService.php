@@ -22,9 +22,9 @@ class ProfileService
             'phone_number' => 'required|string|max:15',
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
-            'district_id' => 'required|exists:districts,id',
-            'province_id' => 'required|exists:provinces,id',
-            'ward_id' => 'required|exists:wards,id',
+            'district_id' => 'required',
+            'province_id' => 'required',
+            'ward_id' => 'required',
             'is_default' => 'nullable',
         ]);
     }
