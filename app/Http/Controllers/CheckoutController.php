@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Services\OrderService;
 use App\Services\CouponService;
 use App\Services\ShippingService;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutController extends Controller
 {
@@ -59,16 +60,16 @@ class CheckoutController extends Controller
                 ->findOrFail($orderId);
             $guestAddress = json_decode($order->guest_address, true);
 
-            $district = District::find($guestAddress['district_id']);
-            $province = Province::find($guestAddress['province_id']);
-            $ward = Ward::find($guestAddress['ward_id']);
             $shippingAddress = (object) [
                 'full_name' => $order->guest_name,
                 'address_line_1' => $guestAddress['address_line_1'],
                 'address_line_2' => $guestAddress['address_line_2'] ?? null,
-                'district' => $district,
-                'province' => $province,
-                'ward' => $ward,
+                'district' => $this->getLocationName('district', $guestAddress['district_id']),
+                'province' => $this->getLocationName('province', $guestAddress['province_id']),
+                'ward' => $this->getLocationName('ward', $guestAddress['ward_id'], $guestAddress['district_id']),
+                'district_id' => $guestAddress['district_id'],
+                'province_id' => $guestAddress['province_id'],
+                'ward_id' => $guestAddress['ward_id'],
             ];
         }
 
@@ -200,10 +201,11 @@ class CheckoutController extends Controller
                 'email' => 'required|email|max:255',
                 'phone_number' => 'required|string|max:15',
                 'address_line_1' => 'required|string|max:255',
-                'district_id' => 'required|exists:districts,id',
-                'province_id' => 'required|exists:provinces,id',
-                'ward_id' => 'required|exists:wards,id',
+                'district_id' => 'required',
+                'province_id' => 'required',
+                'ward_id' => 'required',
             ]);
+
         } else {
             // Kiểm tra xem người dùng đã có địa chỉ nào chưa
             $hasAddresses = $user->addresses()->exists();
@@ -304,5 +306,30 @@ class CheckoutController extends Controller
         }
 
         return response()->json($shippingFee);
+    }
+
+    private function getLocationName($type, $id, $districtId = null)
+    {
+        $apiToken = env('GHN_TOKEN');
+        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
+        
+        $response = Http::withHeaders([
+            'Token' => $apiToken,
+            'Content-Type' => 'application/json',
+        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
+
+        $data = $response->json()['data'] ?? [];
+        if ($type === 'province') {
+            $item = collect($data)->firstWhere('ProvinceID', $id);
+            return $item ? $item['ProvinceName'] : 'Unknown Province';
+        } elseif ($type === 'district') {
+            $item = collect($data)->firstWhere('DistrictID', $id);
+            return $item ? $item['DistrictName'] : 'Unknown District';
+        } elseif ($type === 'ward') {
+            $item = collect($data)->firstWhere('WardCode', $id);
+            return $item ? $item['WardName'] : 'Unknown Ward';
+        }
+        
+        return 'Unknown';
     }
 }

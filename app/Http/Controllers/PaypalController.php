@@ -140,17 +140,17 @@ class PaypalController extends Controller
             // Cập nhật số lượng hàng theo số lượng hàng có trong giỏ
             $cartItems = session('cartItems');
             foreach ($cartItems as $item) {
-                $product = $item['product'];
-                $quantity = $item['quantity'];
-                $variant = $item['variant'];                
+                $product = $item->product;
+                $quantity = $item->quantity;
+                $variant = $item->variant;                
                 // Nếu hàng có phân loại
-                if ($variant) {
-                    $variant->stock_quantity -= $quantity;
+                if ($variant && property_exists($variant, 'stock_quantity')) {
+                    $variant->stock_quantity = max(0, $variant->stock_quantity - (int)$quantity);
                     $variant->save();
                 }
                 // Nếu hàng không phân loại
-                else {
-                    $product->stock_quantity -= $quantity;
+                elseif ($product && property_exists($product, 'stock_quantity')) {
+                    $product->stock_quantity = max(0, $product->stock_quantity - (int)$quantity);
                     $product->save();
                 }
             }
