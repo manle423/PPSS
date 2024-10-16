@@ -1,32 +1,80 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-  
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
 }
 
-.product-container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+.product-table th, .product-table td {
+    padding: 12px 15px;
    
 }
 
+.product-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.product-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.product-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-info {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+}
+
+.pagination .page-link {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    color: #333;
+    text-decoration: none;
+}
+
+.pagination .page-link:hover {
+    background-color: #007bff;
+    color: white;
+}
+/* Đặt nền tổng thể cho container */
+.product-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .product-form-title {
+    font-size: 24px;
+    font-weight: bold;
     text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Nhóm input */
+.input-group {
     margin-bottom: 20px;
 }
 
-.input-group {
-    margin-bottom: 15px;
-}
-
 .input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
 }
 
 .input-group input,
@@ -34,151 +82,99 @@ body {
 .input-group textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    font-size: 14px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    box-sizing: border-box;
+    margin-top: 8px;
 }
 
 .input-group textarea {
     resize: vertical;
 }
 
-.submit-button {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    padding: 10px 15px;
+/* Các nút */
+.submit-button, .btn-primary {
+    padding: 10px 20px;
+    font-size: 16px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
 }
 
 .submit-button:hover {
-    background-color: #4cae4c;
-}
-/* General styling */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f4f8;
-    margin: 0;
-   
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    background-color: #218838;
 }
 
-/* Title styling */
-h1 {
-    text-align: center;
+.btn-primary {
+  
+    color: white;
+    border: none;
+  
+}
+
+.btn-primary:hover {
+    background-color: #04834e;
+}
+
+.alert {
+    padding: 15px;
+    background-color: #f8d7da;
+    border-radius: 4px;
+    color: #721c24;
     margin-bottom: 20px;
-    color: #333;
 }
 
-/* Container for the product table */
-.product-table-container {
-    width: 100%;
-    max-width: 1200px;
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Styling cho phần Variants */
+#variants-container {
+    margin-top: 30px;
+}
+
+.variant-group {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
     background-color: #ffffff;
-    border-radius: 8px; /* Bo góc cho container */
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Styling the product table */
-.product-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 8px; /* Bo góc cho bảng */
-    overflow: hidden; /* Để góc bo được hiển thị đúng */
+.variant-group .remove-variant-button {
+    float: right;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.product-table thead {
+.variant-group .remove-variant-button:hover {
+    background-color: #c82333;
+}
+
+/* Các nút Add Variant */
+#add-variant-button {
+    margin-top: 10px;
+    padding: 8px 16px;
     background-color: #007bff;
     color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.product-table th,
-.product-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #dddddd;
-}
-
-.product-table tbody tr {
-    transition: background-color 0.3s;
-}
-
-.product-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.product-table tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-.product-table .edit-button,
-.product-table .delete-button {
-    padding: 5px 10px; /* Giảm padding để nút nhỏ hơn */
-    font-size: 12px;   /* Giảm kích thước font */
-    margin-right: 5px; /* Khoảng cách giữa các nút */
-    cursor: pointer;    /* Thay đổi con trỏ khi hover */
-}
-
-.product-table .edit-button {
-    background-color: #4CAF50; /* Màu nền cho nút Edit */
-    color: white;               /* Màu chữ cho nút Edit */
-    border: none;               /* Xóa đường viền */
-    border-radius: 4px;        /* Bo góc */
-}
-
-.product-table .delete-button {
-    background-color: #f44336; /* Màu nền cho nút Delete */
-    color: white;               /* Màu chữ cho nút Delete */
-    border: none;               /* Xóa đường viền */
-    border-radius: 4px;        /* Bo góc */
-}
-
-.product-table .edit-button:hover,
-.product-table .delete-button:hover {
-    opacity: 0.8; /* Hiệu ứng hover cho các nút */
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .product-table-container {
-        width: 100%;
-        padding: 10px;
-    }
-
-    .product-table th, .product-table td {
-        padding: 10px 5px;
-        font-size: 14px;
-    }
-
-    .edit-button, .delete-button {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-}
-.pagination {
-    display: flex;
-    justify-content: center; /* Căn giữa các liên kết phân trang */
-    margin-top: 20px; /* Khoảng cách trên phân trang */
-}
-
-.pagination a {
-    margin: 0 5px; /* Khoảng cách giữa các nút */
-    padding: 8px 12px; /* Kích thước nút */
-    border: 1px solid #ccc; /* Viền cho nút */
-    border-radius: 4px; /* Bo góc */
-    text-decoration: none; /* Bỏ gạch chân */
-    color: #007bff; /* Màu chữ */
-    transition: background-color 0.3s;
-}
-
-.pagination a:hover {
-    background-color: #007bff; /* Màu nền khi hover */
-    color: white; /* Màu chữ khi hover */
+#add-variant-button:hover {
+    background-color: #0056b3;
 }

@@ -40,7 +40,7 @@ h1 {
 }
 
 .order-table th {
-    background-color: #007bff;
+    background-color: #579feb;
     color: #fff;
     text-transform: uppercase;
 }
@@ -75,13 +75,13 @@ h1 {
 .action-btn {
     padding: 8px 16px;
     border: none;
-    background-color: #007bff;
-    color: white;
+    background-color: #e6e4a3;
+    color: rgb(21, 20, 20);
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
 }
 
 .action-btn:hover {
-    background-color: #0056b3;
+    background-color: #8fb7e1;
 }

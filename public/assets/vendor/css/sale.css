@@ -1,0 +1,93 @@
+/* Wrapper và căn chỉnh chung */
+.wrapper {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Tiêu đề trang */
+.page-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #343a40;
+}
+
+/* Thẻ h2 và nội dung sản phẩm */
+.report-content h2, .report-content h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+.report-content p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+/* Danh sách variants */
+.report-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.report-content ul li {
+    background-color: #e9ecef;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+/* Bảng dữ liệu */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+}
+
+table thead {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+table th, table td {
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Liên kết và nút */
+a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button.back-link {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button.back-link:hover {
+    background-color: #5a6268;
+}

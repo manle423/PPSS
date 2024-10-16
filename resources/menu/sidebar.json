@@ -8,7 +8,7 @@
         {
             "name": "Customers",
             "icon": "fas fa-users",
-            "url": "#"
+            "url": "customers"
         },
         {
             "name": "Products",
@@ -19,6 +19,11 @@
             "name": "Categories",
             "icon": "fas fa-tags",
             "url": "categories"
+        },
+        {
+            "name": "Coupons",
+            "icon": "fas fa-ticket-alt",
+            "url": "coupons"
         },
         {
             "name": "Orders",

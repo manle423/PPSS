@@ -1,0 +1,92 @@
+/* CSS cho container tổng thể */
+.order-details-container {
+    width: 80%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Tiêu đề của trang */
+.order-details-container h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-family: 'Arial', sans-serif;
+    font-size: 2em;
+    margin-bottom: 30px;
+}
+
+/* Thông tin đơn hàng */
+.order-info {
+    margin-bottom: 30px;
+    line-height: 1.8;
+}
+
+.order-info p {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1em;
+    color: #34495e;
+}
+
+.order-info strong {
+    color: #2980b9;
+}
+
+/* Bảng sản phẩm */
+.order-items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.order-items thead {
+    background-color: #2980b9;
+    color: white;
+}
+
+.order-items th, .order-items td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-items th {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1em;
+}
+
+.order-items td {
+    font-family: 'Arial', sans-serif;
+    font-size: 1em;
+    color: #34495e;
+}
+
+.order-items img {
+    width: 50px;
+    border-radius: 5px;
+}
+
+/* Tô màu hàng sản phẩm xen kẽ */
+.order-items tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.order-items tbody tr:hover {
+    background-color: #eaf2f8;
+}
+
+/* Responsive cho di động */
+@media screen and (max-width: 768px) {
+    .order-details-container {
+        width: 95%;
+    }
+
+    .order-items th, .order-items td {
+        padding: 10px;
+    }
+
+    .order-info p {
+        font-size: 1em;
+    }
+}

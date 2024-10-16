@@ -20,7 +20,7 @@
                 {{ session('success') }}
             </div>
         @endif
-        <form action="{{ route('admin.products.store') }}" method="post" class="new-product-form" onsubmit="removeEmptyVariants()">
+        <form action="{{ route('admin.products.store') }}" enctype="multipart/form-data" method="post" class="new-product-form" onsubmit="removeEmptyVariants()">
             @csrf
             <div class="input-group">
                 <label for="name">Product Name</label>
@@ -37,6 +37,10 @@
             <div class="input-group">
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="4" required>{{ old('description') }}</textarea>
+            </div>
+            <div class="input-group">
+            <label class="file-input">File Input</h6>      
+            <input class="form-control" type="file" id="image" name="image">            
             </div>
             <div class="input-group">
                 <label for="price">Price ($)</label>
@@ -71,6 +75,10 @@
                                     <label for="variant_exp_date">Expiration Date</label>
                                     <input type="date" name="variants[{{ $index }}][exp_date]" value="{{ $variant['exp_date'] }}">
                                 </div>
+                                <div class="input-group mt-2">
+                                    <label for="variant_image">Variant Image</label>
+                                    <input type="file" name="variants[{{ $index }}][variant_image]" accept="image/*">
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -94,12 +102,18 @@
                                 <label for="variant_exp_date">Expiration Date</label>
                                 <input type="date" name="variants[0][exp_date]">
                             </div>
+                            <div class="input-group mt-2">
+                                <label for="variant_image">Variant Image</label>
+                                <input type="file" name="variants[0][variant_image]" accept="image/*">
+                            </div>
                         </div>
                     </div>
                 @endif
             </div>
-
-            <button type="submit" class="submit-button">Add Product</button>
+            <div  style="text-align:center;"> 
+            <button type="submit" class="submit-button" style="margin-top:15px;">Add Product</button>
+            <a href="{{ route('admin.products.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Cancel</a>
+            </div>
         </form>
     </div>
 

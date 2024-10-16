@@ -1,0 +1,38 @@
+body {
+    background-color: #f8f9fa; 
+}
+
+.coupon-detail-container {
+    border: 1px solid #ced4da; 
+    border-radius: 0.375rem;
+    padding: 20px;
+    background-color: #ffffff; 
+}
+
+.coupon-detail-title {
+    color: #343a40; 
+}
+
+.coupon-detail-info h5 {
+    font-size: 1.2rem; 
+    color: #343a40; 
+}
+
+.coupon-detail-info p {
+    font-size: 1.1rem; 
+    color: #495057; 
+}
+
+.coupon-alert {
+    margin-bottom: 20px;
+}
+
+.coupon-action-buttons .btn {
+    font-size: 1rem;
+    padding: 10px 20px; 
+}
+
+
+.coupon-action-buttons .btn:hover {
+    opacity: 0.9;
+}

@@ -8,6 +8,10 @@ use Illuminate\Http\Request;
 
 class AdminCategoryController extends Controller
 {
+    public function __construct(){
+        $this->middleware('admin');
+    }
+    
     // public function index(){
     //     return view('shop-page.home');
     // } 
@@ -21,7 +25,8 @@ class AdminCategoryController extends Controller
     // show list danh muc
     public function list()
     {
-        $categories = Category::whereNull('deleted_at')->paginate(5);
+        $categories = Category::paginate(10);
+        if($categories==null)  return view('admin.categories.list');
         return view('admin.categories.list', compact('categories'));
     }
 
@@ -37,7 +42,7 @@ class AdminCategoryController extends Controller
         //kiem tra danh muc da ton tai chua
         $exist = Category::where('name', $request->input('name'))->first();
         if ($exist) {
-            return redirect()->back()->withErrors(['name' => 'Category already exist.']);
+            return redirect()->back()->withErrors(['name' => 'Category already exists.'])->withInput();
         }
         // tạo mới danh mục
 

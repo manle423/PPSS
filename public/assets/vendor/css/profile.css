@@ -1,0 +1,46 @@
+/* Styling for user information section */
+.user-info-view {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 30px;
+}
+
+.user-info-view h2 {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.user-info-view p {
+    font-size: 1.1rem;
+    color: #34495e;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.user-info-view p span.label {
+    font-weight: bold;
+    color: #2c3e50;
+    width: 35%;
+    text-align: left;
+}
+
+.user-info-view p span.value {
+    color: #34495e;
+    width: 65%;
+    text-align: left;
+    font-style: italic;
+}
+
+/* Styling for values like 'N/A' */
+.user-info-view p span.value[data-empty="true"] {
+    color: #bdc3c7; /* Lighter color to indicate missing information */
+    font-style: normal; /* Regular style for 'N/A' */
+}
