@@ -28,11 +28,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'full_name',
         'email',
         'phone_number',
-        'address',
         'role',
         'username',
         'password',
         'digital_signature',
+        'default_address_id',
     ];
 
     /**
@@ -63,13 +63,24 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Order::class, 'user_id', 'id');
     }
 
+    public function defaultAddress()
+    {
+        return $this->belongsTo(Address::class, 'default_address_id');
+    }
+
     public function addresses()
     {
-        return $this->hasMany(Address::class, 'user_id', 'id');
+        return $this->hasMany(Address::class);
     }
 
     public function contracts()
     {
         return $this->hasMany(Contract::class, 'user_id', 'id');
+    }
+
+    // Define the relationship with CouponUsage model
+    public function couponUsages()
+    {
+        return $this->hasMany(CouponUsage::class, 'user_id');
     }
 }

@@ -4,115 +4,155 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use App\Models\Province;
+use App\Services\ProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
+    protected $profileService;
+
+    public function __construct(ProfileService $profileService)
+    {
+        $this->profileService = $profileService;
+    }
+
     public function viewProfile()
     {
-        $user = Auth::user();
-        $addresses = $user->addresses->sortByDesc('is_default');
-        $provinces = Province::with('districts')->get();
+        $user = Auth::user()->load('defaultAddress');
+        $addresses = $user->addresses->load('province.districts.wards', 'district.wards', 'ward')->sortByDesc('is_default');
+        $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
         return view('user.profile', compact('user', 'addresses', 'provinces'));
     }
 
     public function addAddress(Request $request)
     {
-        // dd($request->all());
         try {
-            $request->validate([
-                'full_name' => 'required|string|max:255',
-                'phone_number' => 'required|string|max:15',
-                'address_line_1' => 'required|string|max:255',
-                'address_line_2' => 'nullable|string|max:255',
-                'district_id' => 'required|exists:districts,id',
-                'province_id' => 'required|exists:provinces,id',
-                'is_default' => 'nullable',
-            ]);
+            $validatedData = $this->profileService->validateAddressData($request);
 
             $user = Auth::user();
-            $addressData = $request->all();
-            $addressData['is_default'] = $request->has('is_default') ? true : false;
+            $addressData = $validatedData;
 
-            // Check if is_default is true, set all other addresses to false
-            if ($addressData['is_default']) {
-                Address::where('user_id', $user->id)->update(['is_default' => false]);
+            $existingAddressCount = $this->profileService->getExistingAddressCount();
+
+            if ($existingAddressCount === 0 || $request->has('is_default')) {
+                $addressData['is_default'] = true;
+                $this->profileService->resetOtherDefaultAddresses();
+            } else {
+                $addressData['is_default'] = false;
             }
 
-            $address = new Address($addressData);
-            $user->addresses()->save($address);
+            $address = $user->addresses()->create($addressData);
 
-            return redirect()->route('user.profile')->with('success', 'Address added successfully.');
+            if ($addressData['is_default']) {
+                $this->profileService->updateUserDefaultAddress($address->id);
+            }
+
+            $message = $this->profileService->getAddressAddedMessage($existingAddressCount, $addressData['is_default']);
+
+            return redirect()->route('user.profile')->with('success', $message);
+        } catch (ValidationException $e) {
+            return redirect()->route('user.profile')->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->route('user.profile')->with('error', 'Error adding address.');
+            return redirect()->route('user.profile')->withErrors(['error' => 'Error adding address: ' . $e->getMessage()])->withInput();
         }
     }
 
     public function deleteAddress($id)
     {
         try {
+            $user = Auth::user();
             $address = Address::findOrFail($id);
+
+            if ($address->user_id !== $user->id) {
+                return redirect()->route('user.profile')->withErrors(['error' => 'Unauthorized action.']);
+            }
+
+            if (!$this->profileService->canDeleteAddress($address)) {
+                return redirect()->route('user.profile')->withErrors(['error' => 'This is your default address and cannot be deleted.']);
+            }
+
+            if ($user->default_address_id == $id) {
+                $newDefaultAddress = $this->profileService->findNewDefaultAddress($id);
+                $this->profileService->updateDefaultAddress($newDefaultAddress);
+            }
+
             $address->delete();
 
-            return redirect()->route('user.profile')->with('success', 'Address deleted successfully.');
+            $message = 'Address deleted successfully. ' .
+                (isset($newDefaultAddress) ? 'A new default address has been set.' : 'No default address remaining.');
+
+            return redirect()->route('user.profile')->with('success', $message);
         } catch (\Exception $e) {
-            return redirect()->route('user.profile')->with('error', 'Error deleting address.');
+            return redirect()->route('user.profile')->withErrors(['error' => 'Error deleting address: ' . $e->getMessage()]);
         }
     }
 
     public function editAddress(Request $request, $id)
     {
         try {
-            $request->validate([
-                'full_name' => 'required|string|max:255',
-                'phone_number' => 'required|string|max:15',
-                'address_line_1' => 'required|string|max:255',
-                'address_line_2' => 'nullable|string|max:255',
-                'district_id' => 'required|exists:districts,id',
-                'province_id' => 'required|exists:provinces,id',
-                'is_default' => 'nullable',
-            ]);
+            $validatedData = $this->profileService->validateAddressData($request);
 
+            $user = Auth::user();
             $address = Address::findOrFail($id);
-            $addressData = $request->all();
-            $addressData['is_default'] = $request->has('is_default') ? true : false;
 
-            // Check if is_default is true, set all other addresses to false
+            if ($address->user_id !== $user->id) {
+                return redirect()->route('user.profile')->withErrors(['error' => 'Unauthorized action.']);
+            }
+
+            $addressData = $validatedData;
+            $addressCount = $this->profileService->getExistingAddressCount();
+
+            $addressData['is_default'] = $this->profileService->determineDefaultStatus($addressCount, $request->has('is_default'));
+
             if ($addressData['is_default']) {
-                Address::where('user_id', $address->user_id)->update(['is_default' => false]);
+                $this->profileService->resetOtherDefaultAddresses($id);
+                $this->profileService->updateUserDefaultAddress($id);
+            } elseif ($user->default_address_id == $id) {
+                $newDefaultAddress = $this->profileService->findNewDefaultAddress($id);
+                $this->profileService->updateDefaultAddress($newDefaultAddress);
             }
 
             $address->update($addressData);
 
-            return redirect()->route('user.profile')->with('success', 'Address updated successfully.');
+            $message = $this->profileService->getAddressUpdatedMessage($addressCount, $addressData['is_default'], $user->default_address_id == $id, isset($newDefaultAddress));
+
+            return redirect()->route('user.profile')->with('success', $message);
+        } catch (ValidationException $e) {
+            return redirect()->route('user.profile')->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->route('user.profile')->with('error', 'Error updating address.');
+            return redirect()->route('user.profile')->withErrors(['error' => 'Error updating address: ' . $e->getMessage()])->withInput();
         }
     }
 
     public function getAddress($id)
     {
-        $address = Address::findOrFail($id);
-        return response()->json($address);
+        try {
+            $address = Address::findOrFail($id);
+            return response()->json($address);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error retrieving address: ' . $e->getMessage()], 400);
+        }
     }
 
     public function updateUserInfo(Request $request)
     {
         try {
-            $request->validate([
-                'full_name' => 'string|max:255',
-                'username' => 'string|max:255',
-                'phone_number' => 'string|max:15',
-                'address' => 'string|max:255',
+            $validatedData = $request->validate([
+                'full_name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username,' . Auth::id(),
+                'phone_number' => 'required|string|max:15',
             ]);
 
             $user = Auth::user();
-            $user->update($request->only('full_name', 'username', 'phone_number', 'address'));
+            $user->update($validatedData);
 
             return redirect()->route('user.profile')->with('success', 'User information updated successfully.');
+        } catch (ValidationException $e) {
+            return redirect()->route('user.profile')->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->route('user.profile')->with('error', 'Error updating user information.');
+            return redirect()->route('user.profile')->withErrors(['error' => 'Error updating user information: ' . $e->getMessage()])->withInput();
         }
     }
 }

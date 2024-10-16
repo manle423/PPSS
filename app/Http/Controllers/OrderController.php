@@ -3,84 +3,130 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
+use App\Models\GuestOrder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    public function showCheckoutPage()
+    public function __construct()
     {
-        // Hiển thị trang checkout
-        return view('components.modal-confirmed-checkout');
+        $this->middleware('buyerOrGuest');
     }
 
-    public function store(Request $request)
+    public function searchForm()
     {
-        $user = auth()->user(); // Giả sử người dùng đã đăng nhập
+        return view('user.orders.search');
+    }
 
-        // Tính tổng giá đơn hàng
-        $totalPrice = 0;
-        $products = $request->input('products');
-
-        foreach ($products as $productData) {
-            $product = Product::findOrFail($productData['product_id']);
-            $totalPrice += $product->price * $productData['quantity'];
-
-            // Kiểm tra tồn kho
-            if ($product->stock < $productData['quantity']) {
-                return response()->json(['error' => 'Không đủ hàng'], 400);
-            }
-        }
-
-        // Gọi API tính phí giao hàng
-        $shippingFee = $this->calculateShippingFee($request->input('address'));
-
-        // Tạo đơn hàng
-        $order = Order::create([
-            'user_id' => $user->id,
-            'total_price' => $totalPrice,
-            'shipping_fee' => $shippingFee,
-            'payment_method' => $request->input('payment_method'),
-            'status' => 'pending',
+    public function search(Request $request)
+    {
+        $request->validate([
+            'order_code' => 'required|string',
+            'email' => 'required|email',
         ]);
 
-        // Lưu chi tiết sản phẩm
-        foreach ($products as $productData) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productData['product_id'],
-                'quantity' => $productData['quantity'],
-                'price' => $product->price,
-            ]);
+        $orderCode = $request->order_code;
+        $email = $request->email;
 
-            // Cập nhật tồn kho
-            $product->update(['stock' => $product->stock - $productData['quantity']]);
+        if (Str::startsWith($orderCode, 'GT')) {
+            $order = GuestOrder::where('order_code', $orderCode)
+                               ->where('guest_email', $email)
+                               ->first();
+        } else {
+            $order = Order::where('order_code', $orderCode)
+                          ->whereHas('user', function($query) use ($email) {
+                              $query->where('email', $email);
+                          })
+                          ->first();
         }
 
-        return response()->json(['message' => 'Đặt hàng thành công', 'order_id' => $order->id], 201);
+        if (!$order) {
+            return back()->withErrors(['error' => 'Không tìm thấy đơn hàng hoặc thông tin không chính xác.'])
+                         ->withInput();
+        }
+
+        // Generate verification code
+        $verificationCode = Str::random(6);
+        $order->verification_code = $verificationCode;
+        $order->save();
+
+        // Send email with verification code
+        $recipientEmail = $order instanceof GuestOrder ? $order->guest_email : $order->user->email;
+        Mail::raw("Mã xác thực của bạn là: $verificationCode", function($message) use ($recipientEmail) {
+            $message->to($recipientEmail)
+                    ->subject('Mã xác thực đơn hàng');
+        });
+
+        return back()->with('success', 'Mã xác thực đã được gửi đến email của bạn. Vui lòng kiểm tra và nhập mã xác thực.')
+                     ->withInput();
     }
 
-    protected function calculateShippingFee($address)
+    public function verifyAndShowOrder(Request $request)
     {
-        // Gọi API của đơn vị giao hàng
-        $apiUrl = env('SHIPPING_API_URL');
-        $response = Http::post($apiUrl, [
-            'address' => $address,
-            'weight' => 1.0, // Giả định trọng lượng
+        $request->validate([
+            'order_code' => 'required|string',
+            'email' => 'required|email',
+            'verification_code' => 'required|string',
         ]);
 
-        if ($response->successful()) {
-            return $response->json()['shipping_fee'];
+        $orderCode = $request->order_code;
+        $email = $request->email;
+        $verificationCode = $request->verification_code;
+
+        if (Str::startsWith($orderCode, 'GT')) {
+            $order = GuestOrder::where('order_code', $orderCode)
+                               ->where('guest_email', $email)
+                               ->where('verification_code', $verificationCode)
+                               ->first();
+        } else {
+            $order = Order::where('order_code', $orderCode)
+                          ->whereHas('user', function($query) use ($email) {
+                              $query->where('email', $email);
+                          })
+                          ->where('verification_code', $verificationCode)
+                          ->first();
         }
 
-        return 0; // Trả về 0 nếu API lỗi
+        if (!$order) {
+            return back()->withErrors(['error' => 'Mã xác thực không chính xác hoặc đã hết hạn.'])
+                         ->withInput();
+        }
+
+        // Clear verification code after successful verification
+        $order->verification_code = null;
+        $order->save();
+
+        return view('user.orders.search', ['order' => $order])
+               ->withInput($request->only(['order_code', 'email']));
     }
-    
-    public function placeOrder(Request $request)
+
+    public function getOrdersByStatus(Request $request, $status)
     {
-        // Xử lý đơn hàng
-        // Logic xử lý lưu đơn hàng vào database, gửi email xác nhận, v.v.
+        if (!in_array($status, ['PENDING','SHIPPING', 'COMPLETED', 'CANCELED'])) {
+            return redirect()->back()->with('error', 'Trạng thái không hợp lệ.');
+        }
+        
+        $orders = Auth::user()->orders()
+            ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod'])
+            ->where('status', $status)
+            ->orderBy('order_date', 'desc')
+            ->paginate(5);
+
+        return view('checkout.history', compact('orders', 'status'));
+    }
+
+    public function show(Order $order)
+    {
+        // Ensure the order belongs to the authenticated user
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod', 'orderItems.item']);
+
+        return view('checkout.details', compact('order'));
     }
 }

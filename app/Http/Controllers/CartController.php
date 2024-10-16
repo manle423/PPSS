@@ -55,7 +55,7 @@ class CartController extends Controller
             if ($query->count()) {
                 $cartItems = $query->with('product')->get();
                 foreach ($cartItems as $item) {
-                    $subtotal += $item->quantity * $item->product->price;
+                    $subtotal += $item->quantity * (optional($item->variant)->variant_price ?? $item->product->price);
                     $variantId = $item->variant ? strval($item->variant->id) : '';
                     $cartKey = $item->product->id . '-' . $variantId;
                     $sessionCart[$cartKey] = $item->quantity;
@@ -103,6 +103,16 @@ class CartController extends Controller
                 }
             }
         }
+
+        // Save the subtotal to session
+        session()->put('subtotal', $subtotal);
+        session()->put('oldSubtotal', $subtotal);
+
+        // Save cartItems to session
+        session()->put('cartItems', $cartItems);
+
+        // Reset the coupon usage state
+        session()->forget('couponCode');
 
         return view('cart.cart', compact('cartItems', 'categories', 'sessionCart', 'subtotal'));
     }
@@ -182,21 +192,6 @@ class CartController extends Controller
         // Redirect back with a success message
         return redirect()->route('cart.index')->with('success', 'Product added to cart successfully!');
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -260,11 +255,20 @@ class CartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($cartKey, $id)
     {
         // Find the cart item by its ID and delete it
         $cartItem = Cart::findOrFail($id);
         $cartItem->delete();
+
+        // Get the cart item from the session
+        $sessionCart = session()->get('cart', []);
+
+        // Remove the item from session cart
+        unset($sessionCart[$cartKey]);
+
+        // Update the session with the modified cart
+        session()->put('cart', $sessionCart);
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Item removed from the cart.');

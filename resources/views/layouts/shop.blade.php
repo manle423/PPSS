@@ -16,6 +16,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap"
         rel="stylesheet">
+    <link href="{{ asset('storage/' . config('app.store.logo')) }}" type="image/png" rel="icon">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
@@ -24,6 +25,7 @@
     <!-- Libraries Stylesheet -->
     <link href="{{ asset('assets/vendor/libs/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/vendor/libs/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.min.css" rel="stylesheet">
 
 
     <!-- Customized Bootstrap Stylesheet -->
@@ -56,7 +58,7 @@
                 </div>
                 <div class="modal-body d-flex align-items-center">
                     <div class="input-group w-100 mx-auto d-flex">
-                        <input type="search" class="form-control p-3" placeholder="keywords"
+                        <input type="search" class="form-control p-2" placeholder="keywords"
                             aria-describedby="search-icon-1">
                         <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
                     </div>
@@ -75,14 +77,11 @@
     @include('components.modal-register')
     <!-- Modal Register End -->
 
-    <!-- Hero Start -->
-   
-    <!-- Hero End -->
-
     @yield('content')
 
     <!-- Footer Start -->
-    @include('components.footer')
+   
+    <x-footer />
     <!-- Footer End -->
 
     <!-- Back to Top -->
@@ -102,6 +101,7 @@
 
     {{-- Gọi file auth.js bên assets/js/auth.js --}}
     <script src="{{ asset('assets/js/auth.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.all.min.js"></script>
 
 </body>
 
