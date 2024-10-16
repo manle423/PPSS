@@ -77,4 +77,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Contract::class, 'user_id', 'id');
     }
+
+    // Define the relationship with CouponUsage model
+    public function couponUsages()
+    {
+        return $this->hasMany(CouponUsage::class, 'user_id');
+    }
 }

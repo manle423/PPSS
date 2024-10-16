@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -32,6 +33,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', function () {
         return redirect(route('admin.dashboard'));
     });
+   
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
 
@@ -62,7 +64,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
         Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
         Route::post('/delete/{id}', [AdminProductController::class, 'destroy'])->name('products.delete');
-
+        Route::get('/sale/{id}', [AdminProductController::class, 'sale'])->name('products.sale');
+       
+        Route::post('/search', [AdminProductController::class, 'search'])->name('products.search');
         // variant
         Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
     });
@@ -162,8 +166,8 @@ Route::middleware('buyerOrGuest')->group(function () {
     // Routes for cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/{product}', [CartController::class, 'store'])->name('cart.store');
-    Route::delete('/cart/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::delete('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroy-session');
+    Route::delete('/cart/{cartKey}/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::post('/cart/delete/{cartKey}', [CartController::class, 'destroySession'])->name('cart.destroy-session');
     Route::patch('/cart/update/{cartKey}/{product}', [CartController::class, 'update'])->name('cart.update');
     Route::patch('/cart/updateSession/{cartKey}', [CartController::class, 'updateSession'])->name('cart.update-session');
 
@@ -171,7 +175,7 @@ Route::middleware('buyerOrGuest')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/success', [CheckoutController::class, 'success'])->name('checkout.success');
-        Route::post('/send-bill-email', [CheckoutController::class, 'sendBillEmail'])->name('checkout.send-bill-email');
+        Route::get('/coupon', [CouponController::class, 'useCoupon'])->name('checkout.coupon');
     });
 
     Route::prefix('paypal')->group(function () {

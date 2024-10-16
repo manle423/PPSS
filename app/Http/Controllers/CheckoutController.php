@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendEmail;
-use App\Mail\SendBillEmail;
 use App\Mail\OrderConfirmation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Province;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\GuestOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -22,14 +22,20 @@ use App\Models\District;
 use App\Models\Ward;
 use App\Services\ProfileService;
 use Illuminate\Support\Facades\Mail;
+use App\Services\OrderService;
+use App\Services\CouponService;
 
 class CheckoutController extends Controller
 {
     protected $profileService;
+    protected $orderService;
+    protected $couponService;
 
-    public function __construct(ProfileService $profileService)
+    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService)
     {
         $this->profileService = $profileService;
+        $this->orderService = $orderService;
+        $this->couponService = $couponService;
     }
 
     public function success(Request $request)
@@ -63,6 +69,21 @@ class CheckoutController extends Controller
             ];
         }
 
+        // Record coupon usage if applicable
+        $couponCode = session()->get('couponCode');
+        if ($couponCode) {
+            $coupon = Coupon::where('code', $couponCode)->first();
+            // Mark the coupon as used by the user
+            CouponUsage::create([
+                'user_id' => Auth::id(),
+                'coupon_id' => $coupon->id,
+                'order_id' => $orderId, // You need to have an order ID available here
+            ]);
+
+            // Reset the coupon usage state
+            session()->forget('couponCode');
+        }
+
         $orderItems = $order->orderItems->map(function ($item) {
             return [
                 'name' => $item->item->name,
@@ -81,13 +102,14 @@ class CheckoutController extends Controller
         $sessionCart = session()->get('cart', []);
         $subtotal = session()->get('subtotal');
         $cartItems = session()->get('cartItems');
+        $usedCoupon = session()->get('usedCoupon');
+        $couponCode = session()->get('couponCode');
+        $oldSubtotal = session()->get('oldSubtotal');
 
         // Kiểm tra xem giỏ hàng có trống không
         if (empty($sessionCart) || empty($cartItems)) {
             return Redirect::route('home')->with('info', 'Your cart is empty. Please add some items before checking out.');
         }
-
-        $totalAmount = $subtotal;
 
         $user = Auth::user();
         $addresses = [];
@@ -97,7 +119,17 @@ class CheckoutController extends Controller
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
 
-        return view('checkout.index', compact('sessionCart', 'subtotal', 'cartItems', 'totalAmount', 'user', 'addresses', 'provinces'));
+        return view('checkout.index', compact(
+            'sessionCart',
+            'subtotal',
+            'cartItems',
+            'oldSubtotal',
+            'user',
+            'addresses',
+            'provinces',
+            'usedCoupon',
+            'couponCode'
+        ));
     }
 
     public function process(Request $request)
@@ -106,43 +138,37 @@ class CheckoutController extends Controller
             $user = Auth::user();
             $addressId = $request->input('selected_address_id');
 
-            // Validate input
             $validator = $this->validateCheckoutData($request, $user);
-
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // Handle address creation or selection
             if ($user) {
                 $hasAddresses = $user->addresses()->exists();
-
                 if (!$hasAddresses || $request->input('new_address')) {
-                    // Create new address if user has no addresses or chooses to create a new one
                     $addressId = $this->createNewAddress($request, $user);
-                } else {
-                    // Use selected address
-                    $addressId = $request->input('selected_address_id');
                 }
             }
 
-            // Create order
             DB::beginTransaction();
-            $order = $this->createOrder($request, $user, $addressId);
+            $cartItems = session()->get('cartItems');
+            $sessionCart = session()->get('cart', []);
+            $subtotal = session()->get('subtotal');
+            $oldSubtotal = session()->get('oldSubtotal', $subtotal);
+            $couponCode = session()->get('couponCode');
+            $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
+            $finalPrice = $oldSubtotal - $discountValue;
+            $totalPrice = $couponCode ? $subtotal : $oldSubtotal;
 
-            // Store order type and ID in session
+            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice);
+
             $orderType = $user ? 'order' : 'guest_order';
             $request->session()->put('order_type', $orderType);
             $request->session()->put($orderType . '_id', $order->id);
 
-            // Send order confirmation email
-            // $this->sendOrderConfirmationEmail($order, $orderType);
-
             DB::commit();
 
-            // Process payment based on selected method
             $paymentMethod = $request->input('payment_method');
-
             switch ($paymentMethod) {
                 case 'paypal':
                     return redirect()->route('paypal.process');
@@ -156,12 +182,6 @@ class CheckoutController extends Controller
             Log::error('Checkout process failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred during checkout. Please try again.');
         }
-    }
-
-    public function sendBillEmail(Request $request)
-    {
-        SendEmail::dispatch()->delay(now()->addMinutes(9));
-        return redirect()->back();
     }
 
     private function validateCheckoutData(Request $request, $user)
@@ -222,89 +242,6 @@ class CheckoutController extends Controller
         ];
 
         return Validator::make($request->all(), $rules, $messages);
-    }
-
-    private function createOrder(Request $request, $user, $addressId)
-    {
-        try {
-            $cartItems = session()->get('cartItems');
-            $sessionCart = session()->get('cart', []);
-            $subtotal = session()->get('subtotal');
-            if ($user) {
-                // Create Order for authenticated user
-                $order = Order::create([
-                    'user_id' => $user->id,
-                    'shipping_address_id' => $addressId,
-                    'order_date' => now(),
-                    'shipping_method_id' => 1, // Just for now
-                    'payment_method' => $request->input('payment_method'),
-                    'total_price' => $subtotal,
-                    'discount_value' => 0,
-                    'final_price' => $subtotal,
-                    'status' => 'pending'
-                ]);
-
-                // Create OrderItems for authenticated user
-                foreach ($cartItems as $item) {
-                    $variantId = $item->variant ? strval($item->variant->id) : '';
-                    $cartKey = $item->product->id . '-' . $variantId;
-                    $quantity = $sessionCart[$cartKey] ?? 0;
-
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'item_id' => $item->product->id,
-                        'variant_id' => $item->variant ? $item->variant->id : null,
-                        'quantity' => $quantity,
-                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
-                    ]);
-                }
-
-                // Không xóa cart ở đây nữa
-                // Cart::where('user_id', $user->id)->delete();
-
-                return $order;
-            } else {
-                // Create GuestOrder for non-authenticated user
-                $guestOrder = GuestOrder::create([
-                    'guest_name' => $request->input('full_name'),
-                    'guest_email' => $request->input('email'),
-                    'guest_phone_number' => $request->input('phone_number'),
-                    'guest_address' => json_encode([
-                        'address_line_1' => $request->input('address_line_1'),
-                        'address_line_2' => $request->input('address_line_2'),
-                        'district_id' => $request->input('district_id'),
-                        'province_id' => $request->input('province_id'),
-                        'ward_id' => $request->input('ward_id'),
-                    ], JSON_UNESCAPED_UNICODE),
-                    'status' => 'pending',
-                    'order_date' => now(),
-                    'shipping_method_id' => 1, // Just for now
-                    'payment_method' => $request->input('payment_method'),
-                    'total_price' => $subtotal,
-                    'discount_value' => 0, // Just for now
-                    'final_price' => $subtotal,
-                    'digital_signature' => '' // Just for now
-                ]);
-
-                // Create OrderItems for guest
-                foreach ($cartItems as $item) {
-                    $variantId = $item->variant ? strval($item->variant->id) : '';
-                    $cartKey = $item->product->id . '-' . $variantId;
-                    $quantity = $sessionCart[$cartKey] ?? 0;
-                    OrderItem::create([
-                        'guest_order_id' => $guestOrder->id,
-                        'item_id' => $item->product->id,
-                        'variant_id' => $item->variant ? $item->variant->id : null,
-                        'quantity' => $quantity,
-                        'price' => $item->variant ? $item->variant->variant_price : $item->product->price,
-                    ]);
-                }
-                return $guestOrder;
-            }
-        } finally {
-            // Không xóa session cart ở đây nữa
-            // session()->forget(['cart', 'cartItems', 'subtotal']);
-        }
     }
 
     private function createNewAddress(Request $request, $user)

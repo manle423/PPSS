@@ -75,7 +75,7 @@
                         <td>{{ $product->name }}</td>
                         <td><img src="{{ $product->image }}" alt="{{ $product->name }}" style="width: 100px; height: auto;"></td>
                         <td>{{ $product->category->name }}</td> 
-                        <td>{{ $product->description }}</td>
+                        <td>{{Str::limit($product->description, 100) }}</td>
                         <td>{{ $product->price }}</td>
                         <td>{{ $product->stock_quantity }}</td>
                         <td>{{ $product->created_at }}</td>

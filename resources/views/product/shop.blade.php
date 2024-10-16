@@ -122,26 +122,36 @@
                                     <div class="col-md-6 col-lg-6 col-xl-4">
                                         <div class="rounded position-relative fruite-item">
                                             <div class="fruite-img">
-                                                <img src="{{ $product->image != null ? $product->image :asset('assets/vendor/img/food-item.jpg') }}"
-                                                    class="img-fluid w-100 rounded-top" alt="">
+                                            <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/food-item.jpg') }}" 
+                                            class="img-fluid rounded-top product-image" 
+                                             alt="Product Image">
                                             </div>
                                             <div class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                 style="top: 10px; left: 10px;">{{ $product->category->name }}</div>
                                             <div class="p-4 border border-secondary border-top-0 rounded-bottom">
+                                            <div class="top-bottom">
                                                 <h4><a
-                                                        href="{{ route('product.show', $product) }}">{{ $product->name }}</a>
+                                                        href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a>
                                                 </h4>
                                                 <p>{{ Str::words($product->description, 10) }}</p>
+                                                </div>
                                                 <div class="d-flex justify-content-between flex-lg-wrap">
                                                     @if ($product->variants->count() == 0)
-                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ</p>
+                                                        <div class="price"style="width:234px; height:65px;">
+                                                        <p class="text-dark fs-5 fw-bold mb-0" >{{ $product->price }} đ</p>
+                                                        </div>
                                                     @elseif ($product->variants->count() == 1)
+                                                    <div class="price"style="width:234px; height:65px;">
                                                         <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants[0]->variant_price }} đ</p>
                                                     {{--Show price in format (lowest variant price) - (highest variant price)--}}
+                                                    </div>
                                                     @else
+                                                    <div class="price"style="width:234px; height:65px;">
                                                     <p class="text-dark fs-5 fw-bold mb-0">{{ $product->variants->min('variant_price') }} -
                                                         {{ $product->variants->max('variant_price') }} đ</p>
-                                                    @endif
+                                                        </div>
+                                                        @endif
+                                                  
                                                     <a href="{{ route('product.show', $product) }}"
                                                         class="btn border border-secondary rounded-pill px-3 text-primary"><i
                                                             class="fa fa-shopping-bag me-2 text-primary"></i> Add to
