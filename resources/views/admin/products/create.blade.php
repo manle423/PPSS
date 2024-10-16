@@ -110,6 +110,25 @@
                     </div>
                 @endif
             </div>
+            <div id="measurements-container">
+                <h3>Measurements</h3>
+                <div class="input-group">
+                    <label for="weight">Weight</label>
+                    <input type="number" id="weight" name="weight" value="" required>
+                </div>
+                <div class="input-group">
+                    <label for="stock">Length</label>
+                    <input type="number" id="length" name="length" value="" required>
+                </div>
+                <div class="input-group">
+                    <label for="stock">Width</label>
+                    <input type="number" id="width" name="width" value="" required>
+                </div>
+                <div class="input-group">
+                    <label for="stock">Height</label>
+                    <input type="number" id="height" name="height" value="" required>
+                </div>
+            </div>
             <div  style="text-align:center;"> 
             <button type="submit" class="submit-button" style="margin-top:15px;">Add Product</button>
             <a href="{{ route('admin.products.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Cancel</a>
