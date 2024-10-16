@@ -349,11 +349,20 @@ margin-top:60px;
 .btn {
     font-weight: 600;
     transition: .5s;
+    text-align:center;
 }
 
 .btn-square {
     width: 32px;
     height: 32px;
+}
+.top-bottom{
+    height:170px;
+}
+.product-image {
+    width: 285px;  /* Đặt chiều rộng cố định */
+    height: 285px; /* Đặt chiều cao cố định */
+    object-fit: cover; /* Giữ tỉ lệ ảnh và cắt phần dư */
 }
 
 .btn-sm-square {

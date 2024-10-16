@@ -18,7 +18,7 @@ class Order extends Model
         'guest_order_id',
         'status',
         'order_date',
-        'shipping_address',
+        'shipping_address_id',
         'shipping_method_id',
         'payment_method',
         'promotion_id',
@@ -26,6 +26,15 @@ class Order extends Model
         'total_price',
         'discount_value',
         'final_price',
+        'verification_code',
+        'shipping_fee',
+    ];
+
+    const STATUS = [
+        'pending' => 'PENDING',
+        'completed' => 'COMPLETED',
+        'canceled' => 'CANCELED',
+        'shipping' => 'SHIPPING',
     ];
 
     protected static function boot()
@@ -38,6 +47,11 @@ class Order extends Model
             $orderCount = self::whereDate('created_at', now()->toDateString())->count();
             $order->order_code = 'HD' . $date . str_pad($orderCount + 1, 4, '0', STR_PAD_LEFT);
         });
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
     public function user()
@@ -68,5 +82,10 @@ class Order extends Model
     public function contracts()
     {
         return $this->hasOne(Contract::class, 'order_id', 'id');
+    }
+
+    public function shippingAddress()
+    {
+        return $this->belongsTo(Address::class, 'shipping_address_id', 'id');
     }
 }

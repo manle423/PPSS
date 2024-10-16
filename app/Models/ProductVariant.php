@@ -18,6 +18,11 @@ class ProductVariant extends Model
         'variant_price',
         'stock_quantity',
         'exp_date',
+        'image',
+        'weight',
+        'length',
+        'width',
+        'height',
     ];
 
     public function product()

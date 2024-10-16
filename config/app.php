@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => 'Asia/Ho_Chi_Minh',
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +122,23 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+'store' => [
+    'name' => env('STORE_NAME', 'Default Store Name'),
+    'description' => env('STORE_DESCRIPTION', 'Default Description'),
+    'address' => env('STORE_ADDRESS', 'Default Address'),
+    'phone' => env('STORE_PHONE', 'Default Phone'),
+    'email' => env('STORE_EMAIL', 'default@example.com'),
+    'footer_why_people_like_us' => env('STORE_FOOTER_WHY_PEOPLE_LIKE_US', 'Why people like us'),
+    'logo'=>env('STORE_LOGO'),
+    'team'=>env('TEAM_NAME'),
+    'product_category' => env('PRODUCT_CATEGORY', 'Default Category'),
+    'trusted' => env('TRUSTED', 'Trusted Brands'),
+    'quality' => env('QUALITY', 'Quality Products'),
+    'price' => env('PRICE', 'Affordable Prices'),
+    'delivery' => env('DELIVERY', 'Fast Delivery'),
+    'thanks' => env('THANKS', 'Thank you for choosing us!'),
+
+],
 
 ];

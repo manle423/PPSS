@@ -20,6 +20,7 @@ class Address extends Model
         'address_line_2',
         'province_id',
         'district_id',
+        'ward_id',
         'is_default',
     ];
 
@@ -37,4 +38,15 @@ class Address extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function scopeDefault($query)
+    {
+        return $query->where('is_default', true);
+    }
+
+    public function ward()
+    {
+        return $this->belongsTo(Ward::class);
+    }
 }
+

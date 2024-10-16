@@ -1,7 +1,6 @@
+<script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}"></script>
 @extends('layouts.shop')
 @section('content')
-
-
     <!-- Single Page Header start -->
     <div class="container-fluid page-header py-5">
         <h1 class="text-center text-white display-6">Checkout</h1>
@@ -12,7 +11,6 @@
         </ol>
     </div>
     <!-- Single Page Header End -->
-
 
     <!-- Checkout Page Start -->
     <div class="container-fluid py-5">
@@ -189,30 +187,43 @@
 
                         {{-- payment method --}}
                         <h3 class="mb-4 mt-4">Payment Method</h3>
-                        <div>
-                             <form action="{{ route('placeOrder') }}" method="POST">
-                            @csrf
-                            <select name="payment_method" id="payment_method" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-                                <option value="cash">Cash</option>
-                                <option value="bank">Bank</option>
-                                <option value="paypal">Paypal</option>
-                                <option value="momo">Momo</option>
-                            </select>
-                        </div>
-                            {{-- <button type="submit">Place Order</button> --}}
-                        </form>
+                        {{-- <div class="card-body">
+                            @if ($message = Session::get('success'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
+
+                            @if ($message = Session::get('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('paypal.payment') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-success">Pay with PayPal</button>
+                            </form>
+
+                        </div> --}}
+
+                        <a class="btn btn-primary" href="{{ route('paypal.process') }}">Pay with Paypal</a>
 
                         <div class="row g-4 text-center align-items-center justify-content-center pt-4">
 
                             <button id="placeOrderBtn" type="button"
                                 class="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary">Place
                                 Order</button>
-
                         </div>
-                    </div>
-                </div>
+
             </form>
+
         </div>
     </div>
+
     <!-- Checkout Page End -->
 @endsection()

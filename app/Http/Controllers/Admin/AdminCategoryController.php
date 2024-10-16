@@ -42,7 +42,7 @@ class AdminCategoryController extends Controller
         //kiem tra danh muc da ton tai chua
         $exist = Category::where('name', $request->input('name'))->first();
         if ($exist) {
-            return redirect()->back()->withErrors(['name' => 'Category already exist.']);
+            return redirect()->back()->withErrors(['name' => 'Category already exists.'])->withInput();
         }
         // tạo mới danh mục
 

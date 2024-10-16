@@ -97,6 +97,7 @@
                         </ul>
                     </div>
                 </div>
+                {{-- @dd($popularProducts    ) --}}
                 {{-- Latest Products Content (stored in multiple tabs)--}}
                 <div class="tab-content">
                     <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -107,28 +108,38 @@
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
-                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                    <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                <div class="top-bottom">
+                                               
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
                                                     <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
+                                                  
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -159,20 +170,28 @@
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
                                                     <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -203,20 +222,28 @@
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
                                                     <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -240,27 +267,35 @@
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
                                                     <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
                                                     <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -324,28 +359,36 @@
                                         <div class="col-md-6 col-lg-4 col-xl-3">
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
-                                                    <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                    <img src="{{ $product->image != null ? $product->image : asset('assets/vendor/img/toys.jpg') }}"
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ Str::words(Str::words(Str::words($product->description, 10) , 10) , 10) }}</p>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -369,27 +412,35 @@
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
                                                     <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ Str::words(Str::words($product->description, 10) , 10)  }}</p>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -413,27 +464,35 @@
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
                                                     <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
-                                                    <p>{{ Str::words(Str::words($product->description, 10) , 10)  }}</p>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
+                                                    <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
@@ -457,27 +516,35 @@
                                             <div class="rounded position-relative fruite-item">
                                                 <div class="fruite-img">
                                                     <img src="{{ asset('assets/vendor/img/toys.jpg') }}"
-                                                        class="img-fluid w-100 rounded-top" alt="">
+                                                        class="img-fluid w-100 rounded-top product-image" alt="">
                                                 </div>
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
                                                     {{ $product->category->name }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4><a  href="{{ route('product.show', $product) }}">{{ $product->name }}</a></h4>
+                                                <div class="top-bottom">
+                                                     <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
                                                     <p>{{ Str::words($product->description, 10)  }}</p>
+                                                    </div>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
                                                         @if ($product->variants->count() == 0)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} đ
                                                             </p>
+                                                        </div>
                                                         @elseif ($product->variants->count() == 1)
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants[0]->variant_price }} đ</p>
+                                                        </div>
                                                             {{-- Show price in format (lowest variant price) - (highest variant price) --}}
                                                         @else
+                                                        <div class="price"style="width:234px; height:65px;">
                                                             <p class="text-dark fs-5 fw-bold mb-0">
                                                                 {{ $product->variants->min('variant_price') }} -
                                                                 {{ $product->variants->max('variant_price') }} đ</p>
+                                                        </div>
                                                         @endif
                                                         <a href="{{ route('product.show', $product) }}"
                                                             class="btn border border-secondary rounded-pill px-3 text-primary"><i
