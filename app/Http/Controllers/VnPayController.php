@@ -41,7 +41,7 @@ class VnPayController extends Controller
             $vnp_HashSecret = config('vnpay.vnp_HashSecret');
             $vnp_Url = config('vnpay.vnp_Url');
             $vnp_ReturnUrl = config('vnpay.vnp_Returnurl');
-            $total_amount = $order->total_price * 100;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
+            $total_amount = $order->final_price * 100;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
             $total_amount = number_format($total_amount, 0, '', '');
             Log::info('Order total amount: ' . $total_amount);
             $inputData = array(
@@ -109,7 +109,7 @@ class VnPayController extends Controller
                     $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
                     if ($orderId) {
                         if ($orderType == 'order') {
-                            $order = Order::findOrFail($orderId)->with('shippingAddress');
+                            $order = Order::findOrFail($orderId);
                             $order->status = Order::STATUS['pending'];
                         } else {
                             $order = GuestOrder::findOrFail($orderId);
@@ -123,17 +123,17 @@ class VnPayController extends Controller
                         // Cập nhật số lượng hàng theo số lượng hàng có trong giỏ
                         $cartItems = session('cartItems');
                         foreach ($cartItems as $item) {
-                            $product = $item['product'];
-                            $quantity = $item['quantity'];
-                            $variant = $item['variant'];
+                            $product = $item->product;
+                            $quantity = $item->quantity;
+                            $variant = $item->variant;                
                             // Nếu hàng có phân loại
-                            if ($variant) {
-                                $variant->stock_quantity -= $quantity;
+                            if ($variant && property_exists($variant, 'stock_quantity')) {
+                                $variant->stock_quantity = max(0, $variant->stock_quantity - (int)$quantity);
                                 $variant->save();
                             }
                             // Nếu hàng không phân loại
-                            else {
-                                $product->stock_quantity -= $quantity;
+                            elseif ($product && property_exists($product, 'stock_quantity')) {
+                                $product->stock_quantity = max(0, $product->stock_quantity - (int)$quantity);
                                 $product->save();
                             }
                         }

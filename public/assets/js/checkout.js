@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const couponForm = document.getElementById("coupon-form");
     const applyAddressButton = document.getElementById("applyAddressButton");
+    const isGuest = !addressSelect; // Determine if the user is a guest
 
     function toggleNewAddressForm() {
         if (!newAddressCheckbox) return;
@@ -47,11 +48,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (applyAddressButton) {
         applyAddressButton.addEventListener("click", function () {
-            if (newAddressCheckbox.checked) {
-                // Handle new address
-                const newAddressFields = newAddressForm.querySelectorAll(
-                    'input[id^="new_"], select[id^="new_"]'
-                );
+            let toDistrictId, toWardCode;
+
+            if (isGuest || (newAddressCheckbox && newAddressCheckbox.checked)) {
+                // Handle new address for guest or registered user with new address
+                let newAddressFields = [];
+                if (newAddressForm) {
+                    newAddressFields = newAddressForm.querySelectorAll('input[id^="new_"], select[id^="new_"]');
+                } else {
+                    // If newAddressForm doesn't exist, try to find fields directly in the document
+                    newAddressFields = document.querySelectorAll('input[id^="new_"], select[id^="new_"]');
+                }
+
                 let isValid = true;
                 newAddressFields.forEach((field) => {
                     if (!field.value && field.id !== "new_address_line_2") {
@@ -68,40 +76,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Update hidden inputs for new address
                 newAddressFields.forEach((field) => {
-                    const hiddenInput = couponForm.querySelector(
+                    const hiddenInput = couponForm ? couponForm.querySelector(
                         `input[name="new_${field.name}"]`
-                    );
+                    ) : null;
                     if (hiddenInput) {
                         hiddenInput.value = field.value;
                     }
                 });
 
-                selectedAddressIdInput.value = "";
+                if (selectedAddressIdInput) {
+                    selectedAddressIdInput.value = "";
+                }
+
+                toDistrictId = parseInt(document.getElementById('new_district_id').value, 10);
+                toWardCode = document.getElementById('new_ward_id').value;
             } else {
-                // Handle existing address
+                // Handle existing address for registered user
                 if (addressSelect.value === "") {
                     alert("Please select an address.");
                     return;
                 }
-                selectedAddressIdInput.value = addressSelect.value;
-            }
+                if (selectedAddressIdInput) {
+                    selectedAddressIdInput.value = addressSelect.value;
+                }
 
-            // Lấy district_id và ward_code từ form
-            let toDistrictId, toWardCode;
-            if (newAddressCheckbox.checked) {
-                toDistrictId = parseInt(document.getElementById('new_district_id').value, 10);
-                toWardCode = document.getElementById('new_ward_id').value;
-            } else {
                 const selectedAddress = addressSelect.options[addressSelect.selectedIndex];
-                console.log(selectedAddress)
                 toDistrictId = parseInt(selectedAddress.getAttribute('data-district-id'), 10);
                 toWardCode = selectedAddress.getAttribute('data-ward-code');
             }
 
-            // Đảm bảo toWardCode là chuỗi
+            // Ensure toWardCode is a string
             toWardCode = toWardCode.toString();
 
-            // Gọi API để tính phí vận chuyển
+            // Call API to calculate shipping fee
             fetch("/checkout/calculate-shipping-fee", {
                 method: "POST",
                 headers: {
@@ -129,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (shippingFeeElement) shippingFeeElement.textContent = formatNumber(shippingFee) + " đ";
                     if (totalAmountElement) totalAmountElement.textContent = formatNumber(finalPrice) + " đ";
                     
-                    // Cập nhật giá trị input hidden cho tổng số tiền
+                    // Update hidden input for total amount
                     const totalAmountInput = document.querySelector('input[name="total_amount"]');
                     if (totalAmountInput) totalAmountInput.value = finalPrice.toFixed(2);
                 } else {
@@ -141,13 +148,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("An error occurred while calculating the shipping fee.");
             });
 
-            // Trigger any additional logic to calculate shipping fee here
-            console.log(
-                "Address applied with ID:",
-                selectedAddressIdInput.value
-            );
+            console.log("Address applied:", isGuest ? "Guest Address" : (selectedAddressIdInput ? selectedAddressIdInput.value : "Unknown"));
+
             // Close the modal
-            $("#shippingModal").modal("hide");
+            const shippingModal = document.getElementById('shippingModal');
+            if (shippingModal) {
+                const bootstrapModal = bootstrap.Modal.getInstance(shippingModal);
+                if (bootstrapModal) {
+                    bootstrapModal.hide();
+                }
+            }
         });
     }
 

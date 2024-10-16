@@ -12,7 +12,6 @@
         ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
 
         $data = $response->json()['data'] ?? [];
-        
         if ($type === 'province') {
             $item = collect($data)->firstWhere('ProvinceID', $id);
             return $item ? $item['ProvinceName'] : 'Unknown Province';

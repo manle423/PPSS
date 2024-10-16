@@ -79,6 +79,7 @@ class AdminProductController extends Controller
                 'category_id' => $request->category_id,
                 'price' => $request->price,
                 'image' => $uploadedFileUrl ?? null,
+                'image' => $uploadedFileUrl ?? null,
                 'stock_quantity' => $request->stock_quantity,
                 'weight' => $request->weight, 
                 'length' => $request->length, 
@@ -114,7 +115,7 @@ class AdminProductController extends Controller
             return redirect()->route('admin.products.create')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
     

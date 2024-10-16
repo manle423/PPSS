@@ -24,7 +24,6 @@ class OrderService
                 'status' => 'pending',
                 'shipping_fee' => $shippingFee
             ]);
-
             $this->createOrderItems($order->id, $cartItems, $sessionCart, 'order_id');
             return $order;
         } else {
