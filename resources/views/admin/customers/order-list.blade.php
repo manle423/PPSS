@@ -22,10 +22,7 @@
             </div>
         @endif
         
-        <div class="table-controls">
-            <!-- Các nút thêm, sửa, xóa có thể thêm vào đây -->
-        </div>
-
+       
         <table class="orders-table">
             <thead>
                 <tr>

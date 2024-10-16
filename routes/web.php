@@ -92,10 +92,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     //Change password
-    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+    Route::get('/reset-pass', [AdminController::class, 'changePass'])->name('password.reset');
+    Route::post('/reset-pass', [AdminController::class, 'setPass'])->name('password.update');
+    
 });
 
 // Cho người chưa đăng nhập
