@@ -148,7 +148,7 @@
                                                     @else
                                                     <div class="price"style="width:234px; height:65px;">
                                                     <p class="text-dark fs-5 fw-bold mb-0">{{ number_format($product->variants->min('variant_price'),0,'.',',') }} -
-                                                        {{ $product->variants->max('variant_price') }} đ</p>
+                                                        {{ number_format($product->variants->max('variant_price'),0,'.',',') }} đ</p>
                                                         </div>
                                                         @endif
                                                   

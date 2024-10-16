@@ -37,7 +37,7 @@ class VnPayController extends Controller
             $vnp_Url = config('vnpay.vnp_Url');
             $vnp_ReturnUrl = config('vnpay.vnp_Returnurl');
             $total_amount = $order->total_price * 100;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
-            $total_amount = number_format($total_amount,0,'','');
+            $total_amount = number_format($total_amount, 0, '', '');
             Log::info('Order total amount: ' . $total_amount);
             $inputData = array(
                 "vnp_Version" => "2.1.0",
@@ -114,6 +114,24 @@ class VnPayController extends Controller
 
                         // Gửi email xác nhận đơn hàng
                         $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
+
+                        // Cập nhật số lượng hàng theo số lượng hàng có trong giỏ
+                        $cartItems = session('cartItems');
+                        foreach ($cartItems as $item) {
+                            $product = $item['product'];
+                            $quantity = $item['quantity'];
+                            $variant = $item['variant'];
+                            // Nếu hàng có phân loại
+                            if ($variant) {
+                                $variant->stock_quantity -= $quantity;
+                                $variant->save();
+                            }
+                            // Nếu hàng không phân loại
+                            else {
+                                $product->stock_quantity -= $quantity;
+                                $product->save();
+                            }
+                        }
 
                         // Xóa cart sau khi thanh toán thành công
                         if ($orderType == 'order') {
