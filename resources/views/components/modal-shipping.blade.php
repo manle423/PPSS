@@ -7,14 +7,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Shipping Options Inside Modal -->
-                <div class="form-group mb-3">
-                    <label for="shipping_method">Shipping Method</label>
-                    <select name="shipping_method" id="shipping_method" class="form-control">
-                        <option value="standard">Standard Shipping (3-5 days)</option>
-                        <option value="express">Express Shipping (1-2 days)</option>
-                    </select>
-                </div>
                 <!-- Address Form Inside Modal -->
                 @if (Auth::check())
                     @if ($addresses->isNotEmpty())
@@ -23,7 +15,9 @@
                             <select name="address_id" id="address_id" class="form-control">
                                 <option value="">Select an address</option>
                                 @foreach ($addresses as $address)
-                                    <option value="{{ $address->id }}"
+                                    <option value="{{ $address->id }}" 
+                                        data-district-id="{{ $address->district_id }}"
+                                        data-ward-code="{{ $address->ward_id}}"
                                         {{ old('address_id', request('address_id')) == $address->id ? 'selected' : '' }}>
                                         {{ $address->full_name }} - {{ $address->address_line_1 }}
                                     </option>

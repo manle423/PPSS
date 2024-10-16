@@ -29,6 +29,11 @@ class PaypalController extends Controller
         try {
             $orderType = session('order_type');
             $orderId = session($orderType == 'order' ? 'order_id' : 'guest_order_id');
+            $totalAmount = session('order_total');
+
+            if (!$totalAmount) {
+                throw new \Exception('Total amount not found in session.');
+            }
 
             if ($orderType == 'order') {
                 $order = Order::findOrFail($orderId);
@@ -47,9 +52,6 @@ class PaypalController extends Controller
                 return redirect()->route('checkout.index')->withErrors('error', 'Failed to connect to PayPal. Please try again.');
             }
 
-            $total_amount = number_format($order->total_price, 2, '.', '');
-            Log::info('Order total amount: ' . $total_amount);
-
             $response = $provider->createOrder([
                 "intent" => "CAPTURE",
                 "application_context" => [
@@ -60,7 +62,7 @@ class PaypalController extends Controller
                     0 => [
                         "amount" => [
                             "currency_code" => "USD",
-                            "value" => $total_amount
+                            "value" => number_format($totalAmount, 2, '.', '')
                         ]
                     ]
                 ]
@@ -120,7 +122,7 @@ class PaypalController extends Controller
             if ($orderType == 'order') {
                 Cart::where('user_id', $order->user_id)->delete();
             }
-            session()->forget(['cart', 'cartItems', 'subtotal']);
+            session()->forget(['cart', 'cartItems', 'subtotal', 'shippingFee']);
 
             return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
         } else {

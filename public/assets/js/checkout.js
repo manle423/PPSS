@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 });
 
-                selectedAddressIdInput.value = ""; // Clear selected address ID when using a new address
+                selectedAddressIdInput.value = "";
             } else {
                 // Handle existing address
                 if (addressSelect.value === "") {
@@ -86,54 +86,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 selectedAddressIdInput.value = addressSelect.value;
             }
 
-            // Call server to calculate shipping fee
-            fetch(
-                "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
-                {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document
-                            .querySelector('meta[name="csrf-token"]')
-                            .getAttribute("content"),
-                        Token: window.GHNConfig.token,
-                        ShopId: window.GHNConfig.shopId,
-                    },
-                    body: JSON.stringify({
-                        from_district_id: 1454,
-                        from_ward_code: "21211",
-                        service_id: 53320,
-                        service_type_id: null,
-                        to_district_id: 1452,
-                        to_ward_code: "21012",
-                        height: 50,
-                        length: 20,
-                        weight: 200,
-                        width: 20,
-                        insurance_value: 10000,
-                        cod_failed_amount: 2000,
-                        coupon: null,
-                    }),
+            // Lấy district_id và ward_code từ form
+            let toDistrictId, toWardCode;
+            if (newAddressCheckbox.checked) {
+                toDistrictId = parseInt(document.getElementById('new_district_id').value, 10);
+                toWardCode = document.getElementById('new_ward_id').value;
+            } else {
+                const selectedAddress = addressSelect.options[addressSelect.selectedIndex];
+                console.log(selectedAddress)
+                toDistrictId = parseInt(selectedAddress.getAttribute('data-district-id'), 10);
+                toWardCode = selectedAddress.getAttribute('data-ward-code');
+            }
+
+            // Đảm bảo toWardCode là chuỗi
+            toWardCode = toWardCode.toString();
+
+            // Gọi API để tính phí vận chuyển
+            fetch("/checkout/calculate-shipping-fee", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                },
+                body: JSON.stringify({
+                    to_district_id: toDistrictId,
+                    to_ward_code: toWardCode,
+                    weight: 1000,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.code === 200) {
+                    const shippingFee = data.data.shipping_fee;
+                    const subtotal = data.data.subtotal;
+                    const finalPrice = data.data.total;
+
+                    const subtotalElement = document.getElementById("subtotal");
+                    const shippingFeeElement = document.getElementById("shippingFee");
+                    const totalAmountElement = document.getElementById("totalAmount");
+
+                    if (subtotalElement) subtotalElement.textContent = formatNumber(subtotal) + " đ";
+                    if (shippingFeeElement) shippingFeeElement.textContent = formatNumber(shippingFee) + " đ";
+                    if (totalAmountElement) totalAmountElement.textContent = formatNumber(finalPrice) + " đ";
+                    
+                    // Cập nhật giá trị input hidden cho tổng số tiền
+                    const totalAmountInput = document.querySelector('input[name="total_amount"]');
+                    if (totalAmountInput) totalAmountInput.value = finalPrice.toFixed(2);
+                } else {
+                    alert("Failed to calculate shipping fee: " + data.message);
                 }
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log(window.GHNConfig);
-                    console.log(data); // Log the response for debugging
-                    if (data.code === 200) {
-                        document.getElementById("shippingFee").textContent =
-                            data.data.total + " đ";
-                    } else {
-                        alert("Failed to calculate shipping fee.");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    alert(
-                        "An error occurred while calculating the shipping fee."
-                    );
-                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while calculating the shipping fee.");
+            });
 
             // Trigger any additional logic to calculate shipping fee here
             console.log(
@@ -200,3 +206,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+function formatNumber(number) {
+    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}

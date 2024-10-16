@@ -26,6 +26,7 @@
                         <a href="#" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#shippingModal">
                             Select Shipping Address
                         </a>
+                        @include('components.modal-shipping', ['addresses' => $addresses])
                     </div>
                     <div class="col-md-12 col-lg-6 col-xl-7">
                         <div class="table-responsive">
@@ -50,43 +51,37 @@
                                         <x-cart-item-checkout :item="$item" :cartKey="$cartKey" :amount="$amount" />
                                     @endforeach
                                     <tr>
-                                        <th scope="row">
-                                        </th>
-                                        <td class="py-5"></td>
-                                        <td class="py-5"></td>
-                                        <td class="py-5">
-                                            <p class="mb-0 text-dark py-3">Subtotal</p>
+                                        <td class="py-3">
+                                            <p class="mb-0 text-dark text-uppercase py-3">Subtotal</p>
                                         </td>
-                                        <td class="py-5">
+                                        <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark" name="subtotal" id="subtotal">{{ $subtotal }}
-                                                    đ</p>
-                                                @isset($couponCode)
-                                                    <p class="mb-0 text-muted text-decoration-line-through " name="subtotal"
-                                                        id="subtotal">{{ $oldSubtotal }}
-                                                        đ</p>
-                                                @endisset
-
+                                                @if(session('coupon_discount', 0) > 0)
+                                                    <p class="mb-0 text-muted text-decoration-line-through">{{ number_format(session('oldSubtotal', 0), 2, '.', ',') }} đ</p>
+                                                @endif
+                                                <p class="mb-0 text-dark" id="subtotal">{{ number_format(session('subtotal', 0), 2, '.', ',') }} đ</p>
                                             </div>
                                         </td>
                                     </tr>
 
                                     <tr>
-                                        <th scope="row"></th>
-                                        <a href="#" class="my-2 ms-3 d-flex align-items-center" data-bs-toggle="modal"
-                                            data-bs-target="#shippingModal">
-                                        </a>
-                                        @include('components.modal-shipping', ['provinces' => $provinces, 'addresses' => $addresses])
-
-                                    </tr>
-                                    
-                                    <tr>
                                         <td class="py-3">
-                                            <p class="mb-0 text-dark text-uppercase py-3">TOTAL</p>
+                                            <p class="mb-0 text-dark text-uppercase py-3">Shipping Fee</p>
                                         </td>
                                         <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark">$135.00</p>
+                                                <p class="mb-0 text-dark" id="shippingFee">{{ number_format(session('shipping_fee', 0), 2, '.', ',') }} đ</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="py-3">
+                                            <p class="mb-0 text-dark text-uppercase py-3">Total</p>
+                                        </td>
+                                        <td class="py-3">
+                                            <div class="py-3 border-bottom border-top">
+                                                <p class="mb-0 text-dark" id="totalAmount">{{ number_format(session('total', session('subtotal', 0)), 2, '.', ',') }} đ</p>
                                             </div>
                                         </td>
                                     </tr>

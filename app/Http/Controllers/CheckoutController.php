@@ -31,12 +31,14 @@ class CheckoutController extends Controller
     protected $profileService;
     protected $orderService;
     protected $couponService;
+    protected $shippingService;
 
-    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService)
+    public function __construct(ProfileService $profileService, OrderService $orderService, CouponService $couponService, ShippingService $shippingService)
     {
         $this->profileService = $profileService;
         $this->orderService = $orderService;
         $this->couponService = $couponService;
+        $this->shippingService = $shippingService;
     }
 
     public function success(Request $request)
@@ -159,14 +161,15 @@ class CheckoutController extends Controller
             $oldSubtotal = session()->get('oldSubtotal', $subtotal);
             $couponCode = session()->get('couponCode');
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
-            $finalPrice = $oldSubtotal - $discountValue;
-            $totalPrice = $couponCode ? $subtotal : $oldSubtotal;
+            $shippingFee = session()->get('shipping_fee', 0);
+            $finalPrice = session('total'); // Đây là tổng cộng cuối cùng, bao gồm cả phí vận chuyển
 
-            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $totalPrice, $discountValue, $finalPrice);
+            $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $oldSubtotal, $discountValue, $finalPrice, $shippingFee);
 
             $orderType = $user ? 'order' : 'guest_order';
             $request->session()->put('order_type', $orderType);
             $request->session()->put($orderType . '_id', $order->id);
+            $request->session()->put('order_total', $finalPrice);
 
             DB::commit();
 
@@ -276,20 +279,33 @@ class CheckoutController extends Controller
 
     public function calculateShippingFee(Request $request)
     {
-        $addressId = $request->input('address_id');
-        $address = Address::find($addressId);
+        $request->validate([
+            'to_district_id' => 'required|numeric',
+            'to_ward_code' => 'required|string',
+            'weight' => 'nullable|numeric',
+        ]);
 
-        if (!$address) {
-            return response()->json(['success' => false, 'message' => 'Address not found.']);
+        $shippingFee = $this->shippingService->calculateShippingFee(
+            $request->to_district_id,
+            $request->to_ward_code,
+            $request->weight ?? 1000,
+        );
+
+        if ($shippingFee['code'] === 200) {
+            $subtotal = session('subtotal', 0);
+            $shippingFeeValue = $shippingFee['data']['total'];
+            $finalPrice = $subtotal + $shippingFeeValue;
+
+            session([
+                'shipping_fee' => $shippingFeeValue,
+                'total' => $finalPrice,
+            ]);
+
+            $shippingFee['data']['shipping_fee'] = $shippingFeeValue;
+            $shippingFee['data']['subtotal'] = $subtotal;
+            $shippingFee['data']['total'] = $finalPrice;
         }
 
-        $shippingService = new ShippingService();
-        $feeData = $shippingService->calculateShippingFee($address);
-
-        if (isset($feeData['code']) && $feeData['code'] == 200) {
-            return response()->json(['success' => true, 'fee' => $feeData['data']['total']]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Failed to calculate shipping fee.']);
+        return response()->json($shippingFee);
     }
 }

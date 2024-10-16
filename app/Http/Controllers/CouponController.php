@@ -24,7 +24,8 @@ class CouponController extends Controller
 
         if ($code == '') {
             session()->put('subtotal', $oldSubtotal);
-            session()->forget(['couponCode', 'usedCoupon']);
+            session()->forget(['couponCode', 'usedCoupon', 'coupon_discount']);
+            $this->recalculateTotal();
             return redirect()->back()->withInput();
         }
 
@@ -42,18 +43,32 @@ class CouponController extends Controller
                 $discount = $oldSubtotal * $coupon->discount_value;
                 $discount = min($discount, $coupon->max_discount);
                 $newSubtotal = $oldSubtotal - $discount;
+                $shippingFee = session('shipping_fee', 0);
+                $total = $newSubtotal + $shippingFee;
 
-                session()->put('subtotal', $newSubtotal);
-                session()->put('oldSubtotal', $oldSubtotal);
-                session()->put('usedCoupon', true);
-                session()->put('couponCode', $code);
+                session([
+                    'subtotal' => $newSubtotal,
+                    'oldSubtotal' => $oldSubtotal,
+                    'usedCoupon' => true,
+                    'couponCode' => $code,
+                    'coupon_discount' => $discount,
+                    'total' => $total,
+                ]);
 
-                return redirect()->back()->withInput();
+                return redirect()->back()->withInput()->with('success', 'Coupon applied successfully');
             } else {
                 return redirect()->back()->withErrors(['coupon_error' => 'Invalid coupon code'])->withInput();
             }
         } else {
             return redirect()->back()->withErrors(['coupon_error' => 'Coupon code not exist'])->withInput();
         }
+    }
+
+    private function recalculateTotal()
+    {
+        $subtotal = session('subtotal', 0);
+        $shippingFee = session('shipping_fee', 0);
+        $total = $subtotal + $shippingFee;
+        session(['total' => $total]);
     }
 }

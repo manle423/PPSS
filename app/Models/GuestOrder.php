@@ -29,6 +29,7 @@ class GuestOrder extends Model
         'final_price',
         'digital_signature',
         'verification_code',
+        'shipping_fee',
     ];
 
     protected static function boot()
