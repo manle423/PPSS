@@ -67,7 +67,7 @@
             </div>
 
             <!-- Dimensions -->
-            <h3>Product Dimensions</h3>
+            <h3>Product Size</h3>
             <div class="input-group">
                 <label for="weight">Weight (kg)</label>
                 <input type="number" id="weight" name="weight" step="0.01" value="{{ old('weight') }}">
@@ -109,6 +109,27 @@
                                 <label for="variant_exp_date">Expiration Date</label>
                                 <input type="date" name="variants[__INDEX__][exp_date]">
                             </div>
+                             <!-- Thêm các trường mới cho variant -->
+                             <div class="input-group mt-2">
+                                <label for="variant_weight">Weight (kg)</label>
+                                <input type="number" name="variants[__INDEX__][weight]" step="0.01" required>
+                            </div>
+
+                            <div class="input-group mt-2">
+                                <label for="variant_length">Length (cm)</label>
+                                <input type="number" name="variants[__INDEX__][length]" step="0.01"  required>
+                            </div>
+
+                            <div class="input-group mt-2">
+                                <label for="variant_width">Width (cm)</label>
+                                <input type="number" name="variants[__INDEX__][width]" step="0.01"  required>
+                            </div>
+
+                            <div class="input-group mt-2">
+                                <label for="variant_height">Height (cm)</label>
+                                <input type="number" name="variants[__INDEX__][height]" step="0.01"  required>
+                            </div>
+
                             <div class="input-group mt-2">
                                 <label for="variant_image">Variant Image</label>
                                 <input type="file" name="variants[__INDEX__][variant_image]" accept="image/*">
@@ -174,25 +195,7 @@
                     @endforeach
                 @endif
             </div>
-            <div id="measurements-container">
-                <h3>Measurements</h3>
-                <div class="input-group">
-                    <label for="weight">Weight (g)</label>
-                    <input type="number" id="weight" name="weight" value="" min="0" max="2147483647" >
-                </div>
-                <div class="input-group">
-                    <label for="stock">Length (cm)</label>
-                    <input type="number" id="length" name="length" value="" min="0" max="2147483647" >
-                </div>
-                <div class="input-group">
-                    <label for="stock">Width (cm)</label>
-                    <input type="number" id="width" name="width" value="" min="0" max="2147483647" >
-                </div>
-                <div class="input-group">
-                    <label for="stock">Height (cm)</label>
-                    <input type="number" id="height" name="height" value="" min="0" max="2147483647" >
-                </div>
-            </div>
+     
             <div  style="text-align:center;"> 
             <button type="submit" class="submit-button" style="margin-top:15px;">Add Product</button>
             <a href="{{ route('admin.products.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Cancel</a>

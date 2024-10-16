@@ -42,7 +42,7 @@
                                     <div class="col-2">${{ $item->product->price }}</div>
                                     <div class="col-2">${{ $item->product->price * $amount }}</div>
                                     <div class="col-1">
-                                        <button class="btn btn-danger btn-sm">Remove</button>
+                                    <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
                                     </div>
                                 </div>
                             @endforeach
