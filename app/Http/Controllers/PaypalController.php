@@ -9,6 +9,7 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\CheckoutController;
 use App\Models\Cart;
+use App\Models\ProductVariant;
 
 class PaypalController extends Controller
 {
@@ -132,6 +133,25 @@ class PaypalController extends Controller
 
             // Gửi email xác nhận đơn hàng
             $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
+
+            // Cập nhật số lượng hàng theo số lượng hàng có trong giỏ
+            $cartItems = session('cartItems');
+            foreach ($cartItems as $item) {
+                $product = $item['product'];
+                $quantity = $item['quantity'];
+                $variant = $item['variant'];                
+                // Nếu hàng có phân loại
+                if ($variant) {
+                    $variant->stock_quantity -= $quantity;
+                    $variant->save();
+                }
+                // Nếu hàng không phân loại
+                else {
+                    $product->stock_quantity -= $quantity;
+                    $product->save();
+                }
+            }
+
 
             // Xóa cart sau khi thanh toán thành công
             if ($orderType == 'order') {
