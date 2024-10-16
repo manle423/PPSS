@@ -41,7 +41,7 @@ class VnPayController extends Controller
             $vnp_HashSecret = config('vnpay.vnp_HashSecret');
             $vnp_Url = config('vnpay.vnp_Url');
             $vnp_ReturnUrl = config('vnpay.vnp_Returnurl');
-            $total_amount = $order->total_price * 100;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
+            $total_amount = $order->final_price * 100;  // VNPAY yêu cầu số tiền phải nhân 100 (vì đơn vị tính là VND)
             $total_amount = number_format($total_amount, 0, '', '');
             Log::info('Order total amount: ' . $total_amount);
             $inputData = array(

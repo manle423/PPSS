@@ -44,7 +44,7 @@ class AdminProductController extends Controller
             'length' => 'required|numeric|min:0',
             'width' => 'required|numeric|min:0', 
             'height' => 'required|numeric|min:0', 
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
@@ -71,8 +71,6 @@ class AdminProductController extends Controller
     
             if ($request->hasFile('image')) {
                 $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath())->getSecurePath();
-            } else {
-                throw new \Exception('Image upload failed.');
             }
             
             $product = Product::create([
@@ -80,7 +78,7 @@ class AdminProductController extends Controller
                 'description' => $request->description,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
-                'image' => $uploadedFileUrl,
+                'image' => $uploadedFileUrl ?? null,
                 'stock_quantity' => $request->stock_quantity,
                 'weight' => $request->weight, 
                 'length' => $request->length, 
@@ -116,7 +114,7 @@ class AdminProductController extends Controller
             return redirect()->route('admin.products.create')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
         }
     }
     

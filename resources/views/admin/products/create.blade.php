@@ -174,7 +174,7 @@
                     @endforeach
                 @endif
             </div>
-            <div id="measurements-container">
+            {{-- <div id="measurements-container">
                 <h3>Measurements</h3>
                 <div class="input-group">
                     <label for="weight">Weight (g)</label>
@@ -192,7 +192,7 @@
                     <label for="stock">Height (cm)</label>
                     <input type="number" id="height" name="height" value="" min="0" max="2147483647" >
                 </div>
-            </div>
+            </div> --}}
             <div  style="text-align:center;"> 
             <button type="submit" class="submit-button" style="margin-top:15px;">Add Product</button>
             <a href="{{ route('admin.products.list') }}" class="btn btn-primary" style="margin-left:10px; background-color:yellow;" >Cancel</a>
