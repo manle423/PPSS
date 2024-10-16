@@ -27,7 +27,7 @@
             <!-- Product Name -->
             <div class="input-group">
                 <label for="name">Product Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" >
             </div>
 
             <!-- Category -->
@@ -112,22 +112,22 @@
                              <!-- Thêm các trường mới cho variant -->
                              <div class="input-group mt-2">
                                 <label for="variant_weight">Weight (kg)</label>
-                                <input type="number" name="variants[__INDEX__][weight]" step="0.01" required>
+                                <input type="number" name="variants[__INDEX__][weight]" step="0.01" >
                             </div>
 
                             <div class="input-group mt-2">
                                 <label for="variant_length">Length (cm)</label>
-                                <input type="number" name="variants[__INDEX__][length]" step="0.01"  required>
+                                <input type="number" name="variants[__INDEX__][length]" step="0.01" >
                             </div>
 
                             <div class="input-group mt-2">
                                 <label for="variant_width">Width (cm)</label>
-                                <input type="number" name="variants[__INDEX__][width]" step="0.01"  required>
+                                <input type="number" name="variants[__INDEX__][width]" step="0.01">
                             </div>
 
                             <div class="input-group mt-2">
                                 <label for="variant_height">Height (cm)</label>
-                                <input type="number" name="variants[__INDEX__][height]" step="0.01"  required>
+                                <input type="number" name="variants[__INDEX__][height]" step="0.01" >
                             </div>
 
                             <div class="input-group mt-2">

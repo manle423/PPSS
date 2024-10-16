@@ -51,13 +51,7 @@
                                     value="{{ old('min_order_value') }}" required>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label">Max order value:</label>
-                            <div class="col-sm-10">
-                                <input type="number" step="0.01" class="form-control" id="max_order_value" name="max_order_value"
-                                    value="{{ old('max_order_value') }}" required>
-                            </div>
-                        </div>
+                   
                         <div class="row mb-3">
                             <label class="col-sm-2 col-form-label">Start date:</label>
                             <div class="col-sm-10">

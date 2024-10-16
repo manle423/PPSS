@@ -35,15 +35,15 @@ class AdminProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'weight' => 'required|numeric|min:0', 
-            'length' => 'required|numeric|min:0',
-            'width' => 'required|numeric|min:0', 
-            'height' => 'required|numeric|min:0', 
+            'weight' => 'nullable|numeric|min:0', 
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0', 
+            'height' => 'nullable|numeric|min:0', 
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
@@ -74,7 +74,7 @@ class AdminProductController extends Controller
             } 
             
             $product = Product::create([
-                'name' => $request->name,
+                'name' => $request->name ?? '',
                 'description' => $request->description,
                 'category_id' => $request->category_id,
                 'price' => $request->price,
@@ -104,7 +104,7 @@ class AdminProductController extends Controller
                         'width' => $variant['width'], 
                         'height' => $variant['height'], 
                         'exp_date' => $variant['exp_date'],
-                        'image' => $variantImageUrl,
+                        'image' => $variantImageUrl ?? null,
                     ]);
                 }
             }
@@ -134,18 +134,18 @@ class AdminProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'weight' => 'required|numeric|min:0', 
-            'length' => 'required|numeric|min:0', 
-            'width' => 'required|numeric|min:0', 
-            'height' => 'required|numeric|min:0', 
+            'weight' => 'nullable|numeric|min:0', 
+            'length' => 'nullable|numeric|min:0', 
+            'width' => 'nullable|numeric|min:0', 
+            'height' => 'nullable|numeric|min:0', 
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variants.*.variant_name' => 'nullable|string|max:255',
             'variants.*.variant_price' => 'nullable|numeric|min:0',
             'variants.*.stock_quantity' => 'nullable|integer|min:0',
-            'variants.*.weight' => 'required|numeric|min:0', 
-            'variants.*.length' => 'required|numeric|min:0', 
-            'variants.*.width' => 'required|numeric|min:0', 
-            'variants.*.height' => 'required|numeric|min:0',
+            'variants.*.weight' => 'nullable|numeric|min:0', 
+            'variants.*.length' => 'nullable|numeric|min:0', 
+            'variants.*.width' => 'nullable|numeric|min:0', 
+            'variants.*.height' => 'nullable|numeric|min:0',
             'variants.*.exp_date' => 'nullable|date',
             'variants.*.variant_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);

@@ -49,8 +49,9 @@
                     </tr>
                 @endforeach   
             </tbody>
+          
         </table>
-
+        <a href="{{ route('admin.customers.list') }}" class="btn btn-primary" style="margin:10px; background-color:yellow;" >Cancel</a>
         <div class="table-info">
             Showing {{ $orders->firstItem() }} to {{ $orders->lastItem() }} of {{ $orders->total() }} entries
         </div>
