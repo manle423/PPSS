@@ -55,6 +55,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCategoryController::class, 'edit'])->name('category.edit');
         Route::post('/update/{id}', [AdminCategoryController::class, 'update'])->name('category.update');
         Route::post('/delete/{id}', [AdminCategoryController::class, 'delete'])->name('category.delete');
+        Route::post('/import', [AdminCategoryController::class, 'import'])->name('category.import');
+        Route::get('/export-template', [AdminCategoryController::class, 'exportTemplate'])->name('category.export.template');
+        Route::post('/bulk-action', [AdminCategoryController::class, 'bulkAction'])->name('category.bulk-action');
     });
     Route::prefix('/coupons')->group(function () {
         Route::get('/', [AdminCouponController::class, 'list'])->name('coupon.list');
@@ -64,6 +67,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCouponController::class, 'edit'])->name('coupon.edit');
         Route::post('/update/{id}', [AdminCouponController::class, 'update'])->name('coupon.update');
         Route::post('/delete/{id}', [AdminCouponController::class, 'delete'])->name('coupon.delete');
+        Route::post('/import', [AdminCouponController::class, 'import'])->name('coupon.import');
+        Route::get('/export-template', [AdminCouponController::class, 'exportTemplate'])->name('coupon.export.template');
+        Route::post('/bulk-action', [AdminCouponController::class, 'bulkAction'])->name('coupon.bulk-action');
     });
 
     Route::prefix('/products')->group(function () {
@@ -220,5 +226,6 @@ Route::get('/api/wards/{district_id}', [LocationController::class, 'getWards'])-
 Route::get('/api/province/{province_id}', [LocationController::class, 'getProvinceName'])->name('api.province.name');
 Route::get('/api/district/{district_id}', [LocationController::class, 'getDistrictName'])->name('api.district.name');
 Route::get('/api/ward/{ward_id}', [LocationController::class, 'getWardName'])->name('api.ward.name');
+
 
 
