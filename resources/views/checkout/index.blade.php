@@ -127,5 +127,5 @@
     </div>
     <!-- Checkout Page End -->
 
-    <script src="{{ asset('assets/js/checkout.js') }}"></script>
+    <script src="{{ asset('assets/js/checkout.js') }}?v={{ time() }}"></script>
 @endsection
