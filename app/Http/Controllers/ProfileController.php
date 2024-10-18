@@ -29,7 +29,7 @@ class ProfileController extends Controller
         return $addressData;
     }
 
-    public function encryptAddress($address)
+    public static function encryptAddress($address)
     {
         $address->ward_id = Crypt::encryptString($address->ward_id);
         $address->province_id = Crypt::encryptString($address->province_id);
@@ -39,7 +39,7 @@ class ProfileController extends Controller
         return $address;
     }
 
-    public function decryptAddress($address)
+    public static function decryptAddress($address)
     {
         $address->ward_id = Crypt::decryptString($address->ward_id);
         $address->province_id = Crypt::decryptString($address->province_id);
