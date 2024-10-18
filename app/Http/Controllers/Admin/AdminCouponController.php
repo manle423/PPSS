@@ -10,9 +10,10 @@ class AdminCouponController extends Controller
 {
     //xem danh sach coupon
     public function list(){
-        $coupons=Coupon::paginate(10);
-      
-        return view('admin.coupons.list',compact('coupons'));
+        $this->updateCouponStatus();
+
+        $coupons = Coupon::paginate(10);
+        return view('admin.coupons.list', compact('coupons'));
     }
 
     public function create(Request $request){
@@ -93,7 +94,7 @@ class AdminCouponController extends Controller
                  'status' => $request->input('status', 1),
              ]);
      
-         
+             $this->updateCouponStatus();
              return redirect()->route('admin.coupon.list')->with('success', 'Coupon updated successfully.');
              
          } catch (\Exception $e) {
@@ -108,5 +109,17 @@ class AdminCouponController extends Controller
         return redirect()->route('admin.coupon.list')->with('success', 'Coupon deleted successfully.');
        
      }
-     
+     private function updateCouponStatus()
+{
+    
+    $coupons = Coupon::where('end_date', '<=', now())
+                     ->where('status', 1)
+                     ->get();
+
+  
+    foreach ($coupons as $coupon) {
+        $coupon->update(['status' => 0]);
+    }
+}
+
 }

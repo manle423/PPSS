@@ -56,7 +56,7 @@
 
             <!-- Price -->
             <div class="input-group">
-                <label for="price">Price ($)</label>
+                <label for="price">Price (VND)</label>
                 <input type="number" id="price" name="price" step="0.01" value="{{ old('price') }}" required>
             </div>
 
@@ -98,7 +98,7 @@
                                 <input type="text" name="variants[__INDEX__][variant_name]">
                             </div>
                             <div class="input-group mt-2">
-                                <label for="variant_price">Variant Price ($)</label>
+                                <label for="variant_price">Variant Price (VND)</label>
                                 <input type="number" name="variants[__INDEX__][variant_price]" step="0.01">
                             </div>
                             <div class="input-group mt-2">
