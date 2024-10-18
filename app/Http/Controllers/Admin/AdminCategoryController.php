@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Imports\CategoriesImport;
+use App\Exports\CategoryTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Validation\ValidationException;
 
 class AdminCategoryController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('admin');
     }
-    
+
     // public function index(){
     //     return view('shop-page.home');
     // } 
@@ -23,10 +28,17 @@ class AdminCategoryController extends Controller
     }
 
     // show list danh muc
-    public function list()
+    public function list(Request $request)
     {
-        $categories = Category::paginate(10);
-        if($categories==null)  return view('admin.categories.list');
+        $query = Category::query();
+
+        if ($request->has('search')) {
+            $search = $request->get('search');
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        $categories = $query->paginate(10);
         return view('admin.categories.list', compact('categories'));
     }
 
@@ -94,5 +106,57 @@ class AdminCategoryController extends Controller
         }
 
         return redirect()->route('admin.category.list')->with('error', 'Category not found.');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            $import = new CategoriesImport;
+            $result = Excel::import($import, $request->file('file'));
+
+            $importedCount = $import->getRowCount();
+            $restoredCount = $import->getRestoredCount();
+
+            $message = "Categories imported successfully. ";
+            $message .= "$importedCount new categories added. ";
+            $message .= "$restoredCount existing categories restored or updated.";
+
+            return redirect()->route('admin.category.list')->with('success', $message);
+        } catch (ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row {$failure->row()}: {$failure->errors()[0]}";
+            }
+            return redirect()->back()->with('error', 'Error importing categories: ' . implode('<br>', $errors));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error importing categories: ' . $e->getMessage());
+        }
+    }
+
+    public function exportTemplate()
+    {
+        return Excel::download(new CategoryTemplateExport, 'categories_template.xlsx');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $ids = $request->input('ids');
+        $action = $request->input('action');
+
+        if (empty($ids)) {
+            return redirect()->back()->with('error', 'No categories selected.');
+        }
+
+        if ($action === 'delete') {
+            Category::whereIn('id', $ids)->delete();
+            return redirect()->back()->with('success', 'Selected categories deleted successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Invalid action.');
     }
 }
