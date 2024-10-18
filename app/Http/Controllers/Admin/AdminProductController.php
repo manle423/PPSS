@@ -14,9 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Imports\ProductsImport;
+use App\Exports\ProductTemplateExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class AdminProductController extends Controller
 {
@@ -362,11 +361,6 @@ class AdminProductController extends Controller
         return view('admin.products.index', compact('products', 'queryInput'));
     }
 
-    public function importForm()
-    {
-        return view('admin.products.import');
-    }
-
     public function import(Request $request)
     {
         $request->validate([
@@ -374,7 +368,16 @@ class AdminProductController extends Controller
         ]);
 
         try {
-            Excel::import(new ProductsImport, $request->file('file'));
+            $import = new ProductsImport;
+            Excel::import($import, $request->file('file'));
+            
+            $errors = $import->getErrors();
+            
+            if (count($errors) > 0) {
+                $errorMessage = "Some rows were not imported:\n" . implode("\n", $errors);
+                return redirect()->route('admin.products.list')->with('error', $errorMessage);
+            }
+            
             return redirect()->route('admin.products.list')->with('success', 'Products imported successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error importing products: ' . $e->getMessage());
@@ -383,31 +386,6 @@ class AdminProductController extends Controller
 
     public function exportTemplate()
     {
-        return Excel::download(new TemplateExport, 'products_import_template.xlsx');
-    }
-}
-
-class TemplateExport implements FromArray, WithHeadings
-{
-    public function array(): array
-    {
-        return [
-            [
-                'Example Product', 'This is a description', 'Example Category', 10.99, 100, 1.5, 10, 5, 2,
-                'Variant 1', 11.99, 50, 1.6, 11, 6, 3, '2023-12-31',
-                'Variant 2', 12.99, 30, 1.7, 12, 7, 4, '2023-12-31',
-                'Variant 3', 13.99, 20, 1.8, 13, 8, 5, '2023-12-31'
-            ],
-        ];
-    }
-
-    public function headings(): array
-    {
-        return [
-            'name', 'description', 'category', 'price', 'stock_quantity', 'weight', 'length', 'width', 'height',
-            'variant_1_name', 'variant_1_price', 'variant_1_stock_quantity', 'variant_1_weight', 'variant_1_length', 'variant_1_width', 'variant_1_height', 'variant_1_exp_date',
-            'variant_2_name', 'variant_2_price', 'variant_2_stock_quantity', 'variant_2_weight', 'variant_2_length', 'variant_2_width', 'variant_2_height', 'variant_2_exp_date',
-            'variant_3_name', 'variant_3_price', 'variant_3_stock_quantity', 'variant_3_weight', 'variant_3_length', 'variant_3_width', 'variant_3_height', 'variant_3_exp_date'
-        ];
+        return Excel::download(new ProductTemplateExport, 'products_import_template.xlsx');
     }
 }
