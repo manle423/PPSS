@@ -70,7 +70,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         // product
         Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
-        Route::post('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
+        Route::get('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
         Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
         Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
@@ -84,6 +84,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/import', [AdminProductController::class, 'import'])->name('products.import');
         Route::get('/export-template', [AdminProductController::class, 'exportTemplate'])->name('products.export.template');
 
+        Route::post('/bulk-action', [AdminProductController::class, 'bulkAction'])->name('products.bulk-action');
     });
 
     Route::prefix('/orders')->group(function () {
@@ -219,3 +220,5 @@ Route::get('/api/wards/{district_id}', [LocationController::class, 'getWards'])-
 Route::get('/api/province/{province_id}', [LocationController::class, 'getProvinceName'])->name('api.province.name');
 Route::get('/api/district/{district_id}', [LocationController::class, 'getDistrictName'])->name('api.district.name');
 Route::get('/api/ward/{ward_id}', [LocationController::class, 'getWardName'])->name('api.ward.name');
+
+
