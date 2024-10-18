@@ -1,48 +1,41 @@
-
-
 @extends('layouts.admin')
 
 @section('content')
 <link href="{{ asset('assets/vendor/css/change-pass.css') }}" rel="stylesheet">
 <h2>Reset Your Password</h2>
 
+{{-- Hiển thị thông báo thành công nếu có --}}
 @if (session('status'))
-    <p class="status-message">{{ session('status') }}</p>
+    <p class="status-message">{{ session('status') }}</p>
 @endif
 
+{{-- Hiển thị danh sách lỗi nếu có --}}
 @if ($errors->any())
-    <ul class="error-list">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
+    <ul class="error-list">
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
 @endif
 
-<form class="change-pass"method="POST" action="{{ route('admin.password.update') }}">
-    @csrf
+<form class="change-pass" method="POST" action="{{ route('admin.password.update') }}">
+    @csrf
 
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
 
-    <div class="form-group">
-        <label for="password">New Password:</label>
-        <input type="password" id="password" name="password" required>
-    </div>
+    <div class="form-group">
+        <label for="password">New Password:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
 
-    <div class="form-group">
-        <label for="password_confirmation">Confirm Password:</label>
-        <input type="password" id="password_confirmation" name="password_confirmation" required>
-    </div>
+    <div class="form-group">
+        <label for="password_confirmation">Confirm Password:</label>
+        <input type="password" id="password_confirmation" name="password_confirmation" required>
+    </div>
 
-    <button type="submit" class="btn-submit">Reset Password</button>
+    <button type="submit" class="btn-submit">Reset Password</button>
 </form>
 @endsection
-
-
-
-
-
-
-

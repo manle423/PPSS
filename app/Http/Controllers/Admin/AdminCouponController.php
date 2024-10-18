@@ -20,42 +20,41 @@ class AdminCouponController extends Controller
     }
     
     public function store(Request $request){
-         $request->validate([
-            'codes' => 'required|array', // Thay đổi từ 'code' thành 'codes'
-            'codes.*' => 'required|string|max:255|unique:coupons,code,NULL,id,deleted_at,NULL', // Kiểm tra từng mã không trùng lặp
+        $request->validate([
+            'code' => 'required|string|max:255',
             'discount_value' => 'required|numeric|min:0',
-        'min_order_value' => 'required|numeric|min:0',
-        'max_discount' => 'required|numeric|min:0',
+            'min_order_value' => 'required|numeric|min:0',
+         
+            'max_discount' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-    'status' => 'required|boolean',
+            'status' => 'required|boolean',
         ]);
-            
-            $status = $request->input('status', 1);
+        $status = $request->input('status', 1);
+        try{
+        $existing=Coupon::where('code',$request->code)->whereNull('deleted_at')->first();
+     if($existing){
+        throw new \Exception('This coupon already exists.');
+     }
+        DB::beginTransaction();
+       Coupon::create([
+      'code' => $request->code,
+      'discount_value' => $request->discount_value,
+      'max_discount' => $request->max_discount,
+      'min_order_value' => $request->min_order_value,
     
-        try {
-            DB::beginTransaction();
-        
-        foreach ($request->codes as $code) {
-             Coupon::create([
-        'code' => $code,
-        'discount_value' => $request->discount_value,
-'max_discount' => $request->max_discount,
-             'min_order_value' => $request->min_order_value,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'status' => $status,
-        ]);
-            }
-        
-            DB::commit();
-            return redirect()->route('admin.coupon.create')->with('success', 'Coupons created successfully.');
-        } catch (\Exception $e) {
-         DB::rollBack();
-         return redirect()->back()->withErrors(['error' => $e->getMessage()]);
-}
+      'start_date' => $request->start_date,
+      'end_date' => $request->end_date,
+      'status' => $status,
+]);
+     DB::commit();
+     return redirect()->route('admin.coupon.create')->with('success', 'Coupon created successfully.');
+    }catch(\Exception $e){
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => $e->getMessage()]);
     }
-
+    
+}
      public function detail($id){
        $coupon=Coupon::findOrFail($id);
        return view('admin.coupons.show',compact('coupon'));

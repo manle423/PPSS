@@ -13,20 +13,16 @@
     </nav>
 
     <div class="navbar-nav align-items-center ms-auto">
-       
-        <div class="nav-item dropdown">
-          
-           
-        </div>
+      
         <div class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <img class="rounded-circle me-lg-2" src="{{ asset('assets/vendor/img/user.jpg') }}"
+                <img class="rounded-circle me-lg-2" src="{{ asset('storage/' . config('app.store.logo')) }}"
                     alt="" style="width: 40px; height: 40px;">
                 <span class="d-none d-lg-inline-flex"></span>
             </a>
             <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-               
-                <a href="{{ route('admin.password.request') }}" class="dropdown-item">Change password</a>
+              
+                <a href="{{ route('admin.password.reset') }}" class="dropdown-item">Change password</a>
                 @guest
                     @if (Route::has('login'))
                         <li class="nav-item">
@@ -96,7 +92,7 @@
             searchModal.show();
         });
 
-        function toggleButtons(query) {
+    function toggleButtons(query) {
     const categoryKeywords = ['category', 'cat', 'cate', 'categories'];
     const productKeywords = ['product', 'pro', 'products', 'produc', 'prod'];
     const customerKeywords = ['customer', 'cus', 'customers', 'cust', 'cu'];
@@ -123,7 +119,6 @@
         document.getElementById('productCreateBtn').style.display = 'none';   
     }
 
-    // Kiểm tra từ khóa cho Customer
     const hasCustomer = customerKeywords.some(keyword => query.includes(keyword));
     if (hasCustomer) {
         document.getElementById('customerListBtn').style.display = 'block';  
@@ -131,7 +126,7 @@
         document.getElementById('customerListBtn').style.display = 'none';  
     }
 
-    // Kiểm tra từ khóa cho Order
+   
     const hasOrder = orderKeywords.some(keyword => query.includes(keyword));
     if (hasOrder) {
         document.getElementById('orderListBtn').style.display = 'block';  
@@ -154,11 +149,7 @@ if (hasAdd) {
     document.getElementById('categoryCreateBtn').style.display = 'block'; 
     document.getElementById('productCreateBtn').style.display = 'block'; 
     document.getElementById('couponCreateBtn').style.display = 'block'; 
-} else {
-    document.getElementById('categoryCreateBtn').style.display = 'none'; 
-    document.getElementById('productCreateBtn').style.display = 'none'; 
-    document.getElementById('couponCreateBtn').style.display = 'none'; 
-}
+} 
 
 const hasList = listKeywords.some(keyword => query.includes(keyword));
 if (hasList) {
@@ -167,13 +158,7 @@ if (hasList) {
     document.getElementById('couponListBtn').style.display = 'block'; 
     document.getElementById('customerListBtn').style.display = 'block'; 
     document.getElementById('orderListBtn').style.display = 'block'; 
-} else {
-    document.getElementById('categoryListBtn').style.display = 'none'; 
-    document.getElementById('productListBtn').style.display = 'none'; 
-    document.getElementById('couponListBtn').style.display = 'none'; 
-    document.getElementById('customerListBtn').style.display = 'none'; 
-    document.getElementById('orderListBtn').style.display = 'none'; 
-}
+} 
 }
     });
 </script>
