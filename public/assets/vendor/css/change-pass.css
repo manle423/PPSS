@@ -54,6 +54,9 @@ h2 {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn-submit:hover {

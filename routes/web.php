@@ -41,7 +41,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/shop', [AdminController::class, 'showInfo'])->name('shop');
     Route::get('/update-shop', [AdminController::class, 'edit'])->name('shop-info');
     Route::post('/update-shop', [AdminController::class, 'update'])->name('update-shop-info');
-  
+    //
+  //  Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ForgotPasswordController::class, 'reset'])->name('password.update');
+
+
     Route::prefix('/categories')->group(function () {
         Route::get('/', [AdminCategoryController::class, 'list'])->name('category.list');
         Route::get('/create', [AdminCategoryController::class, 'create'])->name('category.create');
@@ -96,7 +102,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/reset-pass', [AdminController::class, 'setPass'])->name('password.update');
     
 });
-
 // Cho người chưa đăng nhập
 Route::middleware('guest')->group(function () {
     // Login Routes...
