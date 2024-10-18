@@ -5,51 +5,99 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Product List</h2>
           
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
+            <div>
+                <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">Import Products</button>
+            </div>
         </div>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
         @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
         <a><button type="button"class="submit-button" style="background-color:royalblue"data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button></a>
-        <!-- Modal -->
-       <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-       <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="filterModalLabel">Filter products</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="filterForm" action="{{route('admin.products.filter')}}" method="POST">
-                  @csrf
-                <!-- Tiêu chí lọc tên hàng -->
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="productName" name="name" placeholder="Product name">
+        <!-- Filter Modal -->
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filterModalLabel">Filter products</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <!-- Tiêu chí lọc đơn giá -->
-                    <div class="mb-3">
-                        <label for="price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="price" name="price" step="0.01" placeholder="Price">
+                    <div class="modal-body">
+                        <form id="filterForm" action="{{route('admin.products.filter')}}" method="POST">
+                          @csrf
+                        <!-- Tiêu chí lọc tên hàng -->
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="productName" name="name" placeholder="Product name">
+                            </div>
+                            <!-- Tiêu chí lọc đơn giá -->
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="price" name="price" step="0.01" placeholder="Price">
+                            </div>
+                            <!-- Tiêu chí lọc số lượng -->
+                            <div class="mb-3">
+                                <label for="stock" class="form-label">Stock quantity</label>
+                                <input type="number" class="form-control" id="stock" name="stock_quantity" placeholder="Quantity">
+                            </div>
+                         
+                           
+                        </form>
                     </div>
-                    <!-- Tiêu chí lọc số lượng -->
-                    <div class="mb-3">
-                        <label for="stock" class="form-label">Stock quantity</label>
-                        <input type="number" class="form-control" id="stock" name="stock_quantity" placeholder="Quantity">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" form="filterForm" class="btn btn-secondary">Filter</button>
                     </div>
-                 
-                   
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="filterForm" class="btn btn-secondary">Filter</button>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+
+        <!-- Import Modal -->
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">Import Products</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('admin.products.import') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Choose Excel File</label>
+                                <input type="file" name="file" class="form-control" id="file" required>
+                            </div>
+                            <div class="mb-3">
+                                <a href="{{ route('admin.products.export.template') }}" class="btn btn-secondary">Download Template</a>
+                            </div>
+                            <div class="alert alert-info">
+                                <h6>Import Instructions:</h6>
+                                <ul>
+                                    <li>Each row should represent either a product or a variant.</li>
+                                    <li>For main products, fill all columns except 'variant_name' and 'exp_date'.</li>
+                                    <li>For variants, 'product_name' must match an existing product.</li>
+                                    <li>Variants require 'variant_name', 'price', 'stock_quantity', and other relevant fields.</li>
+                                    <li>Ensure 'category' exists for main products.</li>
+                                    <li>Price should be in Vietnamese Dong (VND).</li>
+                                    <li>Weight should be in grams (g).</li>
+                                    <li>Length, width, and height should be in centimeters (cm).</li>
+                                    <li>Date format for 'exp_date' should be YYYY-MM-DD.</li>
+                                    <li>Numeric fields (price, stock_quantity, weight, etc.) should not contain non-numeric characters.</li>
+                                </ul>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Import</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="table-controls">
         </div>

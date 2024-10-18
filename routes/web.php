@@ -80,6 +80,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/search', [AdminProductController::class, 'search'])->name('products.search');
         // variant
         Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
+
+        Route::post('/import', [AdminProductController::class, 'import'])->name('products.import');
+        Route::get('/export-template', [AdminProductController::class, 'exportTemplate'])->name('products.export.template');
+
     });
 
     Route::prefix('/orders')->group(function () {
