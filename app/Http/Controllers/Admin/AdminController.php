@@ -18,6 +18,31 @@ class AdminController extends Controller
     {
         return view('admin.change-pass');
     }
+
+    public function setPass(Request $request)
+    {
+            // 1. Xác thực dữ liệu đầu vào
+    $request->validate([
+     'email' => 'required|email|exists:users,email',
+ 'password' => 'required|min:8|confirmed',
+    ]);
+
+            // 2. Tìm người dùng dựa trên email đã nhập
+$user = User::where('email', $request->email)->first();
+    
+            // 3. Cập nhật mật khẩu mới sau khi mã hóa
+    $user->password = Hash::make($request->password);
+    
+            // 4. Kiểm tra xem việc lưu có thành công hay không
+    if ($user->save()) {
+                // Nếu lưu thành công, gửi thông báo thành công
+     return redirect()->route('admin.password.reset')->with('status', 'Password updated successfully!');
+    } else {
+                // Nếu không thành công, gửi thông báo lỗi
+     return redirect()->route('admin.password.reset')->withErrors(['error' => 'Failed to update password. Please try again.']);
+    }
+ }
+    
     public function showInfo(){
         $storeInfo = StoreInfo::first();  
         return view('admin.shop.show-info', compact('storeInfo'));
