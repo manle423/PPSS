@@ -7,6 +7,7 @@ use App\Models\Province;
 use App\Services\ProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
@@ -23,17 +24,34 @@ class ProfileController extends Controller
         $user = Auth::user()->load('defaultAddress');
         $addresses = $user->addresses->load('province.districts.wards', 'district.wards', 'ward')->sortByDesc('is_default');
         $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
+        // Decrypt the address
+        foreach ($addresses as $address) {
+            $address->ward_id = Crypt::decryptString($address->ward_id);
+            $address->province_id = Crypt::decryptString($address->province_id);
+            $address->district_id = Crypt::decryptString($address->district_id);
+            $address->address_line_1 = Crypt::decryptString($address->address_line_1);
+            $address->address_line_2 = Crypt::decryptString($address->address_line_2);
+        }
+        //dd($addresses);
         return view('user.profile', compact('user', 'addresses', 'provinces'));
     }
 
     public function addAddress(Request $request)
     {
         try {
+
             $validatedData = $this->profileService->validateAddressData($request);
 
             $user = Auth::user();
             $addressData = $validatedData;
 
+            // Encrypt the address
+            $addressData['district_id'] = Crypt::encryptString($addressData['district_id']);
+            $addressData['province_id'] = Crypt::encryptString($addressData['province_id']);
+            $addressData['ward_id'] = Crypt::encryptString($addressData['ward_id']);
+            $addressData['address_line_1'] = Crypt::encryptString($addressData['address_line_1']);
+            $addressData['address_line_2'] = Crypt::encryptString($addressData['address_line_2']);
+            //dd($addressData);
             $existingAddressCount = $this->profileService->getExistingAddressCount();
 
             if ($existingAddressCount === 0 || $request->has('is_default')) {
@@ -42,6 +60,7 @@ class ProfileController extends Controller
             } else {
                 $addressData['is_default'] = false;
             }
+            //dd($addressData);
 
             $address = $user->addresses()->create($addressData);
 
@@ -114,6 +133,13 @@ class ProfileController extends Controller
                 $this->profileService->updateDefaultAddress($newDefaultAddress);
             }
 
+             // Encrypt the address
+             $addressData['district_id'] = Crypt::encryptString($addressData['district_id']);
+             $addressData['province_id'] = Crypt::encryptString($addressData['province_id']);
+             $addressData['ward_id'] = Crypt::encryptString($addressData['ward_id']);
+             $addressData['address_line_1'] = Crypt::encryptString($addressData['address_line_1']);
+             $addressData['address_line_2'] = Crypt::encryptString($addressData['address_line_2']);
+
             $address->update($addressData);
 
             $message = $this->profileService->getAddressUpdatedMessage($addressCount, $addressData['is_default'], $user->default_address_id == $id, isset($newDefaultAddress));
@@ -130,6 +156,13 @@ class ProfileController extends Controller
     {
         try {
             $address = Address::findOrFail($id);
+            // Decrypt the address
+            $address->ward_id = Crypt::decryptString($address->ward_id);
+            $address->province_id = Crypt::decryptString($address->province_id);
+            $address->district_id = Crypt::decryptString($address->district_id);
+            $address->address_line_1 = Crypt::decryptString($address->address_line_1);
+            $address->address_line_2 = Crypt::decryptString($address->address_line_2);
+            dd($address);
             return response()->json($address);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error retrieving address: ' . $e->getMessage()], 400);
