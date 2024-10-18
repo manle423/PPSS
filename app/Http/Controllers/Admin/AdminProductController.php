@@ -79,7 +79,6 @@ class AdminProductController extends Controller
                 'category_id' => $request->category_id,
                 'price' => $request->price,
                 'image' => $uploadedFileUrl ?? null,
-                'image' => $uploadedFileUrl ?? null,
                 'stock_quantity' => $request->stock_quantity,
                 'weight' => $request->weight, 
                 'length' => $request->length, 
