@@ -142,7 +142,7 @@ class VnPayController extends Controller
                         if ($orderType == 'order') {
                             Cart::where('user_id', $order->user_id)->delete();
                         }
-                        session()->forget(['cart', 'cartItems', 'subtotal', 'shippingFee']);
+                        session()->forget(['cart', 'cartItems', 'subtotal', 'shipping_fee', 'oldSubtotal']);
 
                         return redirect()->route('checkout.success')->with('success', 'Transaction complete.');
                     }

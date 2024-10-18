@@ -1,14 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Models\StoreInfo;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+
 class AdminController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('admin');
     }
     public function index()
@@ -27,13 +30,13 @@ class AdminController extends Controller
             'email' => 'required|email|exists:users,email',
             'password' => 'required|min:8|confirmed',
         ]);
-    
+
         // 2. Tìm người dùng dựa trên email đã nhập
         $user = User::where('email', $request->email)->first();
-    
+
         // 3. Cập nhật mật khẩu mới sau khi mã hóa
         $user->password = Hash::make($request->password);
-    
+
         // 4. Kiểm tra xem việc lưu có thành công hay không
         if ($user->save()) {
             // Nếu lưu thành công, gửi thông báo thành công
@@ -43,19 +46,20 @@ class AdminController extends Controller
             return redirect()->route('admin.password.reset')->withErrors(['error' => 'Failed to update password. Please try again.']);
         }
     }
-    
-    
-    public function showInfo(){
-        $storeInfo = StoreInfo::first();  
+
+
+    public function showInfo()
+    {
+        $storeInfo = StoreInfo::first();
         return view('admin.shop.show-info', compact('storeInfo'));
     }
     public function edit()
     {
-        $storeInfo = StoreInfo::first();  
+        $storeInfo = StoreInfo::first();
         return view('admin.shop.info', compact('storeInfo'));
     }
-    
-  
+
+
     public function update(Request $request)
     {
         $validated = $request->validate([
@@ -74,46 +78,44 @@ class AdminController extends Controller
             'delivery' => 'nullable|string',
             'thanks' => 'nullable|string',
         ]);
-    
-        $storeInfo = StoreInfo::firstOrFail(); 
-   
+
+        $storeInfo = StoreInfo::firstOrFail();
+
         $storeInfo->update($validated);
-    
+
         if ($request->hasFile('logo')) {
-        
+
             $logoPath = $request->file('logo')->store('logo', 'public');
             $storeInfo->update(['logo' => $logoPath]);
-            $this->setEnvValue('STORE_LOGO', "$logoPath"); 
+            $this->setEnvValue('STORE_LOGO', "$logoPath");
         } else {
-           
+
             $this->setEnvValue('STORE_LOGO', $storeInfo->logo);
         }
-       
+
         if (!empty($validated['team'])) {
-            $this->setEnvValue('TEAM_NAME', '"'.$validated['team'].'"');
+            $this->setEnvValue('TEAM_NAME', '"' . $validated['team'] . '"');
         }
         return redirect()->back()->with('success', 'Update shop information successfully!');
     }
-    
-    
+
+
     protected function setEnvValue($key, $value)
     {
         $path = base_path('.env');
 
         if (file_exists($path)) {
-           
+
             $env = file_get_contents($path);
 
             if (strpos($env, "$key=") !== false) {
                 $env = preg_replace("/^$key=.*$/m", "$key=$value", $env);
             } else {
-              
+
                 $env .= "\n$key=$value";
             }
 
             file_put_contents($path, $env);
         }
-
-
-}
+    }
 }

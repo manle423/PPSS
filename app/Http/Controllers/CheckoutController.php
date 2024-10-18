@@ -97,6 +97,7 @@ class CheckoutController extends Controller
             ];
         });
 
+
         $shippingMethod = $order->shippingMethod ?? 'N/A';
         return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod', 'orderType'));
     }
@@ -123,7 +124,7 @@ class CheckoutController extends Controller
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
         }
-
+        // dd(session()->all());
         return view('checkout.index', compact(
             'sessionCart',
             'subtotal',
