@@ -5,11 +5,19 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Product List</h2>
           
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
+            <div>
+                <a href="{{ route('admin.products.create') }}" class="btn btn-primary">Add Product</a>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">Import Products</button>
+            </div>
         </div>
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
         @endif
         <a><button type="button"class="submit-button" style="background-color:royalblue"data-bs-toggle="modal" data-bs-target="#filterModal">Filter</button></a>
