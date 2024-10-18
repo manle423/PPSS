@@ -26,8 +26,9 @@ class AdminProductController extends Controller
     public function list()
     {
         $products = Product::paginate(10);
+        $categories = Category::all();
         if ($products == null)  return view('admin.products.list');
-        return view('admin.products.list', compact('products'));
+        return view('admin.products.list', compact('products', 'categories'));
     }
 
     public function create()
@@ -263,27 +264,53 @@ class AdminProductController extends Controller
     {
         $request->validate([
             'name' => 'nullable|string|max:255',
-            'price' => 'nullable|numeric|min:0',
-            'stock_quantity' => 'nullable|integer|min:0',
+            'category' => 'nullable|exists:categories,id',
+            'price_min' => 'nullable|numeric|min:0',
+            'price_max' => 'nullable|numeric|min:0',
+            'stock_min' => 'nullable|integer|min:0',
+            'stock_max' => 'nullable|integer|min:0',
+            'created_at_start' => 'nullable|date',
+            'created_at_end' => 'nullable|date|after_or_equal:created_at_start',
         ]);
+
         $query = Product::query();
-        if ($request->has('name') && $request->name != '') {
+
+        if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        // Lọc theo đơn giá
-        if ($request->has('price') && $request->price != '') {
-            $query->where('price', '<=', $request->price);
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
         }
 
-        // Lọc theo số lượng sản phẩm
-        if ($request->has('stock_quantity') && $request->stock_quantity != '') {
-            $query->where('stock_quantity', '>=', $request->stock_quantity);
+        if ($request->filled('price_min')) {
+            $query->where('price', '>=', $request->price_min);
         }
 
-        $products = $query->paginate(10);
+        if ($request->filled('price_max')) {
+            $query->where('price', '<=', $request->price_max);
+        }
 
-        return view('admin.products.list', compact('products'));
+        if ($request->filled('stock_min')) {
+            $query->where('stock_quantity', '>=', $request->stock_min);
+        }
+
+        if ($request->filled('stock_max')) {
+            $query->where('stock_quantity', '<=', $request->stock_max);
+        }
+
+        if ($request->filled('created_at_start')) {
+            $query->whereDate('created_at', '>=', $request->created_at_start);
+        }
+
+        if ($request->filled('created_at_end')) {
+            $query->whereDate('created_at', '<=', $request->created_at_end);
+        }
+
+        $products = $query->paginate(10)->appends($request->all());
+        $categories = Category::all();
+
+        return view('admin.products.list', compact('products', 'categories'));
     }
 
     public function destroyVariant($id)
@@ -387,5 +414,49 @@ class AdminProductController extends Controller
     public function exportTemplate()
     {
         return Excel::download(new ProductTemplateExport, 'products_import_template.xlsx');
+    }
+
+    public function bulkAction(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'product_ids' => 'required|array',
+            'product_ids.*' => 'exists:products,id',
+            'action' => 'required|in:delete,discount',
+            'discount_percentage' => 'required_if:action,discount|numeric|min:0|max:100',
+        ]);
+
+        $productIds = $request->input('product_ids');
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->action === 'delete') {
+                foreach ($productIds as $productId) {
+                    $product = Product::findOrFail($productId);
+                    if ($product->image) {
+                        $this->deleteImageFromCloudinary($product->image);
+                    }
+                    $product->delete();
+                }
+                $message = 'Selected products have been deleted.';
+            } elseif ($request->action === 'discount') {
+                $discountPercentage = $request->input('discount_percentage');
+                foreach ($productIds as $productId) {
+                    $product = Product::findOrFail($productId);
+                    $discountedPrice = $product->price * (1 - $discountPercentage / 100);
+                    $product->update(['price' => $discountedPrice]);
+                }
+                $message = 'Bulk discount applied successfully.';
+            } else {
+                throw new \Exception('Invalid action.');
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error performing bulk action: ' . $e->getMessage());
+        }
     }
 }
