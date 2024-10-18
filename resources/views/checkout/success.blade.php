@@ -82,12 +82,13 @@
                 </tr>
             </thead>
             <tbody>
+                {{-- @dd($orderItems);   --}}
                 @foreach ($orderItems as $item)
                     <tr>
                         <td>{{ $item['name'] }}</td>
                         <td>{{ $item['quantity'] }}</td>
-                        <td>{{ number_format($item['price'], 2) }}</td>
-                        <td>{{ number_format($item['total'], 2) }}</td>
+                        <td>{{ $item['price']}}</td>
+                        <td>{{ $item['total'] }}</td>
                     </tr>
                 @endforeach
             </tbody>
