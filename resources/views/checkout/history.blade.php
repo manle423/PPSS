@@ -74,8 +74,10 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     @foreach ($orders as $order)
                         <tr>
+                            
                             <td>{{ $order->order_code }}</td>
                             <td>
                                 {{ $order->shippingAddress->full_name ?? 'N/A' }}<br>

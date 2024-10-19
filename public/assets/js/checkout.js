@@ -218,5 +218,5 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function formatNumber(number) {
-    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    return Math.round(number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }

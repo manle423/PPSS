@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\GuestOrder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class OrderService
 {
@@ -31,12 +32,13 @@ class OrderService
                 'guest_name' => $request->input('full_name'),
                 'guest_email' => $request->input('email'),
                 'guest_phone_number' => $request->input('phone_number'),
+                // Encrypt the address
                 'guest_address' => json_encode([
-                    'address_line_1' => $request->input('address_line_1'),
-                    'address_line_2' => $request->input('address_line_2'),
-                    'district_id' => $request->input('district_id'),
-                    'province_id' => $request->input('province_id'),
-                    'ward_id' => $request->input('ward_id'),
+                    'address_line_1' => Crypt::encryptString($request->input('address_line_1')),
+                    'address_line_2' => Crypt::encryptString($request->input('address_line_2')),
+                    'district_id' => Crypt::encryptString($request->input('district_id')),
+                    'province_id' => Crypt::encryptString($request->input('province_id')),
+                    'ward_id' => Crypt::encryptString($request->input('ward_id')),
                 ], JSON_UNESCAPED_UNICODE),
                 'status' => 'pending',
                 'order_date' => now(),
