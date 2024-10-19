@@ -33,7 +33,7 @@
         <form action="{{ route('admin.products.filter') }}" method="GET" id="filterForm" class="mb-4">
             <div class="row">
                 <div class="col-md-3 mb-3">
-                    <label for="name" class="form-label">Product Name</label>
+                   <label for="name" class="form-label">Product Name</label>
                     <input type="text" class="form-control" id="name" name="name" value="{{ request('name') }}">
                 </div>
                 <div class="col-md-3 mb-3">
@@ -181,7 +181,7 @@
                         <tr>
                             <td><input type="checkbox" name="product_ids[]" value="{{ $product->id }}"
                                     class="product-checkbox"></td>
-                            <td>{{ $product->name }}</td>
+    <td><a href="{{route('admin.products.detail', $product->id)}}">{{ $product->name }}</a></td>
                             <td><img src="{{ $product->image }}" alt="{{ $product->name }}"
                                     style="width: 100px; height: auto;"></td>
                             <td>{{ $product->category->name }}</td>
@@ -190,12 +190,27 @@
                             <td>{{ $product->stock_quantity }}</td>
                             <td>{{ $product->created_at }}</td>
                             <td>{{ $product->updated_at }}</td>
-                            <td class="d-flex">
-                                <a href="{{ route('admin.products.edit', $product->id) }}"
-                                    class="btn btn-sm btn-primary mr-2"><i class="fas fa-edit"></i> Edit</a>
-                                <button type="button" class="btn btn-sm btn-danger delete-product"
-                                    data-id="{{ $product->id }}"><i class="fas fa-trash"></i> Delete</button>
-                            </td>
+                            <td>
+    <div class="action-container d-flex justify-content-center align-items-center">
+        <a href="{{ route('admin.products.edit', $product->id) }}" 
+           class="btn btn-sm btn-primary action-btn" style="margin-left:5px;">
+           <i class="fas fa-edit"></i> Edit
+        </a>
+
+        <button type="button" 
+                class="btn btn-sm btn-danger action-btn delete-product" 
+                data-id="{{ $product->id }}" style="margin-left:5px;">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+
+        <a href="{{ route('admin.products.sale', $product->id) }}" 
+           class="btn btn-sm btn-info action-btn" 
+           style="margin-left:5px;">
+            <i class="fas fa-chart-line"></i> Revenue
+        </a>
+    </div>
+</td>
+
                         </tr>
                     @endforeach
                 </tbody>
