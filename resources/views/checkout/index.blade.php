@@ -55,10 +55,12 @@
                                         </td>
                                         <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
-                                                @if(session('coupon_discount', 0) > 0)
-                                                    <p class="mb-0 text-muted text-decoration-line-through">{{ number_format(session('oldSubtotal', 0), 2, '.', ',') }} đ</p>
+                                                @if (session('coupon_discount', 0) > 0)
+                                                    <p class="mb-0 text-muted text-decoration-line-through">
+                                                        {{ number_format(session('oldSubtotal', 0), 0, '.', ',') }} đ</p>
                                                 @endif
-                                                <p class="mb-0 text-dark" id="subtotal">{{ number_format(session('subtotal', 0), 2, '.', ',') }} đ</p>
+                                                <p class="mb-0 text-dark" id="subtotal">
+                                                    {{ number_format(session('subtotal', 0), 0, '.', ',') }} đ</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -69,7 +71,8 @@
                                         </td>
                                         <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark" id="shippingFee">{{ number_format(session('shipping_fee', 0), 2, '.', ',') }} đ</p>
+                                                <p class="mb-0 text-dark" id="shippingFee">
+                                                    {{ number_format(session('shipping_fee', 0), 0, '.', ',') }} đ</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -80,7 +83,9 @@
                                         </td>
                                         <td class="py-3">
                                             <div class="py-3 border-bottom border-top">
-                                                <p class="mb-0 text-dark" id="totalAmount">{{ number_format(session('total', session('subtotal', 0)), 2, '.', ',') }} đ</p>
+                                                <p class="mb-0 text-dark" id="totalAmount">
+                                                    {{ number_format(session('total', session('subtotal', 0)), 0, '.', ',') }}
+                                                    đ</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -126,6 +131,22 @@
         </div>
     </div>
     <!-- Checkout Page End -->
-
+    @auth
+        @php
+            $newAddress = $user->addresses->whereNull('deleted_at')->isEmpty();
+        @endphp
+        <script>
+            const newAddress = {{ $newAddress ? 'true' : 'false' }};
+            console.log('newAddress:', newAddress);
+            const isGuest = false;
+            console.log(isGuest);
+        </script>
+    @endauth
+    @guest
+        <script>
+            const isGuest = true;
+            console.log(isGuest);
+        </script>
+    @endguest
     <script src="{{ asset('assets/js/checkout.js') }}?v={{ time() }}"></script>
 @endsection

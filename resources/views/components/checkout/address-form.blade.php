@@ -7,7 +7,7 @@
 </div>
 <div class="form-group">
     <label for="new_phone_number" style="font-weight: bold;">Phone Number</label>
-    <input type="text" class="form-control" id="new_phone_number" name="phone_number" value="{{ old('phone_number') }}" required>
+    <input type="number" class="form-control" id="new_phone_number" name="phone_number" value="{{ old('phone_number') }}" required>
 </div>
 <div class="form-group">
     <label for="new_province_id" style="font-weight: bold;">Province</label>

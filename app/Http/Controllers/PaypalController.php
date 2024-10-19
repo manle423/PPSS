@@ -133,7 +133,6 @@ class PaypalController extends Controller
             // Thanh toán thành công
             $order->status = $orderType == 'order' ? Order::STATUS['pending'] : 'PENDING';
             $order->save();
-
             // Gửi email xác nhận đơn hàng
             $this->checkoutController->sendOrderConfirmationEmail($order, $orderType);
 
