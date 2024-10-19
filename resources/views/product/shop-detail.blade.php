@@ -108,7 +108,7 @@
                         <div class="col-lg-6">
                             <h4 class="fw-bold mb-3">{{ $product->name }}</h4>
                             <p class="mb-3">{{ $product->category->name }}</p>
-                            <h5 class="fw-bold mb-3"><span id="product-price">{{ $product->price }} đ</span></h5>
+                            <h5 class="fw-bold mb-3"><span id="product-price">{{ number_format($product->price,0,".",',') }} đ</span></h5>
                             {{-- <p class="mb-3">Warranty period: 1 year</p> --}}
 
                             {{-- Product variants --}}
@@ -118,7 +118,7 @@
                                     <div class="form-check mb-4">
                                         <input type="radio" class="form-check-input" id="variant-{{ $variant->id }}"
                                             name="variant_id_radio" value="{{ $variant->id }}"
-                                            data-price="{{ $variant->variant_price }}"
+                                            data-price="{{ number_format($variant->variant_price,0,'.',',') }}"
                                             data-stock-quantity="{{ $variant->stock_quantity }}"
                                              {{ $key === 0 ? 'checked' : '' }}>
                                         <label class="form-check-label"

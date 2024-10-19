@@ -55,11 +55,15 @@ class CheckoutController extends Controller
             $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
                 ->findOrFail($orderId);
             $shippingAddress = $order->shippingAddress;
+            // Decrypt the shipping address
+            ProfileController::decryptAddress($shippingAddress);
         } else {
             $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
             $guestAddress = json_decode($order->guest_address, true);
-
+            // Decrypt the guest address here
+            $guestAddress = ProfileController::decryptAddressData($guestAddress);
+       
             $shippingAddress = (object) [
                 'full_name' => $order->guest_name,
                 'address_line_1' => $guestAddress['address_line_1'],
@@ -123,6 +127,10 @@ class CheckoutController extends Controller
 
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
+            // Decrypt the address
+            foreach ($addresses as $address) {
+                $address = ProfileController::decryptAddress($address);
+            }
         }
         // dd(session()->all());
         return view('checkout.index', compact(
@@ -165,7 +173,7 @@ class CheckoutController extends Controller
             $discountValue = $this->couponService->calculateDiscount($couponCode, $oldSubtotal);
             $shippingFee = session()->get('shipping_fee', 0);
             $finalPrice = session('total'); // Đây là tổng cộng cuối cùng, bao gồm cả phí vận chuyển
-            
+
             $order = $this->orderService->createOrder($request, $user, $addressId, $cartItems, $sessionCart, $oldSubtotal, $discountValue, $finalPrice, $shippingFee);
 
             $orderType = $user ? 'order' : 'guest_order';
@@ -206,7 +214,6 @@ class CheckoutController extends Controller
                 'province_id' => 'required',
                 'ward_id' => 'required',
             ]);
-
         } else {
             // Kiểm tra xem người dùng đã có địa chỉ nào chưa
             $hasAddresses = $user->addresses()->exists();
@@ -235,7 +242,6 @@ class CheckoutController extends Controller
                         'province_id' => 'required',
                         'ward_id' => 'required',
                     ]);
-
                 } else {
                     $rules['selected_address_id'] = 'required|exists:addresses,id';
                 }
@@ -263,6 +269,9 @@ class CheckoutController extends Controller
         } else {
             $addressData['is_default'] = false;
         }
+        // Encrypt the address
+        $addressData = ProfileController::encryptAddress($addressData);
+
         $address = $user->addresses()->create($addressData);
 
         if ($addressData['is_default']) {
@@ -313,7 +322,7 @@ class CheckoutController extends Controller
     {
         $apiToken = env('GHN_TOKEN');
         $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-        
+
         $response = Http::withHeaders([
             'Token' => $apiToken,
             'Content-Type' => 'application/json',
@@ -330,7 +339,7 @@ class CheckoutController extends Controller
             $item = collect($data)->firstWhere('WardCode', $id);
             return $item ? $item['WardName'] : 'Unknown Ward';
         }
-        
+
         return 'Unknown';
     }
 }

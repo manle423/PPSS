@@ -40,6 +40,9 @@
             <p><strong>Ordered date:</strong> {{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
             <p><strong>Name:</strong> {{ $order->user->full_name ?? $order->guest_name }}</p>
             <p><strong>Address:</strong> 
+                @php
+                    App\Http\Controllers\ProfileController::decryptAddress($order->shippingAddress)
+                @endphp
                 {{ $order->shippingAddress->address_line_1 }}
                 @if($order->shippingAddress->address_line_2)
                     , {{ $order->shippingAddress->address_line_2 }}
