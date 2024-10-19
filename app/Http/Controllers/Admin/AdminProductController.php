@@ -31,6 +31,14 @@ class AdminProductController extends Controller
         return view('admin.products.list', compact('products', 'categories'));
     }
 
+    public function detail($id){
+        $product= Product::findOrFail($id);
+        
+        $product_variants=ProductVariant::where('product_id',$id)->get();
+      
+        return view ('admin.products.detail',compact('product','product_variants'));
+    }
+
     public function create()
     {
         $categories = Category::all();
@@ -350,21 +358,24 @@ class AdminProductController extends Controller
     {
 
         $request->validate([
-            'date' => 'required|date',
+            'order_from' => 'required|date',
+            'order_to' => 'required|date',
         ]);
         $id = $request->input('id');
-        $date = $request->input('date');
+        $fromdate = $request->input('order_from');
+        $todate = $request->input('order_to');
         $product = Product::find($id);
         // Lọc doanh thu sản phẩm theo ngày
-        $productSales = OrderItem::whereDate('created_at', $date)
+        $productSales = OrderItem::whereDate('created_at', '>=',$fromdate)
+            ->whereDate('created_at', '<=', $todate)
             ->where('item_id', $id)
             ->with('order')
             ->get();
 
         return view('admin.products.sale', [
             'productSales' => $productSales,
-            'productName' =>  $product->name, // Thay thế bằng tên sản phẩm thật nếu cần
-            'productId' => $product->id, // Hoặc id sản phẩm nếu cần
+            'productName' =>  $product->name,
+            'productId' => $product->id, 
         ]);
     }
 
