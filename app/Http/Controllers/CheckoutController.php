@@ -134,6 +134,7 @@ class CheckoutController extends Controller
         }
         // dd(session()->all());
         return view('checkout.index', compact(
+            'user',
             'sessionCart',
             'subtotal',
             'cartItems',
@@ -156,7 +157,6 @@ class CheckoutController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
             if ($user) {
                 $hasAddresses = $user->addresses()->exists();
                 if (!$hasAddresses || $request->input('new_address')) {
@@ -181,7 +181,6 @@ class CheckoutController extends Controller
             $request->session()->put($orderType . '_id', $order->id);
             $request->session()->put('order_total', $finalPrice);
             DB::commit();
-
             $paymentMethod = $request->input('payment_method');
             switch ($paymentMethod) {
                 case 'paypal':
@@ -262,7 +261,6 @@ class CheckoutController extends Controller
         $addressData = $validatedData;
 
         $existingAddressCount = $this->profileService->getExistingAddressCount();
-
         if ($existingAddressCount === 0) {
             $addressData['is_default'] = true;
             $this->profileService->resetOtherDefaultAddresses();
@@ -270,8 +268,8 @@ class CheckoutController extends Controller
             $addressData['is_default'] = false;
         }
         // Encrypt the address
-        $addressData = ProfileController::encryptAddress($addressData);
-
+        // $addressData = ProfileController::encryptAddress($addressData);
+        $addressData = ProfileController::encryptAddressData($addressData);
         $address = $user->addresses()->create($addressData);
 
         if ($addressData['is_default']) {

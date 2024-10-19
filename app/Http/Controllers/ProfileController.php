@@ -19,7 +19,7 @@ class ProfileController extends Controller
         $this->profileService = $profileService;
     }
 
-    public function encryptAddressData($addressData)
+    public static function encryptAddressData($addressData)
     {
         $addressData['district_id'] = Crypt::encryptString($addressData['district_id']);
         $addressData['province_id'] = Crypt::encryptString($addressData['province_id']);

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const couponForm = document.getElementById("coupon-form");
     const applyAddressButton = document.getElementById("applyAddressButton");
-    const isGuest = !addressSelect; // Determine if the user is a guest
+    console.log(isGuest);
 
     function toggleNewAddressForm() {
         if (!newAddressCheckbox) return;
@@ -50,10 +50,11 @@ document.addEventListener("DOMContentLoaded", function () {
         applyAddressButton.addEventListener("click", function () {
             let toDistrictId, toWardCode;
 
-            if (isGuest || (newAddressCheckbox && newAddressCheckbox.checked)) {
+            if (isGuest || (newAddressCheckbox && newAddressCheckbox.checked) || newAddress) {
                 // Handle new address for guest or registered user with new address
                 let newAddressFields = [];
                 if (newAddressForm) {
+                    console.log('ok')
                     newAddressFields = newAddressForm.querySelectorAll('input[id^="new_"], select[id^="new_"]');
                 } else {
                     // If newAddressForm doesn't exist, try to find fields directly in the document
