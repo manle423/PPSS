@@ -55,11 +55,15 @@ class CheckoutController extends Controller
             $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
                 ->findOrFail($orderId);
             $shippingAddress = $order->shippingAddress;
+            // Decrypt the shipping address
+            ProfileController::decryptAddress($shippingAddress);
         } else {
             $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
             $guestAddress = json_decode($order->guest_address, true);
-
+            // Decrypt the guest address here
+            $guestAddress = ProfileController::decryptAddressData($guestAddress);
+       
             $shippingAddress = (object) [
                 'full_name' => $order->guest_name,
                 'address_line_1' => $guestAddress['address_line_1'],
@@ -265,6 +269,9 @@ class CheckoutController extends Controller
         } else {
             $addressData['is_default'] = false;
         }
+        // Encrypt the address
+        $addressData = ProfileController::encryptAddress($addressData);
+
         $address = $user->addresses()->create($addressData);
 
         if ($addressData['is_default']) {

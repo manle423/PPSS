@@ -29,6 +29,16 @@ class ProfileController extends Controller
         return $addressData;
     }
 
+    public static function decryptAddressData($addressData)
+    {
+        $addressData['district_id'] = Crypt::decryptString($addressData['district_id']);
+        $addressData['province_id'] = Crypt::decryptString($addressData['province_id']);
+        $addressData['ward_id'] = Crypt::decryptString($addressData['ward_id']);
+        $addressData['address_line_1'] = Crypt::decryptString($addressData['address_line_1']);
+        $addressData['address_line_2'] = Crypt::decryptString($addressData['address_line_2']);
+        return $addressData;
+    }
+
     public static function encryptAddress($address)
     {
         $address->ward_id = Crypt::encryptString($address->ward_id);
