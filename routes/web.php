@@ -55,6 +55,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCategoryController::class, 'edit'])->name('category.edit');
         Route::post('/update/{id}', [AdminCategoryController::class, 'update'])->name('category.update');
         Route::post('/delete/{id}', [AdminCategoryController::class, 'delete'])->name('category.delete');
+        Route::post('/import', [AdminCategoryController::class, 'import'])->name('category.import');
+        Route::get('/export-template', [AdminCategoryController::class, 'exportTemplate'])->name('category.export.template');
+        Route::post('/bulk-action', [AdminCategoryController::class, 'bulkAction'])->name('category.bulk-action');
     });
     Route::prefix('/coupons')->group(function () {
         Route::get('/', [AdminCouponController::class, 'list'])->name('coupon.list');
@@ -64,13 +67,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/edit/{id}', [AdminCouponController::class, 'edit'])->name('coupon.edit');
         Route::post('/update/{id}', [AdminCouponController::class, 'update'])->name('coupon.update');
         Route::post('/delete/{id}', [AdminCouponController::class, 'delete'])->name('coupon.delete');
+        Route::post('/import', [AdminCouponController::class, 'import'])->name('coupon.import');
+        Route::get('/export-template', [AdminCouponController::class, 'exportTemplate'])->name('coupon.export.template');
+        Route::post('/bulk-action', [AdminCouponController::class, 'bulkAction'])->name('coupon.bulk-action');
     });
 
     Route::prefix('/products')->group(function () {
         // product
         Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
-        Route::post('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
+        Route::get('/filter', [AdminProductController::class, 'filter'])->name('products.filter');
         Route::post('/store', [AdminProductController::class, 'store'])->name('products.store');
         Route::get('/edit/{id}', [AdminProductController::class, 'edit'])->name('products.edit');
         Route::put('/update/{id}', [AdminProductController::class, 'update'])->name('products.update');
@@ -80,6 +86,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/search', [AdminProductController::class, 'search'])->name('products.search');
         // variant
         Route::delete('/variants/{id}', [AdminProductController::class, 'destroyVariant'])->name('products.variants.destroy');
+
+        Route::post('/import', [AdminProductController::class, 'import'])->name('products.import');
+        Route::get('/export-template', [AdminProductController::class, 'exportTemplate'])->name('products.export.template');
+
+        Route::post('/bulk-action', [AdminProductController::class, 'bulkAction'])->name('products.bulk-action');
     });
 
     Route::prefix('/orders')->group(function () {
@@ -215,3 +226,6 @@ Route::get('/api/wards/{district_id}', [LocationController::class, 'getWards'])-
 Route::get('/api/province/{province_id}', [LocationController::class, 'getProvinceName'])->name('api.province.name');
 Route::get('/api/district/{district_id}', [LocationController::class, 'getDistrictName'])->name('api.district.name');
 Route::get('/api/ward/{ward_id}', [LocationController::class, 'getWardName'])->name('api.ward.name');
+
+
+
