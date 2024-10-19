@@ -98,6 +98,9 @@
         {{-- @dd($order->shippingAddress) --}}
         <h5>Shipping Information</h5>
         @if ($orderType === 'order')
+            @php
+                App\Http\Controllers\ProfileController::decryptAddress($order->shippingAddress)
+            @endphp
             <p>{{ $order->shippingAddress->full_name }}<br>
                 {{ $order->shippingAddress->address_line_1 }},
                 @if ($order->shippingAddress->address_line_2)
@@ -110,6 +113,7 @@
         @else
             @php
                 $guestAddress = json_decode($order->guest_address, true);
+                $guestAddress = App\Http\Controllers\ProfileController::decryptAddressData($guestAddress)
             @endphp
             <p>{{ $order->guest_name }}<br>
                 {{ $guestAddress['address_line_1'] }},
