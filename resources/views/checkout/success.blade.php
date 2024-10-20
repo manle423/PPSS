@@ -95,20 +95,20 @@
         </table>
 
         <div class="mt-3">
-            <strong>Subtotal:</strong> {{ number_format($order->total_price, 2) }}
+            <strong>Subtotal:</strong> {{ number_format($order->total_price, 0) }}
         </div>
         <div class="mt-1">
-            <strong>Shipping Fee:</strong> {{ number_format($order->shipping_fee, 2) ?? 0 }}
+            <strong>Shipping Fee:</strong> {{ number_format($order->shipping_fee, 0) ?? 0 }}
         </div>
 
         @if($order->discount_value > 0)
             <div class="mt-1">
-                <strong>Discount:</strong> {{ number_format($order->discount_value, 2) }}
+                <strong>Discount:</strong> {{ number_format($order->discount_value, 0) }}
             </div>
         @endif
 
         <div class="mt-1">
-            <strong>Total Price:</strong> {{ number_format($order->final_price, 2) }}
+            <strong>Total Price:</strong> {{ number_format($order->final_price, 0) }}
         </div>
 
         <div class="mt-3">
