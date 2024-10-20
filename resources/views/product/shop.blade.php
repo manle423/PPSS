@@ -151,7 +151,7 @@
 
                                 <div class="col-12">
                                     <div class="pagination d-flex justify-content-center mt-5">
-                                        {{ $products->links() }}
+                                        {{ $products->appends(request()->input())->links() }}
                                     </div>
                                 </div>
                             </div>
