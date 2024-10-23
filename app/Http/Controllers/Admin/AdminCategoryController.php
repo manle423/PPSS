@@ -149,14 +149,14 @@ class AdminCategoryController extends Controller
         $action = $request->input('action');
 
         if (empty($ids)) {
-            return redirect()->back()->with('error', 'No categories selected.');
+            return redirect()->route('admin.category.list')->with('error', 'No categories selected.');
         }
 
         if ($action === 'delete') {
             Category::whereIn('id', $ids)->delete();
-            return redirect()->back()->with('success', 'Selected categories deleted successfully.');
+            return redirect()->route('admin.category.list')->with('success', 'Selected categories deleted successfully.');
         }
 
-        return redirect()->back()->with('error', 'Invalid action.');
+        return redirect()->route('admin.category.list')->with('error', 'Invalid action.');
     }
 }
