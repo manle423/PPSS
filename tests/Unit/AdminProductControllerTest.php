@@ -19,13 +19,18 @@ class AdminProductControllerTest extends TestCase
 
     protected $user;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create([
             'role' => 'ADMIN',
         ]);
         $this->actingAs($this->user);
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
     }
 
     public function testListProducts()
