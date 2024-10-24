@@ -136,11 +136,39 @@ test('Index product page display search result with wrong keyword', function () 
         ->assertViewHas('products',null);
 });
 
+test('Index product page display price range input',function(){
+    $response = $this->get('/shop');
+    // Assert that the price range form is there
+    $response->assertStatus(200)
+        ->assertSee('Price Range')
+        ->assertSee('Min Price')->assertSee('Max Price')
+        ->assertSee('<input type="number" class="form-control" id="minPrice" name="min_price" min="0" max="2147483647" value="">',false)
+        ->assertSee('<input type="number" class="form-control" id="maxPrice" name="max_price" min="0" max="2147483647" value="">',false);
+});
 
-test('Product detail page', function () {
+test('Index product page display search by price range results',function(){
+    $minPrice = random_int(10000,999999);
+    $maxPrice = random_int($minPrice,999999);
+    // Simulate a request to the show method with the price range
+    $response = $this->get('/shop?min_price='. $minPrice. '&max_price='. $maxPrice);
+    // Assert that the response is successful
+    $response->assertStatus(200)
+        ->assertViewIs('product.shop')
+        ->assertSee('Shop') // Assuming 'Shop' text is present on the page
+        ->assertViewHas('products');
+    $products = $response->original->getData()['products']; // Get the products from the response
+    foreach ($products as $product) {
+        $this->assertTrue(
+            $product->price >= $minPrice && $product->price <= $maxPrice,
+            "Product price out of range"
+        );
+    }
+});
+
+
+test('Product detail page link works', function () {
 
     // Get category form database
-    $category = Category::all()->first();
     $product = Product::all()->first();
     $variants = ProductVariant::where('product_id', $product->id)->get();
 
@@ -153,3 +181,22 @@ test('Product detail page', function () {
         ->assertViewHas('product', $product)
         ->assertViewHas('variants');
 });
+
+test('Product detail page display product details', function () {
+    $product = Product::inRandomOrder()->first();
+    $variants = ProductVariant::where('product_id', $product->id)->get();
+    // Simulate a request to the show method
+    $response = $this->get('/shop/' . $product->id);
+    // Assert that the product details are visible
+    $response->assertSee($product->name, "Product name not visible")
+        ->assertSee($product->description, "Product description not visible")
+        ->assertSee(number_format($product->price, 0, '.', ','),"Product price not visible");
+    // Assert that the product variants are visible
+    foreach($variants as $variant) {
+        $response->assertSee(number_format($variant->variant_price, 0, '.', ','),"Product variant price not visible");
+        $response->assertSee($variant->variant_name, "Product variant name not visible");
+        $response->assertSee($variant->stock_quantity, "Product variant quantity not visible");
+    }
+});
+
+
