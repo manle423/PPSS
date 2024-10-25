@@ -71,7 +71,7 @@ class AdminOrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['user', 'shippingAddress.ward.district.province', 'orderItems.item'])->findOrFail($id);
+        $order = Order::with(['user', 'shippingAddress', 'orderItems.item'])->findOrFail($id);
         return view('admin.orders.detail', compact('order'));
     }
 
@@ -88,24 +88,26 @@ class AdminOrderController extends Controller
         }
 
         // Update order status to CANCELLED
-        $order->status = 'CANCELLED';
+        $order->status = 'CANCELED';
         $order->save();
 
         // Restore stock quantities
         foreach ($order->orderItems as $orderItem) {
             $product = $orderItem->item;
-            $quantity = $orderItem->quantity;
+            $quantity = $orderItem->quantity;         
+            \Log::info("Restoring stock for product ID {$product->id}, quantity: {$quantity}");
             $variant = $orderItem->variant;
-
-            if ($variant && property_exists($variant, 'stock_quantity')) {
-                $variant->stock_quantity += $quantity;
-                $variant->save();
-            } elseif ($product && property_exists($product, 'stock_quantity')) {
-                $product->stock_quantity += $quantity;
-                $product->save();
-            }
+            $product->stock_quantity += $quantity;
+            $product->save();
+            // if ($variant && property_exists($variant, 'stock_quantity')) {
+            //     $variant->stock_quantity += $quantity;
+            //     $variant->save();
+            // } elseif ($product && property_exists($product, 'stock_quantity')) {
+            //     $product->stock_quantity += $quantity;
+            //     \Log::info("Restoring stock for product ID {$product->id}, quantity: {$quantity}");
+            //     $product->save();
+            // }
         }
-
         return back()->with('success', 'Order has been cancelled successfully.');
     }
 

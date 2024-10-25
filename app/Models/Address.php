@@ -29,24 +29,24 @@ class Address extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function province()
-    {
-        return $this->belongsTo(Province::class);
-    }
+    // public function province()
+    // {
+    //     return $this->belongsTo(Province::class);
+    // }
 
-    public function district()
-    {
-        return $this->belongsTo(District::class);
-    }
+    // public function district()
+    // {
+    //     return $this->belongsTo(District::class);
+    // }
 
     public function scopeDefault($query)
     {
         return $query->where('is_default', true);
     }
 
-    public function ward()
-    {
-        return $this->belongsTo(Ward::class);
-    }
+    // public function ward()
+    // {
+    //     return $this->belongsTo(Ward::class);
+    // }
 }
 

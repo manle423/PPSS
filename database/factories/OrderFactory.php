@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Address;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,13 +18,17 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
+        // Create a user and an associated address
+        $user = User::factory()->create();
+        $address = Address::factory()->create(['user_id' => $user->id]);
+
         return [
             'order_code' => $this->faker->unique()->regexify('HD[0-9]{8}'),
-            'user_id' => User::inRandomOrder()->first()->id,
+            'user_id' => $user->id,
             'guest_order_id' => null,
             'status' => $this->faker->randomElement(['pending', 'completed', 'canceled']),
             'order_date' => $this->faker->dateTimeThisYear(),
-            'shipping_address' => $this->faker->address,
+            'shipping_address_id' => $address->id,
             'shipping_method_id' => 1,
             'payment_method' => $this->faker->randomElement(['CREDIT_CARD', 'PAYPAL', 'VNPAY']),
             'promotion_id' => null,
