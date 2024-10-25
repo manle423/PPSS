@@ -20,8 +20,7 @@
                     $sessionCart = session()->get('cart', []);
                     $newAmount = $sessionCart[$cartKey];
                 @endphp
-                <input type="number" id="quantity_{{ $cartKey }}" name="quantity" value="{{ $newAmount }}" style="width: 60px;"
-                    max="{{ optional($item->variant)->stock_quantity ?? $item->product->stock_quantity }}" />
+                <input type="number" id="quantity_{{ $cartKey }}" name="quantity" value="{{ $newAmount }}" style="width: 60px;" max="{{ optional($item->variant)->stock_quantity ?? $item->product->stock_quantity }}" />
                 <button class="btn btn-primary btn-sm">Update</button>
             </form>
         </p>
@@ -35,9 +34,9 @@
                     $sessionCart = session()->get('cart', []);
                     $newAmount = $sessionCart[$cartKey];
                 @endphp
-                <input type="number" id="quantity_{{ $cartKey }}" name="quantity" value="{{ $newAmount }}" style="width: 60px;"
+                <input type="number" dusk="quantity_{{ $cartKey }}" id="quantity_{{ $cartKey }}" name="quantity" value="{{ $newAmount }}" style="width: 60px;"
                     max="{{optional($item->variant)->stock_quantity ?? $item->product->stock_quantity }}" />
-                <button type="submit" class="btn btn-primary btn-sm">
+                <button type="submit" class="btn btn-primary btn-sm" dusk="quantity_btn_{{ $cartKey }}">
                     Update
                 </button>
             </form>
