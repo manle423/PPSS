@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 
 class AdminOrderController extends Controller
 {
-    // ... (other methods) ...
-
     public function cancelOrder(Request $request, Order $order)
     {
         if ($order->status !== 'PENDING') {
@@ -33,12 +31,6 @@ class AdminOrderController extends Controller
                 $product->save();
             }
         }
-
-        // You might want to add more logic here, such as:
-        // - Sending cancellation email to customer
-        // - Refunding payment if necessary
-        // - Logging the cancellation
-
         return back()->with('success', 'Order has been cancelled successfully.');
     }
 }
