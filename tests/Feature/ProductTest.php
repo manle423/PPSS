@@ -3,8 +3,13 @@
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\StoreInfo;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\FeatureTestService;
+uses(RefreshDatabase::class);
 
 test('Index product page link works', function () {
+    FeatureTestService::initiateData();
     $response = $this->get('/shop');
 
     $response->assertStatus(200)
@@ -13,6 +18,7 @@ test('Index product page link works', function () {
 });
 
 test("Index product page display sorting options", function () {
+    FeatureTestService::initiateData();
     $response = $response = $this->get('/shop');
     $response->assertStatus(200)
         ->assertViewIs('product.shop')
@@ -27,6 +33,7 @@ test("Index product page display sorting options", function () {
 });
 
 test("Index product page display sorting results", function () {
+    FeatureTestService::initiateData();
     $sortType = ['asc', 'desc', 'latest'];
     $response = $response = $this->get('/shop?sort=' . array_rand($sortType));
     $response->assertStatus(200)
@@ -49,6 +56,7 @@ test("Index product page display sorting results", function () {
 });
 
 test("Index product page display category list", function () {
+    FeatureTestService::initiateData();
     $response = $this->get('/shop');
     $response->assertStatus(200)
         ->assertViewIs('product.shop')
@@ -63,6 +71,7 @@ test("Index product page display category list", function () {
 });
 
 test("Index product page display product of 2 categories", function () {
+    FeatureTestService::initiateData();
     // Get two random categories from the database
     $categories = Category::inRandomOrder()->limit(2)->get();
 
@@ -106,7 +115,8 @@ test("Index product page display product of 2 categories", function () {
 });
 
 test('Index product page display search result with right keyword', function () {
-    $keyword = "itaqu";
+    FeatureTestService::initiateData();
+    $keyword = "i";
     // Simulate a request to the show method with the keyword
     $response = $this->get('/shop?search=' . $keyword);
     // Assert that the response is successful
@@ -126,6 +136,7 @@ test('Index product page display search result with right keyword', function () 
 });
 
 test('Index product page display search result with wrong keyword', function () {
+    FeatureTestService::initiateData();
     $keyword = "###";
     // Simulate a request to the show method with the keyword
     $response = $this->get('/shop?search=' . $keyword);
@@ -137,6 +148,7 @@ test('Index product page display search result with wrong keyword', function () 
 });
 
 test('Index product page display price range input',function(){
+    FeatureTestService::initiateData();
     $response = $this->get('/shop');
     // Assert that the price range form is there
     $response->assertStatus(200)
@@ -147,6 +159,7 @@ test('Index product page display price range input',function(){
 });
 
 test('Index product page display search by price range results',function(){
+    FeatureTestService::initiateData();
     $minPrice = random_int(10000,999999);
     $maxPrice = random_int($minPrice,999999);
     // Simulate a request to the show method with the price range
@@ -167,7 +180,7 @@ test('Index product page display search by price range results',function(){
 
 
 test('Product detail page link works', function () {
-
+    FeatureTestService::initiateData();
     // Get category form database
     $product = Product::all()->first();
     $variants = ProductVariant::where('product_id', $product->id)->get();
@@ -183,6 +196,7 @@ test('Product detail page link works', function () {
 });
 
 test('Product detail page display product details', function () {
+    FeatureTestService::initiateData();
     $product = Product::inRandomOrder()->first();
     $variants = ProductVariant::where('product_id', $product->id)->get();
     // Simulate a request to the show method
