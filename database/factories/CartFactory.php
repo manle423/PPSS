@@ -20,7 +20,7 @@ class CartFactory extends Factory
     {
         $product = Product::inRandomOrder()->first();
         $variant = $product->variants ? $product->variants->random() : null;
-        $maxCartAmount = $variant ? $variant->stock_amount : $product->stock_amount;
+        $maxCartAmount = $variant != null ? $variant->stock_quantity : $product->stock_quantity;
         
         return [
             //
