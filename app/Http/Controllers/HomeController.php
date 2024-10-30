@@ -62,7 +62,6 @@ class HomeController extends Controller
                 ->orderBy('orders_count', 'desc')->limit(8)->get();
             $index += 1;
         }
-
         // Return the view with the data
         return view('home', compact('categories', 'latestProductsAll','latestProductsCategories','popularProducts','popularProductsCategories'));
     }
