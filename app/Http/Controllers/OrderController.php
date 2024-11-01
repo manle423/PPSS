@@ -110,7 +110,7 @@ class OrderController extends Controller
         }
         
         $orders = Auth::user()->orders()
-            ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod'])
+            ->with(['shippingMethod'])
             ->where('status', $status)
             ->orderBy('order_date', 'desc')
             ->paginate(5);
@@ -129,7 +129,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod', 'orderItems.item']);
+        $order->load(['shippingMethod', 'orderItems.item']);
         // Decrypt the address of the order
         ProfileController::decryptAddress($order->shippingAddress);
         //dd($order->shippingAddress);
