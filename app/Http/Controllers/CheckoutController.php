@@ -52,7 +52,7 @@ class CheckoutController extends Controller
         }
 
         if ($orderType == 'order') {
-            $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
+            $order = Order::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
             $shippingAddress = $order->shippingAddress;
             // Decrypt the shipping address
