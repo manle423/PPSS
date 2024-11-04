@@ -114,7 +114,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                
@@ -168,7 +168,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -220,7 +220,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -272,7 +272,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -365,7 +365,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -417,7 +417,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -469,7 +469,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
@@ -521,7 +521,7 @@
                                                 <div
                                                     class="text-white bg-secondary px-3 py-1 rounded position-absolute"
                                                     style="top: 10px; left: 10px;">
-                                                    {{ $product->category->name }}</div>
+                                                    {{ $product->category->name ?? "N/A" }}</div>
                                                 <div class="p-4 border border-secondary border-top-0 rounded-bottom">
                                                 <div class="top-bottom">
                                                      <h4><a  href="{{ route('product.show', $product) }}">{{ Str::words($product->name,5) }}</a></h4>
