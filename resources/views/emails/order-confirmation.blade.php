@@ -54,36 +54,6 @@
 
 <body>
 
-    @php
-        use Illuminate\Support\Facades\Http;
-
-        function getLocationName($type, $id, $districtId = null)
-        {
-            $apiToken = env('GHN_TOKEN');
-            $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-
-            $response = Http::withHeaders([
-                'Token' => $apiToken,
-                'Content-Type' => 'application/json',
-            ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-            $data = $response->json()['data'] ?? [];
-
-            if ($type === 'province') {
-                $item = collect($data)->firstWhere('ProvinceID', $id);
-                return $item ? $item['ProvinceName'] : 'Unknown Province';
-            } elseif ($type === 'district') {
-                $item = collect($data)->firstWhere('DistrictID', $id);
-                return $item ? $item['DistrictName'] : 'Unknown District';
-            } elseif ($type === 'ward') {
-                $item = collect($data)->firstWhere('WardCode', $id);
-                return $item ? $item['WardName'] : 'Unknown Ward';
-            }
-
-            return 'Unknown';
-        }
-    @endphp
-
     <div class="container">
         <div class="alert">
             <h4 class="alert-heading">Order Confirmation</h4>
@@ -98,31 +68,30 @@
         {{-- @dd($order->shippingAddress) --}}
         <h5>Shipping Information</h5>
         @if ($orderType === 'order')
-            @php
-                App\Http\Controllers\ProfileController::decryptAddress($order->shippingAddress)
-            @endphp
             <p>{{ $order->shippingAddress->full_name }}<br>
                 {{ $order->shippingAddress->address_line_1 }},
                 @if ($order->shippingAddress->address_line_2)
                     {{ $order->shippingAddress->address_line_2 }},
                 @endif
-                {{ getLocationName('ward', $order->shippingAddress->ward_id, $order->shippingAddress->district_id) }},
-                {{ getLocationName('district', $order->shippingAddress->district_id) }},
-                {{ getLocationName('province', $order->shippingAddress->province_id) }}
+                {{ $order->shippingAddress->ward->name ?? 'Unknown Ward' }},
+                {{ $order->shippingAddress->district->name ?? 'Unknown District' }},
+                {{ $order->shippingAddress->province->name ?? 'Unknown Province' }}
             </p>
         @else
             @php
-                $guestAddress = json_decode($order->guest_address, true);
-                $guestAddress = App\Http\Controllers\ProfileController::decryptAddressData($guestAddress)
+                $guestAddress = $order->guest_address;
+                $wardName = \App\Models\Ward::find($guestAddress['ward_id'])->name ?? 'Unknown Ward';
+                $districtName = \App\Models\District::find($guestAddress['district_id'])->name ?? 'Unknown District';
+                $provinceName = \App\Models\Province::find($guestAddress['province_id'])->name ?? 'Unknown Province';
             @endphp
             <p>{{ $order->guest_name }}<br>
-                {{ $guestAddress['address_line_1'] }},
-                @if (isset($guestAddress['address_line_2']) && $guestAddress['address_line_2'])
-                    {{ $guestAddress['address_line_2'] }},
+                {{ $order->guest_address['address_line_1'] }},
+                @if (isset($order->guest_address['address_line_2']) && $order->guest_address['address_line_2'])
+                    {{ $order->guest_address['address_line_2'] }},
                 @endif
-                {{ getLocationName('ward', $guestAddress['ward_id'], $guestAddress['district_id']) }},
-                {{ getLocationName('district', $guestAddress['district_id']) }},
-                {{ getLocationName('province', $guestAddress['province_id']) }}
+                {{ $wardName }},
+                {{ $districtName }},
+                {{ $provinceName }}
             </p>
         @endif
 

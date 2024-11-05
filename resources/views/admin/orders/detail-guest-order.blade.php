@@ -1,33 +1,3 @@
-@php
-    use Carbon\Carbon;
-    use Illuminate\Support\Facades\Http;
-
-    function getLocationName($type, $id, $districtId = null)
-    {
-        $apiToken = env('GHN_TOKEN');
-        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-
-        $response = Http::withHeaders([
-            'Token' => $apiToken,
-            'Content-Type' => 'application/json',
-        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-        $data = $response->json()['data'] ?? [];
-        if ($type === 'province') {
-            $item = collect($data)->firstWhere('ProvinceID', $id);
-            return $item ? $item['ProvinceName'] : 'Unknown Province';
-        } elseif ($type === 'district') {
-            $item = collect($data)->firstWhere('DistrictID', $id);
-            return $item ? $item['DistrictName'] : 'Unknown District';
-        } elseif ($type === 'ward') {
-            $item = collect($data)->firstWhere('WardCode', $id);
-            return $item ? $item['WardName'] : 'Unknown Ward';
-        }
-
-        return 'Unknown';
-    }
-@endphp
-
 @extends('layouts.admin')
 @section('content')
     <link href="{{ asset('assets/vendor/css/orderdetail.css') }}" rel="stylesheet">
@@ -43,16 +13,15 @@
             <p><strong>Email:</strong> {{ $order->guest_email }}</p>
             <p><strong>Address:</strong>
                 @php
-                    $address = json_decode($order->guest_address, true);
-                    $address = App\Http\Controllers\ProfileController::decryptAddressData($address);
+                    $address = $order->guest_address;
                 @endphp
                 {{ $address['address_line_1'] }},
                 @if ($address['address_line_2'])
                     {{ $address['address_line_2'] }},
                 @endif
-                {{ getLocationName('ward', $address['ward_id'], $address['district_id']) }},
-                {{ getLocationName('district', $address['district_id']) }}
-                {{ getLocationName('province', $address['province_id']) }}
+                {{ $address['ward_name'] }},
+                {{ $address['district_name'] }},
+                {{ $address['province_name'] }}
             </p>
             <p><strong>Shipping method:</strong> {{ $order->shippingMethod->name ?? 'N/A' }}</p>
             <p><strong>Payment method:</strong> {{ $order->payment_method }}</p>

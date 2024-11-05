@@ -1,33 +1,5 @@
 @extends('layouts.shop')
-@php
-        use Illuminate\Support\Facades\Http;
 
-        function getLocationName($type, $id, $districtId = null)
-        {
-            $apiToken = env('GHN_TOKEN');
-            $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-
-            $response = Http::withHeaders([
-                'Token' => $apiToken,
-                'Content-Type' => 'application/json',
-            ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-            $data = $response->json()['data'] ?? [];
-
-            if ($type === 'province') {
-                $item = collect($data)->firstWhere('ProvinceID', $id);
-                return $item ? $item['ProvinceName'] : 'Unknown Province';
-            } elseif ($type === 'district') {
-                $item = collect($data)->firstWhere('DistrictID', $id);
-                return $item ? $item['DistrictName'] : 'Unknown District';
-            } elseif ($type === 'ward') {
-                $item = collect($data)->firstWhere('WardCode', $id);
-                return $item ? $item['WardName'] : 'Unknown Ward';
-            }
-
-            return 'Unknown';
-        }
-    @endphp
 @section('content')
     <div class="container">
         <h1 class="my-4">Order Details - {{ $order->order_code }}</h1>
@@ -55,7 +27,10 @@
                     @if($order->shippingAddress->address_line_2)
                         {{ $order->shippingAddress->address_line_2 }},
                     @endif
-                {{ getLocationName('ward',$order->shippingAddress->ward_id,$order->shippingAddress->district_id) ?? 'N/A' }}, {{ getLocationName('district',$order->shippingAddress->district_id) ?? 'N/A' }}, {{ getLocationName('province',$order->shippingAddress->province_id) ?? 'N/A' }}</p>
+                    {{ $order->shippingAddress->ward->name ?? 'Unknown Ward' }},
+                    {{ $order->shippingAddress->district->name ?? 'Unknown District' }},
+                    {{ $order->shippingAddress->province->name ?? 'Unknown Province' }}
+                </p>
                 <p><strong>Phone Number:</strong> {{ $order->shippingAddress->phone_number ?? 'N/A' }}</p>
             </div>
         </div>
