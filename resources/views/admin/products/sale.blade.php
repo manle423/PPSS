@@ -17,14 +17,22 @@
             <div class="modal-body">
                 <form id="filterForm" action="{{route('admin.products.search')}}" method="POST">
                   @csrf
-              
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" placeholder="Date order">
-                        <input type="hidden" value="{{$productId}}" name="id">
-                    </div> 
+                  <div class="col-md-3 mb-3">
+                    <label for="created_at_start" class="form-label">Order From: </label>
+                    <input type="date" class="form-control" id="order_from" name="order_from"
+                        value="{{ request('order_from') }}">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="created_at_end" class="form-label">Order To: </label>
+                    <input type="date" class="form-control" id="order_to" name="order_to"
+                        value="{{ request('order_to') }}">
+                </div>
+                   
+                <input type="hidden" value="{{$productId}}" name="id">
+                    
                 </form>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="submit" form="filterForm" class="btn btn-secondary">Search</button>

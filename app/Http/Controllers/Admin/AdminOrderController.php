@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\GuestOrder;
+use App\Models\Ward;
+use App\Models\District;
+use App\Models\Province;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
@@ -71,13 +74,24 @@ class AdminOrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with(['user', 'shippingAddress.ward.district.province', 'orderItems.item'])->findOrFail($id);
+        $order = Order::with(['user', 'shippingAddress.ward', 'shippingAddress.district', 'shippingAddress.province', 'orderItems.item', 'shippingMethod', 'coupon'])
+            ->findOrFail($id);
+
         return view('admin.orders.detail', compact('order'));
     }
 
     public function detailGuestOrder($id)
     {
-        $order = GuestOrder::with(['orders', 'orderItems.item'])->findOrFail($id);
+        $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])->findOrFail($id);
+        $guestAddress = $order->guest_address;
+
+        // Fetch the names from the database
+        $guestAddress['ward_name'] = Ward::where('id', $guestAddress['ward_id'])->value('name') ?? 'Unknown Ward';
+        $guestAddress['district_name'] = District::where('id', $guestAddress['district_id'])->value('name') ?? 'Unknown District';
+        $guestAddress['province_name'] = Province::where('id', $guestAddress['province_id'])->value('name') ?? 'Unknown Province';
+
+        $order->guest_address = $guestAddress;
+
         return view('admin.orders.detail-guest-order', compact('order'));
     }
 

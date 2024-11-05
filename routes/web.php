@@ -34,7 +34,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', function () {
         return redirect(route('admin.dashboard'));
     });
-   
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
   
@@ -74,6 +74,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::prefix('/products')->group(function () {
         // product
+        Route::get('/detail/{id}', [AdminProductController::class, 'detail'])->name('products.detail');
         Route::get('/', [AdminProductController::class, 'list'])->name('products.list');
         Route::get('/create', [AdminProductController::class, 'create'])->name('products.create');
         Route::get('/filter', [AdminProductController::class, 'filter'])->name('products.filter');

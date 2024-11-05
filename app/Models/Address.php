@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Encryptable;
 
 class Address extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Encryptable;
 
     protected $table = 'addresses';
 
@@ -24,6 +25,14 @@ class Address extends Model
         'is_default',
     ];
 
+    protected $encryptable = [
+        'address_line_1',
+        'address_line_2',
+        'province_id',
+        'district_id',
+        'ward_id',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -31,12 +40,12 @@ class Address extends Model
 
     public function province()
     {
-        return $this->belongsTo(Province::class);
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
     public function district()
     {
-        return $this->belongsTo(District::class);
+        return $this->belongsTo(District::class, 'district_id', 'id');
     }
 
     public function scopeDefault($query)
@@ -46,7 +55,7 @@ class Address extends Model
 
     public function ward()
     {
-        return $this->belongsTo(Ward::class);
+        return $this->belongsTo(Ward::class, 'ward_id', 'id');
     }
 }
 

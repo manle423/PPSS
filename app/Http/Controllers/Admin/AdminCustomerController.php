@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class AdminCustomerController extends Controller
 {
     public function list(){
-        $users=User::paginate(10);
+        $users=User::where('role','!=',"ADMIN")->paginate(10);
+
         return view('admin.customers.list',compact('users'));
     }
 

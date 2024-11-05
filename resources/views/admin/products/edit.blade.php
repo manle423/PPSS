@@ -201,6 +201,8 @@
             </div>
 
             <button type="submit" class="btn btn-success mt-3">Update Product</button>
+            <a href="{{ route('admin.products.list') }}"><button type="button" class="btn btn-success mt-3" style="background-color:yellow; margin-right:10px; margin-left:10px;">Cancel</button></a>
+
         </form>
     </div>
 

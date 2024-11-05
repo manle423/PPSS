@@ -20,7 +20,7 @@ class ProductVariantFactory extends Factory
         return [
             'product_id' => Product::inRandomOrder()->first()->id ?? Product::factory(), 
             'variant_name' => $this->faker->word,
-            'stock_quantity' => $this->faker->numberBetween(0, 100),
+            'stock_quantity' => $this->faker->numberBetween(1, 100),
             'variant_price' => $this->faker->randomFloat(0, 10000, 999999),
             'exp_date' => $this->faker->date(),
         ];

@@ -54,26 +54,28 @@ class CheckoutController extends Controller
         if ($orderType == 'order') {
             $order = Order::with(['orderItems.item', 'shippingAddress.district', 'shippingAddress.province', 'shippingAddress.ward', 'shippingMethod'])
                 ->findOrFail($orderId);
-            $shippingAddress = $order->shippingAddress;
-            // Decrypt the shipping address
-            ProfileController::decryptAddress($shippingAddress);
+            
+            // Prepare the shipping address with names
+            $shippingAddress = (object) [
+                'full_name' => $order->shippingAddress->full_name,
+                'address_line_1' => $order->shippingAddress->address_line_1,
+                'address_line_2' => $order->shippingAddress->address_line_2,
+                'district' => $order->shippingAddress->district->name ?? 'Unknown District',
+                'province' => $order->shippingAddress->province->name ?? 'Unknown Province',
+                'ward' => $order->shippingAddress->ward->name ?? 'Unknown Ward',
+            ];
         } else {
             $order = GuestOrder::with(['orderItems.item', 'shippingMethod'])
                 ->findOrFail($orderId);
-            $guestAddress = json_decode($order->guest_address, true);
-            // Decrypt the guest address here
-            $guestAddress = ProfileController::decryptAddressData($guestAddress);
-       
+            $guestAddress = $order->guest_address;
+
             $shippingAddress = (object) [
                 'full_name' => $order->guest_name,
                 'address_line_1' => $guestAddress['address_line_1'],
                 'address_line_2' => $guestAddress['address_line_2'] ?? null,
-                'district' => $this->getLocationName('district', $guestAddress['district_id']),
-                'province' => $this->getLocationName('province', $guestAddress['province_id']),
-                'ward' => $this->getLocationName('ward', $guestAddress['ward_id'], $guestAddress['district_id']),
-                'district_id' => $guestAddress['district_id'],
-                'province_id' => $guestAddress['province_id'],
-                'ward_id' => $guestAddress['ward_id'],
+                'district' => District::find($guestAddress['district_id'])->name ?? 'Unknown District',
+                'province' => Province::find($guestAddress['province_id'])->name ?? 'Unknown Province',
+                'ward' => Ward::find($guestAddress['ward_id'])->name ?? 'Unknown Ward',
             ];
         }
 
@@ -85,7 +87,7 @@ class CheckoutController extends Controller
             CouponUsage::create([
                 'user_id' => Auth::id(),
                 'coupon_id' => $coupon->id,
-                'order_id' => $orderId, // You need to have an order ID available here
+                'order_id' => $orderId,
             ]);
 
             // Reset the coupon usage state
@@ -100,7 +102,6 @@ class CheckoutController extends Controller
                 'total' => number_format($item->quantity * $item->price, 2),
             ];
         });
-
 
         $shippingMethod = $order->shippingMethod ?? 'N/A';
         return view('checkout.success', compact('order', 'orderItems', 'shippingAddress', 'shippingMethod', 'orderType'));
@@ -127,13 +128,10 @@ class CheckoutController extends Controller
 
         if ($user) {
             $addresses = $user->addresses()->orderBy('is_default', 'desc')->get();
-            // Decrypt the address
-            foreach ($addresses as $address) {
-                $address = ProfileController::decryptAddress($address);
-            }
         }
         // dd(session()->all());
         return view('checkout.index', compact(
+            'user',
             'sessionCart',
             'subtotal',
             'cartItems',
@@ -156,7 +154,6 @@ class CheckoutController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
             if ($user) {
                 $hasAddresses = $user->addresses()->exists();
                 if (!$hasAddresses || $request->input('new_address')) {
@@ -181,7 +178,6 @@ class CheckoutController extends Controller
             $request->session()->put($orderType . '_id', $order->id);
             $request->session()->put('order_total', $finalPrice);
             DB::commit();
-
             $paymentMethod = $request->input('payment_method');
             switch ($paymentMethod) {
                 case 'paypal':
@@ -262,16 +258,12 @@ class CheckoutController extends Controller
         $addressData = $validatedData;
 
         $existingAddressCount = $this->profileService->getExistingAddressCount();
-
         if ($existingAddressCount === 0) {
             $addressData['is_default'] = true;
             $this->profileService->resetOtherDefaultAddresses();
         } else {
             $addressData['is_default'] = false;
         }
-        // Encrypt the address
-        $addressData = ProfileController::encryptAddress($addressData);
-
         $address = $user->addresses()->create($addressData);
 
         if ($addressData['is_default']) {
@@ -316,30 +308,5 @@ class CheckoutController extends Controller
         }
 
         return response()->json($shippingFee);
-    }
-
-    private function getLocationName($type, $id, $districtId = null)
-    {
-        $apiToken = env('GHN_TOKEN');
-        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-
-        $response = Http::withHeaders([
-            'Token' => $apiToken,
-            'Content-Type' => 'application/json',
-        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-        $data = $response->json()['data'] ?? [];
-        if ($type === 'province') {
-            $item = collect($data)->firstWhere('ProvinceID', $id);
-            return $item ? $item['ProvinceName'] : 'Unknown Province';
-        } elseif ($type === 'district') {
-            $item = collect($data)->firstWhere('DistrictID', $id);
-            return $item ? $item['DistrictName'] : 'Unknown District';
-        } elseif ($type === 'ward') {
-            $item = collect($data)->firstWhere('WardCode', $id);
-            return $item ? $item['WardName'] : 'Unknown Ward';
-        }
-
-        return 'Unknown';
     }
 }

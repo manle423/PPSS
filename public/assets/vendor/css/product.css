@@ -143,7 +143,20 @@
     border: none;
   
 }
+.action-container {
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center;     /* Căn giữa theo chiều dọc */
+    height: 100%;            /* Đảm bảo chiếm toàn bộ chiều cao của ô <td> */
+   
+}
 
+.action-btn {
+    font-size: 12px;      
+    padding: 5px 10px;      
+    border-radius: 5px;  
+    
+}
 .btn-primary:hover {
     background-color: #04834e;
 }

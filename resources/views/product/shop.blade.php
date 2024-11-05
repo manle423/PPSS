@@ -78,30 +78,12 @@
                                     <div class="mb-3">
                                         <h4 class="mb-2">Price Range</h4>
                                         <label for="minPrice">Min Price:</label>
-                                        <input type="number" class="form-control" id="minPrice" name="min_price"
-                                            min="0" max="2147483647" value="{{ request('min_price') ?? 0 }}">
+                                        <input type="number" class="form-control" id="minPrice" name="min_price" min="0" max="2147483647" value="{{ request('min_price') ?? "" }}">
                                         <label for="maxPrice">Max Price:</label>
-                                        <input type="number" class="form-control" id="maxPrice" name="max_price"
-                                            min="0" max="2147483647" value="{{ request('max_price') ?? 500 }}">
+                                        <input type="number" class="form-control" id="maxPrice" name="max_price" min="0" max="2147483647" value="{{ request('max_price') ?? "" }}">
                                     </div>
                                 </div>
-                                <div class="col-lg-12">
-                                    <div class="mb-3">
-                                        <h4>Additional</h4>
-
-                                        <div class="mb-2">
-                                            <input type="radio" class="me-2" id="Categories-3" name="Categories-1"
-                                                value="Beverages">
-                                            <label for="Categories-3"> Sales</label>
-                                        </div>
-                                        <div class="mb-2">
-                                            <input type="radio" class="me-2" id="Categories-4" name="Categories-1"
-                                                value="Beverages">
-                                            <label for="Categories-4"> Discount</label>
-                                        </div>
-
-                                    </div>
-                                </div>
+                               
 
                                 <div class="col-lg-12">
                                     <div class="position-relative">
@@ -167,7 +149,7 @@
 
                                 <div class="col-12">
                                     <div class="pagination d-flex justify-content-center mt-5">
-                                        {{ $products->links() }}
+                                        {{ $products->appends(request()->input())->links() }}
                                     </div>
                                 </div>
                             </div>
