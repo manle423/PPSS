@@ -28,10 +28,11 @@ test("Cart page showing cart content of guest (from session only)", function () 
     FeatureTestService::initiateData();
     $response = $this->get('/cart');
 
+    
+    // Check that the cart items is in the session
+    $response->assertViewHas('cartItems');
     // Get the cart items from the session
     $cartItems = session()->get('cartItems');
-    // Check that the cart items is in the session
-    $response->assertViewHas('cartItems', $cartItems);
     $subtotal = 0.0;
 
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Cart;
@@ -24,12 +25,19 @@ class FeatureTestService
             $products = Product::factory()->count(5)->create([
                 'category_id' => $category->id,
             ]);
+
             foreach ($products as $product) {
                 // Product variants within each product
                 ProductVariant::factory()->count(3)->create([
                     'product_id' => $product->id,
                 ]);
             }
+
+            // // Create a specific product with a specified name for each category
+            // Product::factory()->create([
+            //     'name' => 'Test Product ',
+            //     'category_id' => $category->id,
+            // ]);
         }
         // Cart items of user
         $cart = Cart::factory()->count(3)->create([
@@ -38,7 +46,7 @@ class FeatureTestService
         // Put cart items in session
         $sessionCart = [];
         foreach ($cart as $item) {
-            $cartKey = $item->product->id. '-'.($item->variant_id? $item->variant_id : '');
+            $cartKey = $item->product->id . '-' . ($item->variant_id ? $item->variant_id : '');
             $sessionCart[$cartKey] = $item->quantity;
         }
         // Total price for the cart
@@ -55,7 +63,7 @@ class FeatureTestService
                     'product' => $product,
                     'variant' => $variant,
                     'quantity' => $amount,
-                    
+
                 ];
                 $subtotal += $amount * ($variant ? $variant->variant_price : $product->price);
             }
@@ -72,6 +80,5 @@ class FeatureTestService
             'email' => 'test@example.com',
             'address' => 'Test Address',
         ]);
-
     }
 }

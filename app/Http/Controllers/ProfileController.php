@@ -51,6 +51,7 @@ class ProfileController extends Controller
 
     public static function decryptAddress($address)
     {
+       
         $address->ward_id = Crypt::decryptString($address->ward_id);
         $address->province_id = Crypt::decryptString($address->province_id);
         $address->district_id = Crypt::decryptString($address->district_id);
