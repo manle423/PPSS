@@ -1,31 +1,3 @@
-@php
-    use Carbon\Carbon;
-    use Illuminate\Support\Facades\Http;
-
-    function getLocationName($type, $id, $districtId = null) {
-        $apiToken = env('GHN_TOKEN');
-        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-        
-        $response = Http::withHeaders([
-            'Token' => $apiToken,
-            'Content-Type' => 'application/json',
-        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-        $data = $response->json()['data'] ?? [];
-        if ($type === 'province') {
-            $item = collect($data)->firstWhere('ProvinceID', $id);
-            return $item ? $item['ProvinceName'] : 'Unknown Province';
-        } elseif ($type === 'district') {
-            $item = collect($data)->firstWhere('DistrictID', $id);
-            return $item ? $item['DistrictName'] : 'Unknown District';
-        } elseif ($type === 'ward') {
-            $item = collect($data)->firstWhere('WardCode', $id);
-            return $item ? $item['WardName'] : 'Unknown Ward';
-        }
-        
-        return 'Unknown';
-    }
-@endphp
 @extends('layouts.shop')
 
 @section('content')
@@ -43,31 +15,17 @@
 
         <h4>Order Details</h4>
         <p><strong>Order Code:</strong> {{ $order->order_code }}</p>
-        <p><strong>Order Date:</strong> {{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
+        <p><strong>Order Date:</strong> {{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
 
         <h5>Shipping Information</h5>
-        @if($shippingAddress)
-            <p>{{ $shippingAddress->full_name }}<br>
-               {{ $shippingAddress->address_line_1 }},
-               @if($shippingAddress->address_line_2)
-                   {{ $shippingAddress->address_line_2 }},
-               @endif
-               {{ getLocationName('ward', $shippingAddress->ward_id, $shippingAddress->district_id) }}, 
-               {{ getLocationName('district', $shippingAddress->district_id) }}, 
-               {{ getLocationName('province', $shippingAddress->province_id) }}</p>
-        @elseif($orderType == 'guest_order')
-            @php
-                $guestAddress = json_decode($order->guest_address, true);
-            @endphp
-            <p>{{ $order->guest_name }}<br>
-               {{ $guestAddress['address_line_1'] }},
-               @if(isset($guestAddress['address_line_2']) && $guestAddress['address_line_2'])
-                   {{ $guestAddress['address_line_2'] }},
-               @endif
-               {{ getLocationName('ward', $guestAddress['ward_id'], $guestAddress['district_id']) }}, 
-               {{ getLocationName('district', $guestAddress['district_id']) }}, 
-               {{ getLocationName('province', $guestAddress['province_id']) }}</p>
-        @endif
+        <p>{{ $shippingAddress->full_name }}<br>
+           {{ $shippingAddress->address_line_1 }},
+           @if($shippingAddress->address_line_2)
+               {{ $shippingAddress->address_line_2 }},
+           @endif
+           {{ $shippingAddress->ward }}, 
+           {{ $shippingAddress->district }}, 
+           {{ $shippingAddress->province }}</p>
 
         <p><strong>Shipping Method:</strong> {{ $shippingMethod->name ?? 'N/A' }}</p>
 
@@ -82,7 +40,6 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- @dd($orderItems);   --}}
                 @foreach ($orderItems as $item)
                     <tr>
                         <td>{{ $item['name'] }}</td>

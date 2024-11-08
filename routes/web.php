@@ -34,7 +34,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', function () {
         return redirect(route('admin.dashboard'));
     });
-   
+    
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/change-password', [AdminController::class, 'changePass'])->name('change-password');
   

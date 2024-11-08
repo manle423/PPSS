@@ -32,6 +32,10 @@ class GuestOrder extends Model
         'shipping_fee',
     ];
 
+    protected $casts = [
+        'guest_address' => 'encrypted:json',
+    ];
+
     protected static function boot()
     {
         // Chuẩn order_code: GT + ngày tháng năm + số thứ tự order ngày hôm đó

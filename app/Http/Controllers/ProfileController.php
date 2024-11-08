@@ -63,13 +63,10 @@ class ProfileController extends Controller
     public function viewProfile()
     {
         $user = Auth::user()->load('defaultAddress');
-        $addresses = $user->addresses->load('province.districts.wards', 'district.wards', 'ward')->sortByDesc('is_default');
+        $addresses = $user->addresses()->with('province', 'district', 'ward')->get()->sortByDesc('is_default');
+
         $provinces = Province::with('districts.wards')->orderBy('name', 'asc')->get();
-        // Decrypt the address
-        foreach ($addresses as $address) {
-            $address = $this->decryptAddress($address);
-        }
-        //dd($addresses);
+
         return view('user.profile', compact('user', 'addresses', 'provinces'));
     }
 
@@ -91,17 +88,12 @@ class ProfileController extends Controller
             } else {
                 $addressData['is_default'] = false;
             }
-
-            // Encrypt the address data
-            $addressData = $this->encryptAddressData($addressData);
-            //dd($addressData);
-
+            
             $address = $user->addresses()->create($addressData);
 
             if ($addressData['is_default']) {
                 $this->profileService->updateUserDefaultAddress($address->id);
             }
-
 
             $message = $this->profileService->getAddressAddedMessage($existingAddressCount, $addressData['is_default']);
 
@@ -168,8 +160,6 @@ class ProfileController extends Controller
                 $this->profileService->updateDefaultAddress($newDefaultAddress);
             }
 
-            // Encrypt the address
-            $addressData = $this->encryptAddressData($addressData);
             $address->update($addressData);
 
             $message = $this->profileService->getAddressUpdatedMessage($addressCount, $addressData['is_default'], $user->default_address_id == $id, isset($newDefaultAddress));
@@ -186,8 +176,6 @@ class ProfileController extends Controller
     {
         try {
             $address = Address::findOrFail($id);
-            // Decrypt the address
-            $this->decryptAddress($address);
             return response()->json($address);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error retrieving address: ' . $e->getMessage()], 400);

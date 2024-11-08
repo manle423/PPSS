@@ -105,19 +105,15 @@ class OrderController extends Controller
 
     public function getOrdersByStatus(Request $request, $status)
     {
-        if (!in_array($status, ['PENDING','SHIPPING', 'COMPLETED', 'CANCELED'])) {
+        if (!in_array($status, ['PENDING', 'SHIPPING', 'COMPLETED', 'CANCELED'])) {
             return redirect()->back()->with('error', 'Trạng thái không hợp lệ.');
         }
-        
+
         $orders = Auth::user()->orders()
             ->with(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod'])
             ->where('status', $status)
             ->orderBy('order_date', 'desc')
             ->paginate(5);
-        // Decrypt the address of each order 
-        foreach ($orders as $order) {
-            ProfileController::decryptAddress($order->shippingAddress);
-        }
 
         return view('checkout.history', compact('orders', 'status'));
     }
@@ -130,9 +126,7 @@ class OrderController extends Controller
         }
 
         $order->load(['shippingAddress.province', 'shippingAddress.district', 'shippingAddress.ward', 'shippingMethod', 'orderItems.item']);
-        // Decrypt the address of the order
-        ProfileController::decryptAddress($order->shippingAddress);
-        //dd($order->shippingAddress);
+
         return view('checkout.details', compact('order'));
     }
 

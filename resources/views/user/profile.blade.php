@@ -69,7 +69,7 @@
                     <p>N/A</p>
                 @else
                     @foreach ($addresses as $address)
-                        <x-profile.address-card :address="$address" />
+                        <x-profile.address-card :address="$address" :provinces="$provinces" />
                     @endforeach
                 @endif
             </div>
@@ -77,6 +77,9 @@
     </div>
     <script>
         var addAddressRoute = "{{ route('user.add-address') }}";
+    </script>
+    <script>
+        var provinces = @json($provinces);
     </script>
     <script src="{{ asset('assets/js/profile.js') }}"></script>
 @endsection

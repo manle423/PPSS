@@ -1,33 +1,3 @@
-@php
-    use Carbon\Carbon;
-    use Illuminate\Support\Facades\Http;
-
-    function getLocationName($type, $id, $districtId = null) {
-        $apiToken = env('GHN_TOKEN');
-        $baseUrl = 'https://online-gateway.ghn.vn/shiip/public-api/master-data/';
-        
-        $response = Http::withHeaders([
-            'Token' => $apiToken,
-            'Content-Type' => 'application/json',
-        ])->get($baseUrl . $type, $type === 'ward' ? ['district_id' => $districtId] : []);
-
-        $data = $response->json()['data'] ?? [];
-        
-        if ($type === 'province') {
-            $item = collect($data)->firstWhere('ProvinceID', $id);
-            return $item ? $item['ProvinceName'] : 'Unknown Province';
-        } elseif ($type === 'district') {
-            $item = collect($data)->firstWhere('DistrictID', $id);
-            return $item ? $item['DistrictName'] : 'Unknown District';
-        } elseif ($type === 'ward') {
-            $item = collect($data)->firstWhere('WardCode', $id);
-            return $item ? $item['WardName'] : 'Unknown Ward';
-        }
-        
-        return 'Unknown';
-    }
-@endphp
-
 @extends('layouts.admin')
 @section('content')
     <link href="{{ asset('assets/vendor/css/orderdetail.css') }}" rel="stylesheet">
@@ -37,19 +7,16 @@
 
         <div class="order-info">
             <p><strong>Order code:</strong> {{ $order->order_code }}</p>
-            <p><strong>Ordered date:</strong> {{ Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
+            <p><strong>Ordered date:</strong> {{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</p>
             <p><strong>Name:</strong> {{ $order->user->full_name ?? $order->guest_name }}</p>
             <p><strong>Address:</strong> 
-                @php
-                    App\Http\Controllers\ProfileController::decryptAddress($order->shippingAddress)
-                @endphp
                 {{ $order->shippingAddress->address_line_1 }}
                 @if($order->shippingAddress->address_line_2)
                     , {{ $order->shippingAddress->address_line_2 }}
                 @endif
-                , {{ getLocationName('ward', $order->shippingAddress->ward_id, $order->shippingAddress->district_id) }}
-                , {{ getLocationName('district', $order->shippingAddress->district_id) }}
-                , {{ getLocationName('province', $order->shippingAddress->province_id) }}
+                , {{ $order->shippingAddress->ward->name ?? 'Unknown Ward' }}
+                , {{ $order->shippingAddress->district->name ?? 'Unknown District' }}
+                , {{ $order->shippingAddress->province->name ?? 'Unknown Province' }}
             </p>
             <p><strong>Shipping method:</strong> {{ $order->shippingMethod->name ?? 'N/A' }}</p>
             <p><strong>Payment method:</strong> {{ ucfirst($order->payment_method) }}</p>
