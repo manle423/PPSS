@@ -12,7 +12,7 @@ class AdminCustomerControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected $user;
+    protected User | Authenticatable $user;
 
     protected function setUp(): void
     {
