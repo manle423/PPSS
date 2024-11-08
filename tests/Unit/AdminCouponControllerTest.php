@@ -357,6 +357,6 @@ class AdminCouponControllerTest extends TestCase
         $this->actingAs($this->buyer);
 
         $response = $this->get(route('admin.coupon.list'));
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect(route('home'));
     }
 }
