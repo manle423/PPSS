@@ -23,7 +23,7 @@ class OrderFactory extends Factory
             'guest_order_id' => null,
             'status' => $this->faker->randomElement(['pending', 'completed', 'canceled']),
             'order_date' => $this->faker->dateTimeThisYear(),
-            'shipping_address' => $this->faker->address,
+            'shipping_address_id' => 1,
             'shipping_method_id' => 1,
             'payment_method' => $this->faker->randomElement(['CREDIT_CARD', 'PAYPAL', 'VNPAY']),
             'promotion_id' => null,
