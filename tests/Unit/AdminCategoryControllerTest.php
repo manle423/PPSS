@@ -44,6 +44,35 @@ class AdminCategoryControllerTest extends TestCase
         $response->assertViewHas('categories');
     }
 
+    // Test pagination
+    public function testCategoryListPagination()
+    {
+        Category::factory()->count(15)->create();
+
+        $response = $this->get(route('admin.category.list'));
+        
+        $response->assertStatus(200);
+        $response->assertViewHas('categories');
+        
+        $categories = $response->original->getData()['categories'];
+        $this->assertEquals(10, $categories->perPage());
+        $this->assertEquals(2, $categories->lastPage());
+    }
+
+    // Test list categories with search
+    public function testListCategoriesWithSearch()
+    {
+        $category1 = Category::factory()->create(['name' => 'Test Category']);
+        $category2 = Category::factory()->create(['name' => 'Another Category']);
+        
+        $response = $this->get(route('admin.category.list', ['search' => 'Test']));
+        
+        $response->assertStatus(200);
+        $response->assertViewHas('categories');
+        $response->assertSee('Test Category');
+        $response->assertDontSee('Another Category');
+    }
+
     public function testCreateCategory()
     {
         $response = $this->get(route('admin.category.create'));
@@ -119,19 +148,7 @@ class AdminCategoryControllerTest extends TestCase
         }
     }
 
-    // Test list categories with search
-    public function testListCategoriesWithSearch()
-    {
-        $category1 = Category::factory()->create(['name' => 'Test Category']);
-        $category2 = Category::factory()->create(['name' => 'Another Category']);
-        
-        $response = $this->get(route('admin.category.list', ['search' => 'Test']));
-        
-        $response->assertStatus(200);
-        $response->assertViewHas('categories');
-        $response->assertSee('Test Category');
-        $response->assertDontSee('Another Category');
-    }
+    
 
     // Test store category validation
     public function testStoreCategoryValidation()
@@ -243,18 +260,5 @@ class AdminCategoryControllerTest extends TestCase
         $response->assertStatus(302);
     }
 
-    // Test pagination
-    public function testCategoryListPagination()
-    {
-        Category::factory()->count(15)->create();
-
-        $response = $this->get(route('admin.category.list'));
-        
-        $response->assertStatus(200);
-        $response->assertViewHas('categories');
-        
-        $categories = $response->original->getData()['categories'];
-        $this->assertEquals(10, $categories->perPage());
-        $this->assertEquals(2, $categories->lastPage());
-    }
+    
 }

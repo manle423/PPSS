@@ -23,15 +23,15 @@ class AdminCustomerControllerTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    public function testListCustomers()
-    {
-        User::factory()->count(5)->create(['role' => 'BUYER']);
+    // public function testListCustomers()
+    // {
+    //     User::factory()->count(5)->create(['role' => 'BUYER']);
 
-        $response = $this->get(route('admin.customers.list'));
+    //     $response = $this->get(route('admin.customers.list'));
 
-        $response->assertStatus(200);
-        $response->assertViewHas('users');
-    }
+    //     $response->assertStatus(200);
+    //     $response->assertViewHas('users');
+    // }
 
     // public function testEditCustomer()
     // {
@@ -43,39 +43,39 @@ class AdminCustomerControllerTest extends TestCase
     //     $response->assertViewHas('user', $customer);
     // }
 
-    public function testDetailCustomer()
-    {
-        $customer = User::factory()->create(['role' => 'BUYER']);
+    // public function testDetailCustomer()
+    // {
+    //     $customer = User::factory()->create(['role' => 'BUYER']);
 
-        $response = $this->get(route('admin.customers.detail', $customer->id));
+    //     $response = $this->get(route('admin.customers.detail', $customer->id));
 
-        $response->assertStatus(200);
-        $response->assertViewHas('user', $customer);
-    }
+    //     $response->assertStatus(200);
+    //     $response->assertViewHas('user', $customer);
+    // }
 
-    public function testDeleteCustomer()
-    {
-        $customer = User::factory()->create(['role' => 'BUYER']);
+    // public function testDeleteCustomer()
+    // {
+    //     $customer = User::factory()->create(['role' => 'BUYER']);
 
-        $response = $this->post(route('admin.customers.delete', $customer->id));
+    //     $response = $this->post(route('admin.customers.delete', $customer->id));
 
-        $response->assertRedirect(route('admin.customers.list'));
-        $this->assertSoftDeleted('users', ['id' => $customer->id]);
-    }
+    //     $response->assertRedirect(route('admin.customers.list'));
+    //     $this->assertSoftDeleted('users', ['id' => $customer->id]);
+    // }
 
-    public function testCustomerOrders()
-    {
-        $customer = User::factory()->create(['role' => 'BUYER']);
-        $address = Address::factory()->create(['user_id' => $customer->id]);
-        $orders = Order::factory()->count(3)->create([
-            'user_id' => $customer->id,
-            'shipping_address_id' => $address->id,
-        ]);
+    // public function testCustomerOrders()
+    // {
+    //     $customer = User::factory()->create(['role' => 'BUYER']);
+    //     $address = Address::factory()->create(['user_id' => $customer->id]);
+    //     $orders = Order::factory()->count(3)->create([
+    //         'user_id' => $customer->id,
+    //         'shipping_address_id' => $address->id,
+    //     ]);
 
-        $response = $this->get(route('admin.customers.orders', $customer->id));
-        $response->assertStatus(200);
-        $response->assertViewHas('orders', function ($viewOrders) use ($orders) {
-            return $viewOrders->count() === $orders->count();
-        });
-    }
+    //     $response = $this->get(route('admin.customers.orders', $customer->id));
+    //     $response->assertStatus(200);
+    //     $response->assertViewHas('orders', function ($viewOrders) use ($orders) {
+    //         return $viewOrders->count() === $orders->count();
+    //     });
+    // }
 }

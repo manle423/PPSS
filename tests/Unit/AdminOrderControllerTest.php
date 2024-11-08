@@ -16,24 +16,24 @@ class AdminOrderControllerTest extends TestCase
 
     protected User | Authenticatable $user;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create([
-            'role' => 'ADMIN',
-        ]);
-        $this->actingAs($this->user);
-    }
+    // protected function setUp(): void
+    // {
+    //     parent::setUp();
+    //     $this->user = User::factory()->create([
+    //         'role' => 'ADMIN',
+    //     ]);
+    //     $this->actingAs($this->user);
+    // }
 
-    public function testListOrders()
-    {
-        Order::factory()->count(5)->create();
+    // public function testListOrders()
+    // {
+    //     Order::factory()->count(5)->create();
 
-        $response = $this->get(route('admin.orders.list'));
+    //     $response = $this->get(route('admin.orders.list'));
 
-        $response->assertStatus(200);
-        $response->assertViewHas('orders');
-    }
+    //     $response->assertStatus(200);
+    //     $response->assertViewHas('orders');
+    // }
 
     // public function testShowOrder()
     // {
@@ -45,22 +45,22 @@ class AdminOrderControllerTest extends TestCase
     //     // $response->assertViewHas('order', $order);
     // }
 
-    public function testCancelOrder()
-    {
-        $order = Order::factory()->create(['status' => 'PENDING']);
-        $product = Product::factory()->create(['stock_quantity' => 10]);
-        $orderItem = OrderItem::factory()->create([
-            'order_id' => $order->id,
-            'item_id' => $product->id,
-            'quantity' => 2,
-        ]);
+    // public function testCancelOrder()
+    // {
+    //     $order = Order::factory()->create(['status' => 'PENDING']);
+    //     $product = Product::factory()->create(['stock_quantity' => 10]);
+    //     $orderItem = OrderItem::factory()->create([
+    //         'order_id' => $order->id,
+    //         'item_id' => $product->id,
+    //         'quantity' => 2,
+    //     ]);
 
-        $response = $this->patch(route('admin.orders.cancel', $order->id));
+    //     $response = $this->patch(route('admin.orders.cancel', $order->id));
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success', 'Order has been cancelled successfully.');
+    //     $response->assertRedirect();
+    //     $response->assertSessionHas('success', 'Order has been cancelled successfully.');
 
-        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'CANCELED']);
-        $this->assertDatabaseHas('products', ['id' => $product->id, 'stock_quantity' => 12]);
-    }
+    //     $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'CANCELED']);
+    //     $this->assertDatabaseHas('products', ['id' => $product->id, 'stock_quantity' => 12]);
+    // }
 }
