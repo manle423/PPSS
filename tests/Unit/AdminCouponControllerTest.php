@@ -9,18 +9,24 @@ use Illuminate\Http\UploadedFile;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\CouponsImport;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use App\Models\StoreInfo;
 
 class AdminCouponControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User | Authenticatable $user;
-
+    protected User | Authenticatable $buyer;
     protected function setUp(): void
     {
         parent::setUp();
+        StoreInfo::factory()->create();
         $this->user = User::factory()->create([
             'role' => 'ADMIN',
+        ]);
+        $this->buyer = User::factory()->create([
+            'role' => 'BUYER',
         ]);
         $this->actingAs($this->user);
     }
@@ -165,5 +171,192 @@ class AdminCouponControllerTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('error', 'Invalid action.');
+    }
+
+    public function testListCouponsWithSearch()
+    {
+        $coupon1 = Coupon::factory()->create(['code' => 'TEST123']);
+        $coupon2 = Coupon::factory()->create(['code' => 'ANOTHER']);
+
+        $response = $this->get(route('admin.coupon.list', ['search' => 'TEST']));
+
+        $response->assertStatus(200);
+        $response->assertSee('TEST123');
+        $response->assertDontSee('ANOTHER');
+    }
+
+    public function testListCouponsWithStatusFilter()
+    {
+        $activeCoupon = Coupon::factory()->create(['status' => 1]);
+        $inactiveCoupon = Coupon::factory()->create(['status' => 0]);
+
+        $response = $this->get(route('admin.coupon.list', ['status' => 1]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('coupons', function ($coupons) use ($activeCoupon) {
+            return $coupons->contains($activeCoupon)
+                && $coupons->where('status', 0)->isEmpty();
+        });
+    }
+
+    public function testAutoDeactivateExpiredCoupons()
+    {
+        $expiredCoupon = Coupon::factory()->create([
+            'end_date' => now()->subDay(),
+            'status' => 1
+        ]);
+
+        $this->get(route('admin.coupon.list'));
+
+        $this->assertDatabaseHas('coupons', [
+            'id' => $expiredCoupon->id,
+            'status' => 0
+        ]);
+    }
+
+    public function testCreateCouponValidation()
+    {
+        $response = $this->post(route('admin.coupon.store'), [
+            'code' => '',
+            'discount_value' => -1,
+            'min_order_value' => -1,
+            'max_discount' => -1,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->subDay()->toDateString(), // Invalid end date
+            'status' => 'invalid'
+        ]);
+
+        $response->assertSessionHasErrors([
+            'code',
+            'discount_value',
+            'min_order_value',
+            'max_discount',
+            'end_date',
+            'status'
+        ]);
+    }
+
+    public function testCreateDuplicateCoupon()
+    {
+        Coupon::factory()->create(['code' => 'DUPLICATE']);
+
+        $response = $this->post(route('admin.coupon.store'), [
+            'code' => 'DUPLICATE',
+            'discount_value' => 0.1,
+            'min_order_value' => 500000,
+            'max_discount' => 50000,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->addDays(10)->toDateString(),
+            'status' => 1,
+        ]);
+
+        $response->assertSessionHasErrors(['error' => 'This coupon already exists.']);
+    }
+
+    public function testUpdateCouponValidation()
+    {
+        $coupon = Coupon::factory()->create();
+
+        $response = $this->post(route('admin.coupon.update', $coupon->id), [
+            'code' => '',
+            'discount_value' => -1,
+            'min_order_value' => -1,
+            'max_discount' => -1,
+            'start_date' => now()->toDateString(),
+            'end_date' => now()->subDay()->toDateString(),
+            'status' => 'invalid'
+        ]);
+
+        $response->assertSessionHasErrors([
+            'code',
+            'discount_value',
+            'min_order_value',
+            'max_discount',
+            'end_date',
+            'status'
+        ]);
+    }
+
+    public function testImportCouponsWithValidFile()
+    {
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->create('coupons.xlsx');
+        Excel::shouldReceive('import')
+            ->once()
+            ->andReturn(new CouponsImport());
+
+        $response = $this->post(route('admin.coupon.import'), [
+            'file' => $file
+        ]);
+
+        $response->assertRedirect(route('admin.coupon.list'));
+        $response->assertSessionHas('success');
+    }
+
+    public function testImportCouponsWithInvalidFileType()
+    {
+        Storage::fake('local');
+
+        $file = UploadedFile::fake()->create('coupons.txt');
+
+        $response = $this->post(route('admin.coupon.import'), [
+            'file' => $file
+        ]);
+
+        $response->assertSessionHasErrors(['file']);
+    }
+
+    public function testImportCouponsWithValidationErrors()
+    {
+        Storage::fake('local');
+        
+        $file = UploadedFile::fake()->create('coupons.xlsx');
+        
+        $validator = \Validator::make([], ['field' => 'required']);
+        $validator->fails();
+        $validationException = new \Illuminate\Validation\ValidationException($validator);
+        
+        Excel::shouldReceive('import')
+            ->once()
+            ->andThrow(new \Maatwebsite\Excel\Validators\ValidationException(
+                $validationException, 
+                []
+            ));
+
+        $response = $this->post(route('admin.coupon.import'), [
+            'file' => $file
+        ]);
+
+        $response->assertSessionHas('error');
+    }
+
+    public function testDetailCoupon()
+    {
+        $coupon = Coupon::factory()->create();
+
+        $response = $this->get(route('admin.coupon.detail', $coupon->id));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('admin.coupons.show');
+        $response->assertViewHas('coupon', $coupon);
+    }
+
+    public function testDetailNonExistentCoupon()
+    {
+        StoreInfo::factory()->create();
+        
+        $response = $this->get(route('admin.coupon.detail', 999));
+        $response->assertStatus(404);
+    }
+
+    public function testUnauthorizedAccess()
+    {
+        StoreInfo::factory()->create();
+        
+        $this->actingAs($this->buyer);
+
+        $response = $this->get(route('admin.coupon.list'));
+        $response->assertRedirect(route('login'));
     }
 }

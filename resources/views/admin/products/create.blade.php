@@ -203,5 +203,5 @@
         </form>
     </div>
 
-    <script src="{{ asset('assets/js/product.js') }}"></script>
+    <script src="{{ asset('assets/js/product.js') }}?v={{ time() }}"></script>
 @endsection

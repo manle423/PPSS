@@ -100,7 +100,7 @@
     <script src="{{ asset('assets/vendor/js/main.js') }}"></script>
 
     {{-- Gọi file auth.js bên assets/js/auth.js --}}
-    <script src="{{ asset('assets/js/auth.js') }}"></script>
+    <script src="{{ asset('assets/js/auth.js') }}?v={{ time() }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.all.min.js"></script>
 
 </body>

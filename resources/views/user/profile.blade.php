@@ -81,5 +81,5 @@
     <script>
         var provinces = @json($provinces);
     </script>
-    <script src="{{ asset('assets/js/profile.js') }}"></script>
+    <script src="{{ asset('assets/js/profile.js') }}?v={{ time() }}"></script>
 @endsection

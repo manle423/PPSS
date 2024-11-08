@@ -429,7 +429,7 @@ class CheckoutProcessTest extends TestCase
 
         $response = $this->withMiddleware(['buyerOrGuest'])
             ->actingAs($this->user)
-            ->get(route('order.history'));
+            ->get(route('user.order-history', Order::STATUS['pending']));
 
         $response->assertStatus(200);
         $response->assertViewIs('checkout.history');
