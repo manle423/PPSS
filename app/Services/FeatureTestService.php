@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Models\StoreInfo;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 
 uses(RefreshDatabase::class);
 
@@ -72,6 +73,7 @@ class FeatureTestService
             'email' => 'test@example.com',
             'address' => 'Test Address',
         ]);
-
+        // Seed the database with location data
+        Artisan::call('db:seed', ['--class' => 'LocationSeeder']);
     }
 }
