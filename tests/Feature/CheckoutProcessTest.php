@@ -67,7 +67,7 @@ class CheckoutProcessTest extends TestCase
     }
 
     // Test go to register page
-    public function test_go_to_register_page()
+    private function test_go_to_register_page()
     {
         $response = $this->get(route('register'));
 
@@ -83,7 +83,7 @@ class CheckoutProcessTest extends TestCase
     }
 
     // Test user registration
-    public function test_user_registration()
+    private function test_user_registration()
     {
         $this->test_go_to_register_page();
 
@@ -116,7 +116,7 @@ class CheckoutProcessTest extends TestCase
     }
 
     // Test add new address
-    public function test_add_new_address()
+    private function test_add_new_address()
     {
         $this->test_user_registration();
 
@@ -153,7 +153,7 @@ class CheckoutProcessTest extends TestCase
     }
 
     // Test go to home page
-    public function test_go_to_home_page()
+    private function test_go_to_home_page()
     {
         $this->test_add_new_address();
 
@@ -169,7 +169,7 @@ class CheckoutProcessTest extends TestCase
         $response->assertViewHas(['latestProductsAll', 'categories']);
     }
 
-    public function test_add_product_to_cart()
+    private function test_add_product_to_cart()
     {
         $this->test_go_to_home_page();
 
@@ -229,7 +229,7 @@ class CheckoutProcessTest extends TestCase
         $this->assertEquals($this->session['subtotal'], $variant->variant_price * $cartItem->quantity);
     }
 
-    public function test_view_checkout_page()
+    private function test_view_checkout_page()
     {
         $this->test_add_product_to_cart();
 
@@ -343,7 +343,7 @@ class CheckoutProcessTest extends TestCase
 
     // Test payment process
 
-    public function test_payment_process()
+    private function test_payment_process()
     {
         $this->test_view_checkout_page();
 
